@@ -1,7 +1,8 @@
 const express = require("express")
 const cors = require("cors")
-const { connect } = require("./config/db.config")
+const { connect } = require("./configs/db.config")
 const initRoutes = require("./routes/index.route")
+const logger = require('./utils/logger.util');
 
 require("dotenv").config()
 
@@ -9,6 +10,11 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+app.use((req, res, next) => {
+    logger.info(`:::::Request: ${req.method} ${req.url} (${res.statusCode})`);
+    next();
+  });
 
 initRoutes(app)
 connect()
