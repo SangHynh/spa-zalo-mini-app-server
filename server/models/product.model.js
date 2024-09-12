@@ -15,6 +15,7 @@ const ingredientSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
+  images: { type: [String], default: [] }, // Bổ sung
   price: { type: Number, required: true },
   category: { type: String, required: true },
   stock: { type: Number, required: true },

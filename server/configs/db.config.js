@@ -12,7 +12,7 @@ async function connect() {
       maxPoolSize: 50,
     });
     console.log("Connected to MongoDB successfully");
-    await testAdd();
+    // await testAdd();
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err);
   }

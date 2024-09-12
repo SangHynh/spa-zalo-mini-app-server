@@ -3,7 +3,22 @@ const Product = require('../models/product.model');
 // CREATE
 exports.createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    if (!req.files) {
+      return res.status(400).json({ error: 'No images uploaded' });
+    }
+
+    // Convert Text to Json
+    req.body.variants = JSON.parse(req.body.variants);
+    req.body.ingredients = JSON.parse(req.body.ingredients);
+    req.body.benefits = JSON.parse(req.body.benefits);
+
+    const imageUrls = req.files.map(file => file.path);
+
+    const product = new Product({
+      ...req.body,
+      images: imageUrls
+    })
+    
     const savedProduct = await product.save();
     res.status(201).json(savedProduct);
   } catch (err) {
