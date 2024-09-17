@@ -7,6 +7,7 @@ import {
   ManageServices,
   ManageUsers,
 } from "../pages";
+import CreateProduct from "../pages/products/CreateProduct";
 
 const routes = [
   {
@@ -33,6 +34,10 @@ const routes = [
             path: path.MANAGE_SERVICES,
             element: <ManageServices />,
           },
+          {
+            path: path.CREATE_PRODUCT,
+            element: <CreateProduct />,
+          }
         ],
       },
     ],

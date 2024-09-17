@@ -60,10 +60,12 @@ const AdminLayout = () => {
 
         {/* Nội dung chính */}
         <div
-          className="col-span-12"
+          className="col-span-12 flex flex-col"
           style={{
             marginLeft: isDrawerOpen ? drawerWidth : 0,
             transition: "margin-left 0.3s ease",
+            minHeight: "100vh",
+            alignItems: "flex-start", 
           }}
         >
           <Outlet />
