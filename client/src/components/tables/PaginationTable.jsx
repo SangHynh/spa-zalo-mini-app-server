@@ -82,7 +82,7 @@ TablePaginationActions.propTypes = {
 export default function PaginationTable({ rows, columns, onDelete }) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    
+
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -106,7 +106,7 @@ export default function PaginationTable({ rows, columns, onDelete }) {
                                 {column.charAt(0).toUpperCase() + column.slice(1)}
                             </TableCell>
                         ))}
-                        <TableCell key="actions">Actions</TableCell> {/* New actions column */}
+                        <TableCell key="actions">Actions</TableCell> {/* Actions column */}
                     </TableRow>
                 </TableHead>
                 {/* Dynamic Table Rows */}
@@ -139,17 +139,10 @@ export default function PaginationTable({ rows, columns, onDelete }) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                            colSpan={3}
+                            colSpan={columns.length + 1}
                             count={rows.length}
                             rowsPerPage={rowsPerPage}
-                            slotProps={{
-                                select: {
-                                    inputProps: {
-                                        'aria-label': 'rows per page',
-                                    },
-                                    native: true,
-                                },
-                            }}
+                            page={page}
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
                             ActionsComponent={TablePaginationActions}

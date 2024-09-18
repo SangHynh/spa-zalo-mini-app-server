@@ -1,7 +1,18 @@
-import React from "react";
+import axios from "../utils/axios";
 
-const products = () => {
-  return <div>products</div>;
-};
+// GET PRODUCTS
+export const apiGetProducts = () => axios(
+  {
+    url: "/products/",
+    method: "GET",
+  }
+)
 
-export default products;
+// POST PRODUCT
+export const apiCreateProducts = (formData) => axios(
+  {
+    url: "/products/",
+    method: "POST",
+    data: formData
+  }
+)
