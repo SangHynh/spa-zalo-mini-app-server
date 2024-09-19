@@ -1,3 +1,4 @@
+export { default as Login } from "./Login";
 export { default as AdminLayout } from "./AdminLayout";
 export { default as Dashboard } from "./Dashboard";
 export { default as ManageProducts } from "./ManageProducts";

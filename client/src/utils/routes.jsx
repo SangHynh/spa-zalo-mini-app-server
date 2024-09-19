@@ -1,6 +1,7 @@
 import App from "../App";
 import path from "./path";
 import {
+  Login,
   AdminLayout,
   Dashboard,
   ManageProducts,
@@ -14,6 +15,10 @@ const routes = [
     path: "/",
     element: <App />,
     children: [
+      {
+        path: path.LOGIN,
+        element: <Login />,
+      },
       {
         path: path.ADMIN_LAYOUT,
         element: <AdminLayout />,
@@ -37,7 +42,7 @@ const routes = [
           {
             path: path.CREATE_PRODUCT,
             element: <CreateProduct />,
-          }
+          },
         ],
       },
     ],

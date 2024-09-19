@@ -1,4 +1,6 @@
 const path = {
+  LOGIN: "/",
+
   ADMIN_LAYOUT: "admin",
   DASHBOARD: "dashboard",
   MANAGE_PRODUCTS: "manage-products",
