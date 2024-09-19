@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -13,35 +13,11 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Tooltip } from "@mui/material";
+import { Container, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-
-function createData(
-  id,
-  name,
-  price,
-  category,
-  stock,
-  expiryDate,
-  salesQuality,
-  variants = [],
-  relatedProducts = [],
-  usageInstructions
-) {
-  return {
-    id,
-    name,
-    price,
-    category,
-    stock,
-    expiryDate,
-    salesQuality,
-    variants,
-    relatedProducts,
-    usageInstructions,
-  };
-}
+import { apiGetProducts } from "../../apis/products";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 function Row(props) {
   const { row } = props;
@@ -60,16 +36,16 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.id}
+          {row._id}
         </TableCell>
         <TableCell align="right">{row.name}</TableCell>
         <TableCell align="right">{row.price}</TableCell>
         <TableCell align="right">{row.category}</TableCell>
         <TableCell align="right">{row.stock}</TableCell>
         <TableCell align="right">{row.expiryDate}</TableCell>
-        <TableCell align="right">{row.salesQuality}</TableCell>
+        <TableCell align="right" sx={{ width: "250px" }}>{row.benefits.join(', ')}</TableCell>
         <TableCell align="right" sx={{ width: "350px" }}>
-          {row.usageInstructions}
+          {row.description}
         </TableCell>
         <TableCell align="right" sx={{ width: "10px" }}>
           <Tooltip title="Edit">
@@ -126,7 +102,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Related Products
+                Ingredients
               </Typography>
               <Table
                 size="small"
@@ -135,9 +111,9 @@ function Row(props) {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell>Volume</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Stock</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Percentage</TableCell>
+                    <TableCell>Usage Instructions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -147,8 +123,8 @@ function Row(props) {
                         <TableCell component="th" scope="row">
                           {relatedRow.name}
                         </TableCell>
-                        <TableCell>{relatedRow.price}</TableCell>
-                        <TableCell>{relatedRow.stock}</TableCell>
+                        <TableCell>{relatedRow.percentage}</TableCell>
+                        <TableCell>{relatedRow.usageInstructions}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -157,87 +133,30 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                Images
+              </Typography>
+              {/* Image List */}
+              {row.images.length > 0 && (
+                <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
+                  {row.images.map((imgSrc, index) => (
+                    <ImageListItem key={index}>
+                      <img src={imgSrc} alt={`Uploaded ${index}`} loading="lazy" />
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              )}
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
     </React.Fragment>
   );
 }
-
-const rows = [
-  createData(
-    1,
-    "Frozen yoghurt",
-    159,
-    "Desserts",
-    24,
-    "2024-12-01",
-    3.99,
-    [{ volume: "100ml", price: 55, stock: 20 }],
-    [
-      { name: "Ice cream sandwich", price: 237, stock: 37 },
-      { name: "Cupcake", price: 305, stock: 67 },
-    ],
-    "Here is the product manual (if available)"
-  ),
-  createData(
-    2,
-    "Ice cream sandwich",
-    237,
-    "Desserts",
-    37,
-    "2024-11-15",
-    4.99,
-    [{ volume: "100ml", price: 55, stock: 18 }],
-    [
-      { name: "Frozen yoghurt", price: 159, stock: 24 },
-      { name: "Cupcake", price: 305, stock: 67 },
-    ],
-    "Here is the product manual (if available)"
-  ),
-  createData(
-    3,
-    "Eclair",
-    262,
-    "Desserts",
-    24,
-    "2024-10-20",
-    3.79,
-    [{ volume: "100ml", price: 50, stock: 15 }],
-    [
-      { name: "Gingerbread", price: 356, stock: 49 },
-      { name: "Ice cream sandwich", price: 237, stock: 37 },
-    ],
-    "Here is the product manual (if available)"
-  ),
-  createData(
-    4,
-    "Cupcake",
-    305,
-    "Desserts",
-    67,
-    "2024-09-30",
-    2.5,
-    [{ volume: "150ml", price: 60, stock: 30 }],
-    [
-      { name: "Frozen yoghurt", price: 159, stock: 24 },
-      { name: "Eclair", price: 262, stock: 24 },
-    ],
-    "Here is the product manual (if available)"
-  ),
-  createData(
-    5,
-    "Gingerbread",
-    356,
-    "Desserts",
-    49,
-    "2024-08-15",
-    1.5,
-    [{ volume: "200ml", price: 70, stock: 10 }],
-    [
-      { name: "Eclair", price: 262, stock: 24 },
-      { name: "Cupcake", price: 305, stock: 67 },
-    ],
-    "Here is the product manual (if available)"
-  ),
-];
 
 const ProductTable = () => {
   const [page, setPage] = useState(0);
@@ -252,11 +171,23 @@ const ProductTable = () => {
     setPage(0);
   };
 
+  const [products, setProducts] = useState([])
+
+  // GET PRODUCTS
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await apiGetProducts()
+      if (response.status === 200) setProducts(response.data)
+    }
+
+    fetchProducts()
+  }, [])
+
   return (
     <>
       <TableContainer
         component={Paper}
-        style={{ maxHeight: "400px", overflowY: "auto", overflowX: "auto" }}
+        style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
         <Table aria-label="collapsible table">
           <TableHead
@@ -295,10 +226,10 @@ const ProductTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {products
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <Row key={row.name} row={row} />
+                <Row key={row._id} row={row} />
               ))}
           </TableBody>
         </Table>
@@ -306,7 +237,7 @@ const ProductTable = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={rows.length}
+        count={products.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

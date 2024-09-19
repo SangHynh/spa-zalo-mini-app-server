@@ -8,16 +8,16 @@ import ProductTable from "./products/ProductTable";
 // import { productColumns, productRows } from "../utils/constants";
 
 const ManageProducts = () => {
-  useState(() => {
-    const fetchProducts = async () => {
-      const response = await apiGetProducts();
-      if (response) {
-        console.log("Successfully fetch products!");
-      }
-    };
+  // useState(() => {
+  //   const fetchProducts = async () => {
+  //     const response = await apiGetProducts();
+  //     if (response) {
+  //       console.log("Successfully fetch products!");
+  //     }
+  //   };
 
-    fetchProducts();
-  }, []);
+  //   fetchProducts();
+  // }, []);
 
   return (
     <Box className="p-8 bg-white min-h-screen w-full flex flex-col gap-6">
