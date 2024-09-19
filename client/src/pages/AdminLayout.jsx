@@ -10,7 +10,9 @@ import {
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { Outlet, Link } from "react-router-dom";
 import { sidebar } from "../utils/constants";
+import Topheader from "../components/banners/Topheader";
 
+const TOP_HEADER_HEIGHT = 64;
 const drawerWidth = 240;
 
 const AdminLayout = () => {
@@ -22,17 +24,17 @@ const AdminLayout = () => {
 
   return (
     <>
+      <Topheader height={TOP_HEADER_HEIGHT} />
+      <IconButton
+        color="inherit"
+        aria-label="open drawer"
+        onClick={toggleDrawer}
+        edge="start"
+        sx={{ position: "absolute", top: 13, left: 16, zIndex: 1300 }}
+      >
+        <MenuIcon />
+      </IconButton>
       <main className="w-full grid grid-cols-12 min-h-screen max-h-screen overflow-auto">
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={toggleDrawer}
-          edge="start"
-          sx={{ position: "absolute", top: 16, left: 16, zIndex: 1300 }}
-        >
-          <MenuIcon />
-        </IconButton>
-
         <Drawer
           variant="persistent"
           open={isDrawerOpen}
@@ -43,6 +45,7 @@ const AdminLayout = () => {
               width: drawerWidth,
               boxSizing: "border-box",
               transition: "width 0.3s ease",
+              marginTop: `${TOP_HEADER_HEIGHT}px`,
             },
           }}
         >
@@ -63,6 +66,7 @@ const AdminLayout = () => {
             transition: "margin-left 0.3s ease",
             minHeight: "100vh",
             alignItems: "flex-start",
+            marginTop: `${TOP_HEADER_HEIGHT}px`,
           }}
         >
           <Outlet />

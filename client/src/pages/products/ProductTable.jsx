@@ -25,7 +25,10 @@ function Row(props) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow
+        sx={{ "& > *": { borderBottom: "unset" } }}
+        className="bg-gray-100"
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -39,11 +42,28 @@ function Row(props) {
           {row._id}
         </TableCell>
         <TableCell align="right">{row.name}</TableCell>
-        <TableCell align="right">{row.price}</TableCell>
+        <TableCell align="right">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(row.price)}
+        </TableCell>
         <TableCell align="right">{row.category}</TableCell>
         <TableCell align="right">{row.stock}</TableCell>
-        <TableCell align="right">{row.expiryDate}</TableCell>
-        <TableCell align="right" sx={{ width: "250px" }}>{row.benefits.join(', ')}</TableCell>
+        <TableCell align="right">
+          {new Date(row.expiryDate).toLocaleString("vi-VN", {
+            timeZone: "Asia/Ho_Chi_Minh",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false, // 24-hour format
+          })}
+        </TableCell>
+        <TableCell align="right" sx={{ width: "250px" }}>
+          {row.benefits.join(", ")}
+        </TableCell>
         <TableCell align="right" sx={{ width: "350px" }}>
           {row.description}
         </TableCell>
@@ -76,19 +96,19 @@ function Row(props) {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell>Volume</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Stock</TableCell>
+                    <TableCell align="center">Volume</TableCell>
+                    <TableCell align="center">Price</TableCell>
+                    <TableCell align="center">Stock</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.variants.map((variantRow) => (
                     <TableRow key={variantRow.volume}>
-                      <TableCell component="th" scope="row">
+                      <TableCell component="th" scope="row" align="center">
                         {variantRow.volume}
                       </TableCell>
-                      <TableCell>{variantRow.price}</TableCell>
-                      <TableCell>{variantRow.stock}</TableCell>
+                      <TableCell align="center">{variantRow.price}</TableCell>
+                      <TableCell align="center">{variantRow.stock}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -111,20 +131,24 @@ function Row(props) {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Percentage</TableCell>
-                    <TableCell>Usage Instructions</TableCell>
+                    <TableCell align="center">Name</TableCell>
+                    <TableCell align="center">Percentage</TableCell>
+                    <TableCell align="center">Usage Instructions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.relatedProducts &&
                     row.relatedProducts.map((relatedRow) => (
                       <TableRow key={relatedRow.name}>
-                        <TableCell component="th" scope="row">
+                        <TableCell component="th" scope="row" align="center">
                           {relatedRow.name}
                         </TableCell>
-                        <TableCell>{relatedRow.percentage}</TableCell>
-                        <TableCell>{relatedRow.usageInstructions}</TableCell>
+                        <TableCell align="center">
+                          {relatedRow.percentage}
+                        </TableCell>
+                        <TableCell align="center">
+                          {relatedRow.usageInstructions}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -145,7 +169,11 @@ function Row(props) {
                 <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
                   {row.images.map((imgSrc, index) => (
                     <ImageListItem key={index}>
-                      <img src={imgSrc} alt={`Uploaded ${index}`} loading="lazy" />
+                      <img
+                        src={imgSrc}
+                        alt={`Uploaded ${index}`}
+                        loading="lazy"
+                      />
                     </ImageListItem>
                   ))}
                 </ImageList>
@@ -171,17 +199,17 @@ const ProductTable = () => {
     setPage(0);
   };
 
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([]);
 
   // GET PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await apiGetProducts()
-      if (response.status === 200) setProducts(response.data)
-    }
+      const response = await apiGetProducts();
+      if (response.status === 200) setProducts(response.data);
+    };
 
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   return (
     <>
@@ -195,6 +223,7 @@ const ProductTable = () => {
               backgroundColor: "pink",
               position: "sticky",
               top: 0,
+              zIndex: 10,
             }}
           >
             <TableRow>
@@ -216,10 +245,10 @@ const ProductTable = () => {
                 Expiry Date
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Sales Quality
+                Benefít
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Usage Instructions
+                Description
               </TableCell>
               <TableCell />
               <TableCell />
