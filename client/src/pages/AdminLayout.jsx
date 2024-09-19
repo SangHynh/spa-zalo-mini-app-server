@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { Outlet, Link } from "react-router-dom";
-import { sidebar } from "../utils/constants"; // Đường dẫn đến constants.jsx
+import { sidebar } from "../utils/constants";
 
 const drawerWidth = 240;
 
@@ -23,18 +23,16 @@ const AdminLayout = () => {
   return (
     <>
       <main className="w-full grid grid-cols-12 min-h-screen max-h-screen overflow-auto">
-        {/* Nút toggle để ẩn/hiện sidebar */}
         <IconButton
           color="inherit"
           aria-label="open drawer"
           onClick={toggleDrawer}
           edge="start"
-          sx={{ position: "absolute", top: 16, left: 16, zIndex: 1300 }} // Đảm bảo nút nằm trên cùng
+          sx={{ position: "absolute", top: 16, left: 16, zIndex: 1300 }}
         >
           <MenuIcon />
         </IconButton>
 
-        {/* Drawer */}
         <Drawer
           variant="persistent"
           open={isDrawerOpen}
@@ -58,14 +56,13 @@ const AdminLayout = () => {
           </List>
         </Drawer>
 
-        {/* Nội dung chính */}
         <div
           className="col-span-12 flex flex-col"
           style={{
             marginLeft: isDrawerOpen ? drawerWidth : 0,
             transition: "margin-left 0.3s ease",
             minHeight: "100vh",
-            alignItems: "flex-start", 
+            alignItems: "flex-start",
           }}
         >
           <Outlet />
