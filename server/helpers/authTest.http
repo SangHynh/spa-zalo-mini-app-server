@@ -1,0 +1,37 @@
+
+GET http://localhost:5000
+Authorization: Bearer AccessTokenHere
+
+### REGISTER ROUTE
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+### LOGIN ROUTE
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+### REFRESH TOKEN
+POST http://localhost:5000/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}
+
+### LOGOUT ROUTE
+DELETE http://localhost:5000/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjY3MzU2OTAsImV4cCI6MTcyNzM0MDQ5MCwiYXVkIjoiNjZlOWIxNDY1NjE2OGY4OGEzMzBkZTg1In0.nYp5At1iy9GlHpe51WjMnv-M4N23lbghIgUEJ7lRQhE"
+}
