@@ -17,6 +17,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+import path from "../../utils/path";
 
 const CreateProduct = () => {
     // HANDLE IMAGES UPLOAD
@@ -125,6 +127,7 @@ const CreateProduct = () => {
 
     // SUBMIT
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -184,6 +187,8 @@ const CreateProduct = () => {
                     cancelButtonText: "Cancel",
                 }).then(({ isConfirmed }) => {
                     if (isConfirmed) {
+                        navigate(`/${path.ADMIN_LAYOUT}/${path.MANAGE_PRODUCTS}`)
+                    } else {
                         window.location.reload();
                     }
                 });

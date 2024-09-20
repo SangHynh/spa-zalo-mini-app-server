@@ -137,17 +137,17 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.relatedProducts &&
-                    row.relatedProducts.map((relatedRow) => (
-                      <TableRow key={relatedRow.name}>
+                  {row.ingredients &&
+                    row.ingredients.map((ingredient) => (
+                      <TableRow key={ingredient.name}>
                         <TableCell component="th" scope="row" align="center">
-                          {relatedRow.name}
+                          {ingredient.name}
                         </TableCell>
                         <TableCell align="center">
-                          {relatedRow.percentage}
+                          {ingredient.percentage}
                         </TableCell>
                         <TableCell align="center">
-                          {relatedRow.usageInstructions}
+                          {ingredient.usageInstructions}
                         </TableCell>
                       </TableRow>
                     ))}
