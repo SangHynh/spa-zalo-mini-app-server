@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 
 const { connect } = require("./configs/db.config");
 const initRoutes = require("./routes/index.route");
-const logger = require("./utils/logger.util");
+const loggingMiddleware = require("./middlewares/logger.middleware");
 const authRoute = require("./auth/auth.route");
 const { verifyAccessToken } = require("./configs/jwt.config");
 require("./configs/redis.config");
@@ -21,11 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/auth", authRoute);
 
-// Logger middleware
-app.use((req, res, next) => {
-  logger.info(`:::::Request: ${req.method} ${req.url} (${res.statusCode})`);
-  next();
-});
+// Middleware ghi log
+app.use(loggingMiddleware);
 
 // Initialize routes
 initRoutes(app);
