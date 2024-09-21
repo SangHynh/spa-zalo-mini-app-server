@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getCookie } from "./cookies";
 
+// CUSTOM AXIOS WITH HEADER CONTAIN TOKEN
 const instance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
 });
