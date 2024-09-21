@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,6 +12,11 @@ import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
+import { apiLogin } from "../apis/auth";
+import Swal from "sweetalert2";
+import { setCookie } from "../utils/cookies";
+import { useNavigate } from "react-router-dom";
+import path from "../utils/path";
 
 const Paper = styled("div")(({ theme }) => ({
   marginTop: theme.spacing(8),
@@ -48,6 +53,46 @@ function Copyright() {
 }
 
 export default function SignIn() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // console.log(email, password)
+      const response = await apiLogin({ email, password })
+
+      // console.log(response)
+
+      if (response.status === 200) {
+        const data = await response.data;
+
+        console.log(data.accessToken, data.refreshToken)
+
+        setCookie("accessToken", data.accessToken, 1 / 24);
+        setCookie("refreshToken", data.refreshToken, 7);
+
+        Swal.fire({
+          icon: "success",
+          title: "Login successfully!",
+          showConfirmButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+        }).then(({ isConfirmed }) => {
+          if (isConfirmed) {
+            navigate(`/${path.ADMIN_LAYOUT}/${path.MANAGE_PRODUCTS}`)
+          } else {
+            window.location.reload();
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err.message)
+    }
+  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -58,7 +103,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Form noValidate>
+        <Form noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -69,6 +114,8 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -80,6 +127,8 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}

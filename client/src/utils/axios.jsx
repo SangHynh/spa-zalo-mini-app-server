@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCookie } from "./cookies";
 
 const instance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -7,12 +8,11 @@ const instance = axios.create({
 // Add a request interceptor
 instance.interceptors.request.use(
     function (config) {
-        let token = window.localStorage.getItem("token"); // Users have to Login
-        if (token) token = JSON.parse(token);
+        let token = getCookie("accessToken"); // Users have to Login
 
         // Headers only if token is existed
-        if (token && token.state?.token) {
-            config.headers.Authorization = `Bearer ${token.state.token}`;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         return config;
