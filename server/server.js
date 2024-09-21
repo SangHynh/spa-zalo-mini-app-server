@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const createError = require("http-errors");
 const dotenv = require("dotenv");
+const helmet = require('helmet');
 
 const { connect } = require("./configs/db.config");
 const initRoutes = require("./routes/index.route");
@@ -15,14 +16,16 @@ dotenv.config();
 
 const app = express();
 
+// Che dấu công nghệ sử dụng phía BE
+app.disable('x-powered-by');
+
 // Middleware
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use("/auth", authRoute);
-
-// Middleware ghi log
 app.use(loggingMiddleware);
+app.use("/auth", authRoute);
 
 // Initialize routes
 initRoutes(app);

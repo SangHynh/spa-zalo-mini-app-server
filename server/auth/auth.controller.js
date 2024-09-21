@@ -6,6 +6,7 @@ const {
   verifyRefreshToken,
 } = require("../configs/jwt.config");
 const redis = require("../configs/redis.config");
+const loggingMiddleware = require('../middlewares/logger.middleware');
 
 const register = async (req, res, next) => {
   try {
