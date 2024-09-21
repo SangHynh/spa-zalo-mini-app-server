@@ -83,16 +83,24 @@ module.exports = {
         (err, payload) => {
           if (err) return reject(createError.Unauthorized());
           const userId = payload.aud;
-          //Kiểm tra refresh token tồn tại trong redis
-          redis.GET(userId, (err, result) => {
-            if (err) {
+          // Tìm token trong redis để xem có hợp lệ không
+          redis
+            .GET(userId)
+            .then((result) => {
+              if (!result) {
+                //token không tìm thấy trong redis
+                return reject(createError.Unauthorized("Refresh token is invalid"));
+              }
+              if (refreshToken === result) {
+                return resolve(userId);
+              }
+              //token không khớp
+              reject(createError.Unauthorized("Refresh token is invalid"));
+            })
+            .catch((err) => {
               console.log(err.message);
               reject(createError.InternalServerError());
-            }
-            if (refreshToken === result) return resolve(userId);
-            reject(createError.Unauthorized());
-          });
-          resolve(userId);
+            });
         }
       );
     });
