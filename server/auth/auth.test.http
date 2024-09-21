@@ -1,0 +1,37 @@
+
+GET http://localhost:8080
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjY3NTc5MTcsImV4cCI6MTcyNjc2MTUxNywiYXVkIjoiNjZlYzNjMTFiOGY3MTAzNDliNDZmNzUwIn0.o2Ijtx3zbfU4hUjZGg1o59tc0HYK9_9gTPcKNOCAnk8
+
+### REGISTER ROUTE
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+### LOGIN ROUTE
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+### REFRESH TOKEN
+POST http://localhost:8080/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}
+
+### LOGOUT ROUTE
+DELETE http://localhost:8080/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjY3MzU2OTAsImV4cCI6MTcyNzM0MDQ5MCwiYXVkIjoiNjZlOWIxNDY1NjE2OGY4OGEzMzBkZTg1In0.nYp5At1iy9GlHpe51WjMnv-M4N23lbghIgUEJ7lRQhE"
+}

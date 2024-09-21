@@ -73,13 +73,13 @@ async function testAdd() {
     const productResult = await product.save();
     console.log("Product created successfully:", productResult);
 
-    /* // TEST ADD STUDENT
+    // TEST ADD STUDENT
     const student = new Student({
       name: "Mnh Phng",
       age: 20,
     });
     const studentResult = await student.save();
-    console.log("Student created successfully:", studentResult); */
+    console.log("Student created successfully:", studentResult);
   } catch (err) {
     console.error("Error creating data:", err);
   }
