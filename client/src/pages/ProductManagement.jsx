@@ -10,7 +10,7 @@ const ProductManagement = () => {
   const { t } = useTranslation();
 
   return (
-    <Box className="p-8 bg-white min-h-screen w-full flex flex-col gap-6">
+    <Box className="p-8 w-full flex flex-col gap-6">
       <Typography variant="h5">{t("product_mgmt")}</Typography>
       <Button variant="outlined" href={path.CREATE_PRODUCT} className="w-fit">
         {t("create")}

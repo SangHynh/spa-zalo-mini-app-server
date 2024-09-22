@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Menu, MenuItem, Avatar } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
+import { DarkModeContext } from "../../context/DarkModeContext";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const options = [
   { value: "vi", label: "Tiếng Việt", flag: "/vietnam.png" },
@@ -10,6 +12,8 @@ const options = [
 ];
 
 const Topheader = ({ height }) => {
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const { t, i18n } = useTranslation();
   const [selectedOption, setSelectedOption] = useState(options[0]);
@@ -53,15 +57,27 @@ const Topheader = ({ height }) => {
 
   return (
     <div
-      className="flex justify-end items-center fixed z-50 w-full top-0 bg-white border-b pr-10 gap-4 py-2"
+      className="flex justify-end items-center fixed z-50 w-full top-0 dark:border-none dark:bg-[#121212] border-b pr-10 gap-4 py-2"
       style={{ height: `${height}px` }}
     >
+      <button
+        onClick={toggleDarkMode}
+        className={
+          "flex items-center p-2 rounded-full transition-colors duration-300"
+        }
+      >
+        {isDarkMode ? (
+          <FaMoon className="w-5 h-5 text-yellow-400" />
+        ) : (
+          <FaSun className="w-5 h-5 text-gray-600" />
+        )}
+      </button>
       <Select
         value={selectedOption}
         onChange={handleChange}
         options={options}
         formatOptionLabel={formatOptionLabel}
-        className="w-fit"
+        className="w-fit text-black"
       />
       <Button
         onClick={handleClick}

@@ -8,16 +8,25 @@ import {
   IconButton,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { getSidebar } from "../utils/constants";
 import Topheader from "../components/banners/Topheader";
 import { useTranslation } from "react-i18next";
 import { FaCaretDown, FaCaretRight } from "react-icons/fa";
+import { useTheme } from "@emotion/react";
 
 const TOP_HEADER_HEIGHT = 64;
 const drawerWidth = 240;
 
 const AdminLayout = () => {
+  const location = useLocation();
+  const theme = useTheme();
+
+  const activeColor =
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, 0.12)" // Màu active cho chế độ tối
+      : "rgba(0, 0, 0, 0.08)"; // Màu active cho chế độ sáng
+
   const [activeTabs, setActiveTabs] = useState([]);
   const handleActiveTabs = (tabId) => {
     if (activeTabs.some((el) => el === tabId))
@@ -46,7 +55,7 @@ const AdminLayout = () => {
       >
         <MenuIcon />
       </IconButton>
-      <main className="w-full grid grid-cols-12 min-h-screen max-h-screen overflow-auto">
+      <main className="w-full grid grid-cols-12 h-screen overflow-auto">
         <Drawer
           variant="persistent"
           open={isDrawerOpen}
@@ -62,20 +71,6 @@ const AdminLayout = () => {
           }}
         >
           <List>
-            {/* {sidebar.map((item) => (
-              <ListItem
-                button
-                key={item.id}
-                component={Link}
-                to={item.path}
-                className="my-4"
-              >
-                {item.icon && (
-                  <ListItemIcon className="-mr-2">{item.icon}</ListItemIcon>
-                )}
-                <ListItemText primary={item.name} />
-              </ListItem>
-            ))} */}
             {sidebar.map((item) => (
               <Fragment key={item.id}>
                 {item.type === "SINGLE" && (
@@ -83,7 +78,18 @@ const AdminLayout = () => {
                     button
                     component={Link}
                     to={item.path}
-                    className="my-4"
+                    className={`my-4 ${
+                      location.pathname === item.path ? "bg-gray-200" : ""
+                    }`}
+                    sx={{
+                      backgroundColor:
+                        location.pathname === item.path
+                          ? activeColor
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: activeColor, // Màu nền hover
+                      },
+                    }}
                   >
                     {item.icon && (
                       <ListItemIcon className="-mr-2">{item.icon}</ListItemIcon>
@@ -97,14 +103,14 @@ const AdminLayout = () => {
                     <ListItem
                       button
                       onClick={() => handleActiveTabs(item.id)}
-                      className="mt-4 mb-2 cursor-pointer"
+                      className={"mt-4 mb-2 cursor-pointer"}
                     >
                       <ListItemIcon className="-mr-2">{item.icon}</ListItemIcon>
                       <ListItemText primary={item.name} />
                       {activeTabs.some((tabId) => tabId === item.id) ? (
-                        <FaCaretDown className="text-gray-500" />
+                        <FaCaretDown className="text-gray-500 dark:text-white" />
                       ) : (
-                        <FaCaretRight className="text-gray-500" />
+                        <FaCaretRight className="text-gray-500 dark:text-white" />
                       )}
                     </ListItem>
 
@@ -117,6 +123,20 @@ const AdminLayout = () => {
                             component={Link}
                             to={sub.path}
                             style={{ paddingLeft: "34px" }}
+                            className={
+                              location.pathname === sub.path
+                                ? "bg-gray-300"
+                                : ""
+                            }
+                            sx={{
+                              backgroundColor:
+                                location.pathname === sub.path
+                                  ? activeColor
+                                  : "transparent",
+                              "&:hover": {
+                                backgroundColor: activeColor, // Màu nền hover
+                              },
+                            }}
                           >
                             <ListItemText
                               primary={sub.icon}
@@ -140,7 +160,7 @@ const AdminLayout = () => {
           style={{
             marginLeft: isDrawerOpen ? drawerWidth : 0,
             transition: "margin-left 0.3s ease",
-            minHeight: "100vh",
+            height: `calc(100vh - ${TOP_HEADER_HEIGHT}px)`,
             alignItems: "flex-start",
             marginTop: `${TOP_HEADER_HEIGHT}px`,
           }}
