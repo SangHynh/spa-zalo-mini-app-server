@@ -18,10 +18,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { apiGetProducts } from "../../apis/products";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { useTranslation } from "react-i18next";
 
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
+
+  const { t } = useTranslation();
 
   return (
     <React.Fragment>
@@ -87,7 +90,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Variants
+                {t("variants")}
               </Typography>
               <Table
                 size="small"
@@ -96,9 +99,9 @@ function Row(props) {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Volume</TableCell>
-                    <TableCell align="center">Price</TableCell>
-                    <TableCell align="center">Stock</TableCell>
+                    <TableCell align="center">{t("volume")}</TableCell>
+                    <TableCell align="center">{t("price")}</TableCell>
+                    <TableCell align="center">{t("stock")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -122,7 +125,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Ingredients
+                {t("ingredients")}
               </Typography>
               <Table
                 size="small"
@@ -131,9 +134,11 @@ function Row(props) {
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Name</TableCell>
-                    <TableCell align="center">Percentage</TableCell>
-                    <TableCell align="center">Usage Instructions</TableCell>
+                    <TableCell align="center">{t("name")}</TableCell>
+                    <TableCell align="center">{t("percentage")}</TableCell>
+                    <TableCell align="center">
+                      {t("usageInstructions")}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -162,7 +167,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Images
+                {t("images")}
               </Typography>
               {/* Image List */}
               {row.images.length > 0 && (
@@ -187,6 +192,8 @@ function Row(props) {
 }
 
 const ProductTable = () => {
+  const { t } = useTranslation();
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -230,25 +237,25 @@ const ProductTable = () => {
               <TableCell />
               <TableCell sx={{ fontWeight: "bold" }}>Id</TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Name
+                {t("name")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Price
+                {t("price")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Category
+                {t("category")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Stock
+                {t("stock")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Expiry Date
+                {t("expDate")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Benefít
+                {t("benefits")}
               </TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Description
+                {t("description")}
               </TableCell>
               <TableCell />
               <TableCell />
@@ -271,6 +278,7 @@ const ProductTable = () => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage={t("rowsOfPage")}
       />
     </>
   );

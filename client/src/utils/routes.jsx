@@ -4,9 +4,14 @@ import {
   Login,
   AdminLayout,
   Dashboard,
-  ManageProducts,
-  ManageServices,
-  ManageUsers,
+  ProductManagement,
+  UserManagement,
+  OrderManagement,
+  BookingManagement,
+  CategoryManagement,
+  AffiliateMarketing,
+  Commission,
+  RanknPoint,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 
@@ -28,16 +33,36 @@ const routes = [
             element: <Dashboard />,
           },
           {
-            path: path.MANAGE_PRODUCTS,
-            element: <ManageProducts />,
+            path: path.PRODUCT_MANAGEMENT,
+            element: <ProductManagement />,
           },
           {
-            path: path.MANAGE_USERS,
-            element: <ManageUsers />,
+            path: path.USER_MANAGEMENT,
+            element: <UserManagement />,
           },
           {
-            path: path.MANAGE_SERVICES,
-            element: <ManageServices />,
+            path: path.ORDER_MANAGEMENT,
+            element: <OrderManagement />,
+          },
+          {
+            path: path.BOOKING_MANAGEMENT,
+            element: <BookingManagement />,
+          },
+          {
+            path: path.CATEGORY_MANAGEMENT,
+            element: <CategoryManagement />,
+          },
+          {
+            path: path.AFFILIATE_MARKETING,
+            element: <AffiliateMarketing />,
+          },
+          {
+            path: path.COMMISSION,
+            element: <Commission />,
+          },
+          {
+            path: path.RANK_POINT,
+            element: <RanknPoint />,
           },
           {
             path: path.CREATE_PRODUCT,

@@ -1,7 +1,12 @@
 export { default as Login } from "./Login";
 export { default as AdminLayout } from "./AdminLayout";
 export { default as Dashboard } from "./Dashboard";
-export { default as ManageProducts } from "./ManageProducts";
-export { default as ManageUsers } from "./ManageUsers";
-export { default as ManageServices } from "./ManageServices";
+export { default as ProductManagement } from "./ProductManagement";
+export { default as UserManagement } from "./UserManagement";
+export { default as OrderManagement } from "./OrderManagement";
+export { default as BookingManagement } from "./BookingManagement";
+export { default as CategoryManagement } from "./CategoryManagement";
+export { default as AffiliateMarketing } from "./AffiliateMarketing";
+export { default as Commission } from "./Commission";
+export { default as RanknPoint } from "./RanknPoint";
 export { default as ProductTable } from "./products/ProductTable";

@@ -3,9 +3,14 @@ const path = {
 
   ADMIN_LAYOUT: "admin",
   DASHBOARD: "dashboard",
-  MANAGE_PRODUCTS: "manage-products",
-  MANAGE_USERS: "manage-users",
-  MANAGE_SERVICES: "manage-services",
+  PRODUCT_MANAGEMENT: "product-management",
+  USER_MANAGEMENT: "user-management",
+  ORDER_MANAGEMENT: "oder-management",
+  BOOKING_MANAGEMENT: "booking-management",
+  CATEGORY_MANAGEMENT: "category-management",
+  AFFILIATE_MARKETING: "affiliate-marketing",
+  COMMISSION: "commission",
+  RANK_POINT: "rank-point",
   CREATE_PRODUCT: "create-product",
 };
 
