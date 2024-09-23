@@ -9,18 +9,39 @@ const redis = require("../configs/redis.config");
 
 const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const doesExist = await Account.findOne({ email: email });
-    if (doesExist) {
-      throw createError.Conflict(`${email} is already registered`);
+    const { email, zaloId, password, role } = req.body;
+    // Kiểm tra role không khớp
+    if (!role || !["admin", "user"].includes(role)) {
+      throw createError.BadRequest();
     }
+    // Kiểm tra xem email hoặc zaloId có bị trùng lặp không
+    if (role === "admin" && email) {
+      const doesExist = await Account.findOne({ email });
+      if (doesExist) {
+        throw createError.Conflict(`${email} is already registered`);
+      }
+    } else if (role === "user" && zaloId) {
+      const doesExist = await Account.findOne({ zaloId });
+      if (doesExist) {
+        throw createError.Conflict(`${zaloId} is already registered`);
+      }
+    } else {
+      //Lỗi sai vai trò với email hoặc zaloId
+      throw createError.BadRequest();
+    }
+
+    // Tạo tài khoản mới
     const account = new Account({
       email,
+      zaloId,
       password,
+      role
     });
+
     const savedAccount = await account.save();
     const accessToken = await signAccessToken(savedAccount.id);
     const refreshToken = await signRefreshToken(savedAccount.id);
+
     res.send({ accessToken, refreshToken });
   } catch (error) {
     next(error);
@@ -29,11 +50,22 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const account = await Account.findOne({ email: email });
-    if (!account) throw createError.NotFound("Account not registered");
+    const { email, zaloId, password } = req.body;
+
+    let account;
+    if (email) {
+      account = await Account.findOne({ email });
+    } else if (zaloId) {
+      account = await Account.findOne({ zaloId });
+    }
+
+    //chưa đăng ký tài khoản
+    if (!account) throw createError.NotFound("Invalid username or password");
+
+    //sai mật khẩu
     const isMatch = await account.isValidPassword(password);
-    if (!isMatch) throw createError.Unauthorized("Invalid email or password");
+    if (!isMatch) throw createError.Unauthorized("Invalid username or password");
+
     const accessToken = await signAccessToken(account.id);
     const refreshToken = await signRefreshToken(account.id);
     res.send({ accessToken, refreshToken });
@@ -62,7 +94,7 @@ const logout = async (req, res, next) => {
     const userId = await verifyRefreshToken(refreshToken);
     redis.DEL(userId).then((result) => {
       res.sendStatus(204); 
-    }).catch((err) => {
+    }).catch(() => {
       next(createError.InternalServerError());
     });
   } catch (error) {

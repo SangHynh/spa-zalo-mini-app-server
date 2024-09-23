@@ -5,15 +5,28 @@ const bcrypt = require("bcrypt");
 const AccountSchema = new Schema({
   email: {
     type: String,
-    required: true,
     lowercase: true,
-    unique: true,
+    unique: function () {
+      return this.role === "admin";
+    },
+  },
+  zaloId: {
+    type: String,
+    unique: function () {
+      return this.role === "user";
+    },
   },
   password: {
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["admin", "user"],
+    required: true,
+  },
 });
+
 
 AccountSchema.pre("save", async function (next) {
   try {

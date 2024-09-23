@@ -1,18 +1,30 @@
-const createError = require('http-errors');
+const createError = require("http-errors");
 
 const authValidate = (req, res, next) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return next(createError.BadRequest('Email and password are required'));
-    }
+  const { email, password, zaloId } = req.body;
+  if (!email && !zaloId) {
+    return next(createError.BadRequest("Username is required"));
+  }
+  if (email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        return next(createError.BadRequest('Invalid email format'));
+      return next(createError.BadRequest("Invalid email format"));
     }
-    if (password.length < 6) {
-        return next(createError.BadRequest('Password must be at least 6 characters long'));
+  }
+  if (zaloId) {
+    const zaloIdRegex = /^[a-zA-Z0-9]+$/;
+    if (!zaloIdRegex.test(zaloId)) {
+      return next(
+        createError.BadRequest("Invalid user name")
+      );
     }
-    next();
+  }
+  if (!password || password.length < 6) {
+    return next(
+      createError.BadRequest("Password must be at least 6 characters long")
+    );
+  }
+  next();
 };
 
 module.exports = authValidate;

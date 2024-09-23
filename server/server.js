@@ -49,6 +49,12 @@ connect();
 // Test route
 app.get("/", verifyAccessToken, async (req, res, next) => {
   res.send("Hello kitty");
+  const delay = 10000; // 10 giây
+
+  setTimeout(() => {
+    // Gửi phản hồi sau 10 giây
+    res.send("Hello kitty");
+  }, delay);
 });
 
 // Middleware xử lý các yêu cầu không khớp với bất kỳ route nào
