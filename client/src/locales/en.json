@@ -27,5 +27,9 @@
   "general-config": "General Config",
   "affiliate-marketing": "Affiliate Marketing",
   "commission": "Commission",
-  "rank-point": "Rank and Point"
+  "rank-point": "Rank and Point",
+  "customer": "Customer",
+  "staff": "Staff",
+  "customer_mgmt": "Customer Management",
+  "staff_mgmt": "Staff Management"
 }

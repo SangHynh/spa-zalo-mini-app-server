@@ -27,5 +27,9 @@
   "general-config": "Cấu hình chung",
   "affiliate-marketing": "Tiếp thị liên kết",
   "commission": "Hoa hồng",
-  "rank-point": "Hạng và điểm"
+  "rank-point": "Hạng và điểm",
+  "customer": "Khách hàng",
+  "staff": "Nhân viên",
+  "customer_mgmt": "Quản lý khách hàng",
+  "staff_mgmt": "Quản lý nhân viên"
 }

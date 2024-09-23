@@ -67,6 +67,7 @@ const AdminLayout = () => {
               boxSizing: "border-box",
               transition: "width 0.3s ease",
               marginTop: `${TOP_HEADER_HEIGHT}px`,
+              border: theme.palette.mode === "dark" ? "none" : "",
             },
           }}
         >

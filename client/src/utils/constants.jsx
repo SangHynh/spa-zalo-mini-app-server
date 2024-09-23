@@ -27,9 +27,22 @@ export const getSidebar = (t) => [
   {
     id: 3,
     name: t("user"),
-    path: `/${path.ADMIN_LAYOUT}/${path.USER_MANAGEMENT}`,
     icon: <FaUserCog size={25} />,
-    type: "SINGLE",
+    type: "PARENT",
+    subs: [
+      {
+        id: 11,
+        icon: <GoDash />,
+        path: `/${path.ADMIN_LAYOUT}/${path.CUSTOMER_MANAGEMENT}`,
+        name: t("customer"),
+      },
+      {
+        id: 12,
+        icon: <GoDash />,
+        path: `/${path.ADMIN_LAYOUT}/${path.STAFF_MANAGEMENT}`,
+        name: t("staff"),
+      },
+    ],
   },
   {
     id: 4,

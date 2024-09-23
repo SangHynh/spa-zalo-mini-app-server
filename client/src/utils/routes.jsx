@@ -5,15 +5,18 @@ import {
   AdminLayout,
   Dashboard,
   ProductManagement,
-  UserManagement,
   OrderManagement,
   BookingManagement,
   CategoryManagement,
   AffiliateMarketing,
   Commission,
   RanknPoint,
+  CustomerManagement,
+  StaffManagement,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
+import CreateCustomer from "../pages/users/CreateCustomer";
+import CreateStaff from "../pages/users/CreateStaff";
 
 const routes = [
   {
@@ -37,8 +40,12 @@ const routes = [
             element: <ProductManagement />,
           },
           {
-            path: path.USER_MANAGEMENT,
-            element: <UserManagement />,
+            path: path.CUSTOMER_MANAGEMENT,
+            element: <CustomerManagement />,
+          },
+          {
+            path: path.STAFF_MANAGEMENT,
+            element: <StaffManagement />,
           },
           {
             path: path.ORDER_MANAGEMENT,
@@ -67,6 +74,14 @@ const routes = [
           {
             path: path.CREATE_PRODUCT,
             element: <CreateProduct />,
+          },
+          {
+            path: path.CREATE_CUSTOMER,
+            element: <CreateCustomer />,
+          },
+          {
+            path: path.CREATE_STAFF,
+            element: <CreateStaff />,
           },
         ],
       },

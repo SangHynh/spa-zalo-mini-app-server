@@ -6,7 +6,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 export const DarkModeContext = createContext();
 
 export const DarkModeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // Lấy trạng thái dark mode từ localStorage (nếu có), mặc định là false
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const storedDarkMode = localStorage.getItem("darkMode");
+    return storedDarkMode ? JSON.parse(storedDarkMode) : false;
+  });
 
   // Cập nhật class 'dark' cho phần tử HTML khi đổi nền
   useEffect(() => {
@@ -15,10 +19,12 @@ export const DarkModeProvider = ({ children }) => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+    // Lưu trạng thái dark mode vào localStorage
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prevMode) => !prevMode);
   };
 
   // Tạo MUI theme
