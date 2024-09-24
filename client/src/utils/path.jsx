@@ -15,6 +15,7 @@ const path = {
   CREATE_PRODUCT: "create-product",
   CREATE_CUSTOMER: "create-customer",
   CREATE_STAFF: "create-staff",
+  EDIT_PRODUCT: "edit-product",
 };
 
 export default path;

@@ -56,19 +56,20 @@ exports.getProductById = async (req, res) => {
 // UPDATE
 exports.updateProduct = async (req, res) => {
   try {
+    console.log(req.body)
     // Convert Text to Json
     req.body.variants = JSON.parse(req.body.variants);
     req.body.ingredients = JSON.parse(req.body.ingredients);
     req.body.benefits = JSON.parse(req.body.benefits);
-    req.body.images = JSON.parse(req.body.images);
+    req.body.existingImages = JSON.parse(req.body.existingImages);
     req.body.deleteImages = JSON.parse(req.body.deleteImages);
 
     const imageUrls = req.files.map(file => file.path);
 
     console.log(req.body)
 
-    if (Array.isArray(req.body.images)) {
-      imageUrls.push(...req.body.images);
+    if (Array.isArray(req.body.existingImages)) {
+      imageUrls.push(...req.body.existingImages);
     }
 
     if (req.body.expiryDate) {

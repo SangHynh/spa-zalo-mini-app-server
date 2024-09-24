@@ -19,6 +19,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { apiGetProducts } from "../../apis/products";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import path from "../../utils/path";
 
 function Row(props) {
   const { row } = props;
@@ -72,14 +74,14 @@ function Row(props) {
         </TableCell>
         <TableCell align="right" sx={{ width: "10px" }}>
           <Tooltip title="Edit">
-            <IconButton>
+            <IconButton color="primary" href={`${path.EDIT_PRODUCT}/${row._id}`}>
               <EditIcon />
             </IconButton>
           </Tooltip>
         </TableCell>
         <TableCell align="right" sx={{ width: "10px" }}>
           <Tooltip title="Delete">
-            <IconButton>
+            <IconButton color="error">
               <DeleteIcon />
             </IconButton>
           </Tooltip>
