@@ -6,15 +6,11 @@ const AccountSchema = new Schema({
   email: {
     type: String,
     lowercase: true,
-    unique: function () {
-      return this.role === "admin";
-    },
+    sparse: true, // Cho phép bỏ qua các giá trị null trong email
   },
   zaloId: {
     type: String,
-    unique: function () {
-      return this.role === "user";
-    },
+    sparse: true, // Cho phép bỏ qua các giá trị null trong zaloId
   },
   password: {
     type: String,
@@ -26,6 +22,18 @@ const AccountSchema = new Schema({
     required: true,
   },
 });
+
+// Index cho email chỉ khi role là admin và email không null
+AccountSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { role: "admin", email: { $ne: null } } }
+);
+
+// Index cho zaloId chỉ khi role là user và zaloId không null
+AccountSchema.index(
+  { zaloId: 1 },
+  { unique: true, partialFilterExpression: { role: "user", zaloId: { $ne: null } } }
+);
 
 
 AccountSchema.pre("save", async function (next) {

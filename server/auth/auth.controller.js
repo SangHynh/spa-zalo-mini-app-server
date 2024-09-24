@@ -12,22 +12,22 @@ const register = async (req, res, next) => {
     const { email, zaloId, password, role } = req.body;
     // Kiểm tra role không khớp
     if (!role || !["admin", "user"].includes(role)) {
-      throw createError.BadRequest();
+      throw createError.BadRequest("Invalid role");
     }
     // Kiểm tra xem email hoặc zaloId có bị trùng lặp không
     if (role === "admin" && email) {
       const doesExist = await Account.findOne({ email });
       if (doesExist) {
-        throw createError.Conflict(`${email} is already registered`);
+        throw createError.Conflict(`Account is already registered`);
       }
     } else if (role === "user" && zaloId) {
       const doesExist = await Account.findOne({ zaloId });
       if (doesExist) {
-        throw createError.Conflict(`${zaloId} is already registered`);
+        throw createError.Conflict(`Account is already registered`);
       }
     } else {
       //Lỗi sai vai trò với email hoặc zaloId
-      throw createError.BadRequest();
+      throw createError.BadRequest("Invalid role");
     }
 
     // Tạo tài khoản mới
