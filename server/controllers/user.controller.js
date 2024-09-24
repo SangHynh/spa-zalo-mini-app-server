@@ -76,3 +76,67 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.suggestProductsForUser = async (req, res) => {
+  try {
+    // Lấy thông tin của khách hàng hiện tại từ req.params.id
+    const customerId = req.params.id;
+    const customer = await User.findById(customerId);
+    
+    // Kiểm tra nếu không tìm thấy khách hàng
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Lấy danh sách productId mà khách hàng hiện tại đã có
+    const customerProductIds = customer.productSuggestions.map(suggestion => suggestion.productId);
+
+    // Tìm sản phẩm từ các khách hàng khác không phải là khách hàng hiện tại
+    const otherUsers = await User.find({ _id: { $ne: customerId } });
+
+    // Tạo một đối tượng để lưu trữ điểm gợi ý trung bình cho các sản phẩm
+    const productScores = {};
+
+    // Duyệt qua các sản phẩm của khách hàng khác
+    otherUsers.forEach(user => {
+      user.productSuggestions.forEach(suggestion => {
+        // Nếu sản phẩm không có trong danh sách của khách hàng hiện tại
+        if (!customerProductIds.includes(suggestion.productId)) {
+          if (!productScores[suggestion.productId]) {
+            productScores[suggestion.productId] = {
+              productName: suggestion.productName,
+              totalScore: 0,
+              count: 0
+            };
+          }
+          // Cộng dồn điểm và số lượng
+          productScores[suggestion.productId].totalScore += suggestion.suggestedScore;
+          productScores[suggestion.productId].count += 1;
+        }
+      });
+    });
+
+    // Tính điểm trung bình cho mỗi sản phẩm
+    const averageScores = Object.entries(productScores).map(([productId, { productName, totalScore, count }]) => {
+      return {
+        productId,
+        productName,
+        averageScore: totalScore / count
+      };
+    });
+
+    // Sắp xếp sản phẩm dựa trên điểm trung bình (cao đến thấp) và lấy top 3
+    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+
+    // Trả về danh sách sản phẩm gợi ý
+    return res.status(200).json({
+      message: "Suggested products found successfully",
+      recommendations: topRecommendations
+    });
+  } catch (error) {
+    console.error("Error suggesting products:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+

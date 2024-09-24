@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true, unique: true },
-    role: { type: String },//hiện tại chưa rõ gồm những gì
     membershipTier: {
         type: String,
         enum: ["Member", "Silver", "Gold", "Diamond"],
@@ -14,6 +13,13 @@ const userSchema = new mongoose.Schema({
     referralCode: { type: String },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
+    productSuggestions: [
+        {
+            productId: { type: String },  // ID của sản phẩm
+            productName: { type: String },  // Tên sản phẩm
+            suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
+        }
+    ]
 }, {
     timestamps: true
 });
