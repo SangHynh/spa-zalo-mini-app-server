@@ -33,3 +33,11 @@ export const apiUpdateProduct = (id, formData) => axios(
     data: formData
   }
 )
+
+// DELETE PRODUCT
+export const apiDeleteProduct = (id) => axios(
+  {
+      url: "/api/products/" + id,
+      method: "DELETE",
+  }
+)

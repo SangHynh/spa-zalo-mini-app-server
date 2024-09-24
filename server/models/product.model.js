@@ -17,12 +17,17 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   images: { type: [String], default: [] }, // Bổ sung
   price: { type: Number, required: true },
+  subCategoryId: { type: mongoose.Schema.Types.ObjectId },
+  subCategory: { type: String, required: true },
+  categoryId: { type: mongoose.Schema.Types.ObjectId },
   category: { type: String, required: true },
   stock: { type: Number, required: true },
   variants: [variantSchema],
   ingredients: [ingredientSchema],
   benefits: [String],
-  expiryDate: { type: Date, required: true }
+  expiryDate: { type: Date, required: false },
+  usageInstructions: { type: String, required: false },
+  salesQuantity: { type: Number, default: 0 }
 },{
     timestamps: true
 });

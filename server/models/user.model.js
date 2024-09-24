@@ -14,6 +14,13 @@ const userSchema = new mongoose.Schema({
     referralCode: { type: String },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
+    carts: [{
+        productId: { type: mongoose.Schema.Types.ObjectId },
+        productName: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true, min: 1 },
+        images: { type: [String], default: [] },
+    }]
 }, {
     timestamps: true
 });
