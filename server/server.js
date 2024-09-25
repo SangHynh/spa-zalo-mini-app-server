@@ -9,7 +9,7 @@ const initRoutes = require("./routes/index.route");
 const loggingMiddleware = require("./middlewares/logger.middleware");
 const authRoute = require("./auth/auth.route");
 const { verifyAccessToken } = require("./configs/jwt.config");
-require("./configs/redis.config");
+const redis = require("./configs/redis.config");
 require("./configs/jwt.config");
 
 dotenv.config();
