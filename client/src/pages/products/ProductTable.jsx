@@ -18,6 +18,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { apiGetProducts } from "../../apis/products";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import path from "../../utils/path";
 import { toast } from "react-toastify";
 import { useTheme } from "@emotion/react";
 

@@ -1,14 +1,43 @@
 import axios from "../utils/axios";
 
-export const apiGetCategories = () =>
-  axios({
-    url: "/api/categories/",
-    method: "GET",
-  });
+// GET CATEGORIES
+export const apiGetCategories = () => axios(
+    {
+        url: "/api/categories/",
+        method: "GET",
+    }
+)
 
-export const apiCreateCategories = (formData) =>
-  axios({
-    url: "/api/categories/",
-    method: "POST",
-    data: formData,
-  });
+// GET CATEGORY
+export const apiGetCategory = (id) => axios(
+    {
+        url: "/api/categories/" + id,
+        method: "GET",
+    }
+)
+
+// POST CATEGORY
+export const apiCreateCategory = (formData) => axios(
+    {
+        url: "/api/categories/",
+        method: "POST",
+        data: formData
+    }
+)
+
+// PUT CATEGORY
+export const apiUpdateCategory = (id, formData) => axios(
+    {
+        url: "/api/categories/" + id,
+        method: "PUT",
+        data: formData
+    }
+)
+
+// DELETE CATEGORY
+export const apiDeleteCategory = (id) => axios(
+    {
+        url: "/api/categories/" + id,
+        method: "DELETE",
+    }
+)

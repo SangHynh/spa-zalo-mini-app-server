@@ -1,3 +1,4 @@
+const { deleteImage } = require('../middlewares/upload.middlewares');
 const Product = require('../models/product.model');
 const moment = require('moment');
 
@@ -55,7 +56,38 @@ exports.getProductById = async (req, res) => {
 // UPDATE
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    console.log(req.body)
+    // Convert Text to Json
+    req.body.variants = JSON.parse(req.body.variants);
+    req.body.ingredients = JSON.parse(req.body.ingredients);
+    req.body.benefits = JSON.parse(req.body.benefits);
+    req.body.existingImages = JSON.parse(req.body.existingImages);
+    req.body.deleteImages = JSON.parse(req.body.deleteImages);
+
+    const imageUrls = req.files.map(file => file.path);
+
+    console.log(req.body)
+
+    if (Array.isArray(req.body.existingImages)) {
+      imageUrls.push(...req.body.existingImages);
+    }
+
+    if (req.body.expiryDate) {
+      req.body.expiryDate = moment(req.body.expiryDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    }
+
+    if (Array.isArray(req.body.deleteImages)) {
+      req.body.deleteImages.forEach(url => {
+        const publicId = url
+          .split('/').slice(-2).join('/') // Get the last two parts: folder and filename
+          .split('.')[0];
+        
+        deleteImage(publicId);
+      });
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, {...req.body, images: imageUrls}, { new: true });
+
     if (!product) return res.status(404).json({ message: 'Product not found' });
     return res.status(200).json(product);
   } catch (err) {
@@ -67,7 +99,24 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Ensure product is deleted
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      const deleteImagePromises = product.images.map(async (url) => {
+        const publicIdWithFolder = url
+          .split('/').slice(-2).join('/')
+          .split('.')[0];
+
+        return await deleteImage(publicIdWithFolder);
+      });
+
+      // Wait for all image deleted
+      await Promise.all(deleteImagePromises);
+    }
     return res.status(200).json({ message: 'Product deleted successfully' });
   } catch (err) {
     return res.status(500).json({ message: err.message });

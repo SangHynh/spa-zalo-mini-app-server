@@ -18,6 +18,7 @@ const path = {
   CREATE_SERVICE: "create-service",
   CREATE_CUSTOMER: "create-customer",
   CREATE_STAFF: "create-staff",
+  EDIT_PRODUCT: "edit-product",
   CREATE_CATEGORY: "create-category",
 };
 

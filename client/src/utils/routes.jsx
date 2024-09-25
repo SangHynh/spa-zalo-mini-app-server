@@ -18,6 +18,7 @@ import {
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
 import CreateStaff from "../pages/users/CreateStaff";
+import EditProduct from "../pages/products/EditProducts";
 import CreatCategory from "../pages/categories/CreatCategory";
 import CreateService from "../pages/services/CreateService";
 
@@ -81,6 +82,10 @@ const routes = [
           {
             path: path.CREATE_PRODUCT,
             element: <CreateProduct />,
+          },
+          {
+            path: path.EDIT_PRODUCT + "/:id",
+            element: <EditProduct />,
           },
           {
             path: path.CREATE_SERVICE,

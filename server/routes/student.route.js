@@ -1,5 +1,5 @@
 const studentController = require("../controllers/student.controller");
-const upload = require("../middlewares/upload.middlewares");
+const { upload } = require("../middlewares/upload.middlewares");
 const router = require("express").Router();
 
 // GET

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../../controllers/product.controller');
+const serviceController = require('../../controllers/service.controller');
 const { upload } = require('../../middlewares/upload.middlewares');
 const MAX_FILES = 10;
 
 // GET
-router.get('/', productController.getAllProducts);
-router.get('/:id', productController.getProductById);
+router.get('/', serviceController.getServices);
+router.get('/:id', serviceController.getServiceById);
 
 // POST 
 router.post('/', (req, res, next) => {
@@ -14,7 +14,7 @@ router.post('/', (req, res, next) => {
     next();
 },
     upload.array('images', MAX_FILES), 
-    productController.createProduct
+    serviceController.createService
 );
 
 // PUT
@@ -23,10 +23,10 @@ router.put('/:id', (req, res, next) => {
     next();
 },
     upload.array('images', MAX_FILES),
-    productController.updateProduct
+    serviceController.updateService
 );
 
 // DELETE
-router.delete('/:id', productController.deleteProduct);
+router.delete('/:id', serviceController.deleteService);
 
 module.exports = router;

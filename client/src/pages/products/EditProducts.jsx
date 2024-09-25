@@ -7,25 +7,27 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { benefits, VisuallyHiddenInput } from "../../utils/constants";
+import { benefits, categories, VisuallyHiddenInput } from "../../utils/constants";
 import PaginationTable from "../../components/tables/PaginationTable";
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import { apiCreateProducts } from "../../apis/products";
+import { apiCreateProducts, apiGetProduct, apiUpdateProduct } from "../../apis/products";
 import Swal from "sweetalert2";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import PreviewProduct from "./PreviewProduct";
 
-const CreateProduct = () => {
+const EditProduct = () => {
     // HANDLE IMAGES UPLOAD
     // State to hold uploaded image files
     const [images, setImages] = useState([]);
+    const [deleteImages, setDeleteImages] = useState([]);
+    const [existingImages, setExistingImages] = useState([]);
 
     // Handle file upload and store files in the state
     const handleFileUpload = (event) => {
@@ -41,7 +43,13 @@ const CreateProduct = () => {
     };
 
     const handleRemoveImage = (indexToRemove) => {
-        setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
+        setImages((prevImages) => {
+            const imageToRemove = prevImages[indexToRemove];
+            if (imageToRemove) {
+                setDeleteImages((prevDeleteImages) => [...prevDeleteImages, existingImages[indexToRemove]]); // Use existing image URL for deletion
+            }
+            return prevImages.filter((_, index) => index !== indexToRemove); // Remove from displayed images
+        });
     };
 
     // HANDLE CREATE VARIANTS
@@ -110,32 +118,6 @@ const CreateProduct = () => {
         setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
     };
 
-    // FETCH CATEGORIES
-    const [categories, setCategories] = useState([]);
-    const [subCategories, setSubCategories] = useState([]);
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const response = await apiGetCategories()
-            if (response.status === 200) setCategories(response.data)
-        }
-
-        fetchCategories()
-    }, [])
-
-    // Display sub category
-    const handleCategoryChange = (event) => {
-        const selectedCategory = event.target.value;
-        setProductCategory(selectedCategory);
-
-        const category = categories.find(cat => cat._id === selectedCategory._id);
-        setSubCategories(category ? category.subCategory : []);
-        setProductSubCategory('');
-
-        console.log(productCategory)
-        console.log(productSubCategory)
-    };
-
     // PREVIEW PRODUCT
     // Calculate total stock
     const [productName, setProductName] = useState('')
@@ -153,6 +135,63 @@ const CreateProduct = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    // FETCH CATEGORIES ÀN THEN PRODUCT
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+
+    // Display sub category
+    const handleCategoryChange = (event) => {
+        const selectedCategory = event.target.value;
+        setProductCategory(selectedCategory);
+
+        const category = categories.find(cat => cat._id === selectedCategory._id);
+        setSubCategories(category ? category.subCategory : []);
+        setProductSubCategory('');
+    };
+
+    // HANDLE FETCH PRODUCT
+    const { id } = useParams()
+
+    useEffect(() => {
+        const fetchCategoriesAndProduct = async () => {
+            // Fetch categories
+            const categoryResponse = await apiGetCategories();
+            if (categoryResponse.status === 200) {
+                setCategories(categoryResponse.data);
+    
+                if (id) {
+                    const productResponse = await apiGetProduct(id);
+                    if (productResponse.status === 200) {
+                        const product = productResponse.data;
+    
+                        // Find the full category and subcategory for the product
+                        const fullCategory = categoryResponse.data.find(cat => cat._id === product.categoryId);
+                        setProductCategory(fullCategory);
+                        setSubCategories(fullCategory ? fullCategory.subCategory : []);
+                        
+                        const fullSubCategory = fullCategory?.subCategory.find(subCat => subCat._id === product.subCategoryId);
+                        setProductSubCategory(fullSubCategory);
+    
+                        // Set product details
+                        setProductName(product.name);
+                        setProductDescription(product.description);
+                        setProductAmount(product.amount);
+                        setProductBenefits(product.benefits);
+                        setProductExpiredDate(dayjs(product.expiryDate));
+                        setVariants(product.variants);
+                        setIngredients(product.ingredients);
+                        setProductAmount(product.price);
+                        setImages(product.images);
+                        setExistingImages(product.images);
+                    }
+                }
+            }
+        };
+    
+        fetchCategoriesAndProduct();
+    }, [id]);
+    
 
     // SUBMIT
     const [loading, setLoading] = useState(false);
@@ -176,9 +215,13 @@ const CreateProduct = () => {
         formData.append('variants', JSON.stringify(variants));
         formData.append('ingredients', JSON.stringify(ingredients));
 
+        const updatedExistingImages = existingImages.filter(imageUrl => !deleteImages.includes(imageUrl));
+
+        const newImages = images.filter(imgSrc => !existingImages.includes(imgSrc));
+
         // Append images
-        for (let index = 0; index < images.length; index++) {
-            const imageSrc = images[index];
+        for (let index = 0; index < newImages.length; index++) {
+            const imageSrc = newImages[index];
 
             // Chuyển đổi blob URL thành Blob
             const response = await fetch(imageSrc);
@@ -203,23 +246,36 @@ const CreateProduct = () => {
             formData.append("images", blob, imageName); // Thêm hình ảnh vào FormData
         }
 
+        formData.append('existingImages', JSON.stringify(updatedExistingImages));
+
+        formData.append('deleteImages', JSON.stringify(deleteImages));
+
+        // LOG
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof Blob) {
+                console.log(`${key}: [Blob]`); // Chỉ in ra tên key nếu giá trị là Blob
+            } else {
+                console.log(`${key}:`, value); // In ra key và value
+            }
+        }
+
         try {
-            const response = await apiCreateProducts(formData);
+            const response = await apiUpdateProduct(id, formData);
 
             // console.log(response.data)
             console.log(response.status)
 
-            if (response.status === 201) {
+            if (response.status === 200) {
                 Swal.fire({
                     icon: "success",
-                    title: "Successfully create new product!",
+                    title: "Successfully update product!",
                     showConfirmButton: true,
                     showCancelButton: true,
                     confirmButtonText: "Confirm",
                     cancelButtonText: "Cancel",
                 }).then(({ isConfirmed }) => {
                     if (isConfirmed) {
-                        navigate(`/${path.ADMIN_LAYOUT}/${path.MANAGE_PRODUCTS}`)
+                        navigate(`/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`)
                     } else {
                         window.location.reload();
                     }
@@ -377,6 +433,7 @@ const CreateProduct = () => {
                             options={benefits}
                             disableCloseOnSelect
                             getOptionLabel={(option) => option}
+                            value={productBenefits}
                             onChange={(event, newValue) => {
                                 setProductBenefits(newValue); // Update the selected benefits
                             }}
@@ -415,7 +472,8 @@ const CreateProduct = () => {
                                     fullWidth
                                     margin="dense"
                                     value={productExpiredDate}
-                                    onChange={(e) => setProductExpiredDate(e)}
+                                    onChange={(newValue) => setProductExpiredDate(newValue)}
+                                    renderInput={(params) => <TextField {...params} />}
                                 />
                             </DemoContainer>
                         </LocalizationProvider>
@@ -524,7 +582,7 @@ const CreateProduct = () => {
                 <Grid2 container fullWidth spacing={2} sx={{ mt: 2, justifyContent: 'flex-end' }}>
                     <Grid2>
                         <Button type="submit" variant="contained" color="success">
-                            Create
+                            Update
                         </Button>
                     </Grid2>
                     <Grid2>
@@ -561,4 +619,4 @@ const CreateProduct = () => {
     );
 };
 
-export default CreateProduct;
+export default EditProduct;
