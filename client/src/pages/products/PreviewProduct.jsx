@@ -33,7 +33,7 @@ const PreviewProduct = ({
                     <strong>Amount:</strong> {productAmount} VND
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
-                    <strong>Category:</strong> {productCategory.name} - {productSubCategory.name}
+                    <strong>Category:</strong> {productCategory?.name} - {productSubCategory?.name}
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
                     <strong>Expired Date:</strong> {productExpiredDate.format('DD/MM/YYYY')}

@@ -29,3 +29,10 @@ export const apiUpdateService = (id, formData) =>
     method: "PUT",
     data: formData,
   });
+
+// DELETE SERVICE
+export const apiDeleteService = (id) =>
+  axios({
+    url: "/api/services/" + id,
+    method: "DELETE",
+  });

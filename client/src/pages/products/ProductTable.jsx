@@ -16,14 +16,18 @@ import TablePagination from "@mui/material/TablePagination";
 import { ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { apiGetProducts } from "../../apis/products";
+import { apiDeleteProduct, apiGetProducts } from "../../apis/products";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import path from "../../utils/path";
 import { toast } from "react-toastify";
 import { useTheme } from "@emotion/react";
+import Swal from "sweetalert2";
+import { useLoading } from "../../context/LoadingProvider";
 
 function Row(props) {
+  const { showLoading, hideLoading } = useLoading();
+
   const { row, searchTerm } = props;
 
   // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
@@ -50,6 +54,29 @@ function Row(props) {
       });
   };
   const theme = useTheme();
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Bạn có chắc muốn xóa sản phẩm này, thao tác sẽ không thể hoàn trả",
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        showLoading();
+        const res = await apiDeleteProduct(id);
+        if (res) {
+          Swal.fire("Đã xóa sản phẩm!", "", "success").then(() => {
+            // Tải lại trang sau khi thông báo thành công
+            window.location.reload();
+          });
+        } else {
+          Swal.fire("Xóa sản phẩm thất bại!", "", "error");
+        }
+        hideLoading();
+      }
+    });
+  }
 
   return (
     <>
@@ -186,7 +213,7 @@ function Row(props) {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
-                  <IconButton>
+                  <IconButton onClick={() => handleDelete(row._id)}>
                     <DeleteIcon className="text-red-500" />
                   </IconButton>
                 </Tooltip>

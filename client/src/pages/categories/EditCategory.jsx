@@ -21,6 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import PreviewCategory from "./PreviewCategory";
+import { useLoading } from "../../context/LoadingProvider";
 
 const EditCategory = () => {
     // HANDLE CREATE SUBCATEGORIES
@@ -94,12 +95,12 @@ const EditCategory = () => {
     const handleClose = () => setOpen(false);
 
     // SUBMIT
-    const [loading, setLoading] = useState(false);
+    const { showLoading, hideLoading } = useLoading();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        showLoading();
 
         const data = {
             name: categoryName,
@@ -135,15 +136,12 @@ const EditCategory = () => {
             console.error('Error creating category:', error);
             // Handle error (e.g., show an error message)
         } finally {
-            setLoading(false);
+            hideLoading();
         }
     };
 
     return (
         <Container className="m-5">
-            <Backdrop open={loading} sx={{ color: '#fff', zIndex: 9999 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
 
             <Typography variant="h5" gutterBottom>
                 Update Category

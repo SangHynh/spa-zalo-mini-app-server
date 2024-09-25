@@ -21,6 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import PreviewService from "./PreviewService";
+import { useLoading } from "../../context/LoadingProvider";
 
 const EditService = () => {
     // HANDLE IMAGES UPLOAD
@@ -118,12 +119,12 @@ const EditService = () => {
 
 
     // SUBMIT
-    const [loading, setLoading] = useState(false);
+    const { showLoading, hideLoading } = useLoading();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        showLoading();
 
         const formData = new FormData();
         formData.append('name', serviceName);
@@ -204,7 +205,7 @@ const EditService = () => {
             console.error('Error creating service:', error);
             // Handle error (e.g., show an error message)
         } finally {
-            setLoading(false);
+            hideLoading();
         }
     };
 

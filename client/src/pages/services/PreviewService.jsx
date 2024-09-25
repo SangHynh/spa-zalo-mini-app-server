@@ -25,7 +25,7 @@ const PreviewService = ({
                     <strong>Amount:</strong> {serviceAmount} VND
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
-                    <strong>Category:</strong> {serviceCategory.name} - {serviceSubCategory.name}
+                    <strong>Category:</strong> {serviceCategory?.name} - {serviceSubCategory?.name}
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
                     <strong>Description:</strong> {serviceDescription}

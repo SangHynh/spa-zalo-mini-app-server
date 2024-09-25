@@ -18,10 +18,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { apiGetCategories } from "../../apis/categories";
+import { apiDeleteCategory, apiGetCategories } from "../../apis/categories";
 import path from "../../utils/path";
+import Swal from "sweetalert2";
+import { useLoading } from "../../context/LoadingProvider";
 
 function Row(props) {
+  const { showLoading, hideLoading } = useLoading();
   const { row, searchTerm } = props;
 
   // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
@@ -46,6 +49,29 @@ function Row(props) {
         toast.success("Copy thất bại");
       });
   };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Bạn có chắc muốn xóa danh mục này, thao tác sẽ không thể hoàn trả",
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        showLoading();
+        const res = await apiDeleteCategory(id);
+        if (res) {
+          Swal.fire("Đã xóa danh mục!", "", "success").then(() => {
+            // Tải lại trang sau khi thông báo thành công
+            window.location.reload();
+          });
+        } else {
+          Swal.fire("Xóa danh mục thất bại!", "", "error");
+        }
+        hideLoading();
+      }
+    });
+  }
 
   return (
     <>
@@ -101,7 +127,7 @@ function Row(props) {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
-                  <IconButton>
+                  <IconButton onClick={() => handleDelete(row._id)}>
                     <DeleteIcon className="text-red-500" />
                   </IconButton>
                 </Tooltip>
