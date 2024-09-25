@@ -15,8 +15,11 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { TableHead } from '@mui/material';
+import { TableHead, TextField } from '@mui/material';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from '@mui/icons-material/Check';
+import CancelIcon from '@mui/icons-material/Close';
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -79,9 +82,11 @@ TablePaginationActions.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function PaginationTable({ rows, columns, onDelete }) {
+export default function PaginationTable({ rows, columns, onDelete, onEditRow }) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [editRow, setEditRow] = React.useState(null); // Thêm trạng thái để theo dõi dòng đang chỉnh sửa
+    const [editData, setEditData] = React.useState({}); // Thêm trạng thái để lưu dữ liệu chỉnh sửa
 
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -95,6 +100,17 @@ export default function PaginationTable({ rows, columns, onDelete }) {
         setPage(0);
     };
 
+    const handleEditClick = (row) => {
+        setEditRow(row._id); // Lưu ID của dòng đang chỉnh sửa
+        setEditData(row); // Lưu dữ liệu dòng đó vào trạng thái chỉnh sửa
+    };
+
+    const handleSave = () => {
+        onEditRow(editData);
+        setEditRow(null);
+        setEditData({});
+    };
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
@@ -106,7 +122,7 @@ export default function PaginationTable({ rows, columns, onDelete }) {
                                 {column.charAt(0).toUpperCase() + column.slice(1)}
                             </TableCell>
                         ))}
-                        <TableCell key="actions">Actions</TableCell> {/* Actions column */}
+                        <TableCell key="actions">Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 {/* Dynamic Table Rows */}
@@ -115,14 +131,41 @@ export default function PaginationTable({ rows, columns, onDelete }) {
                         ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : rows
                     ).map((row) => (
-                        <TableRow key={row.id}>
+                        <TableRow key={row._id}>
                             {columns.map((column) => (
                                 <TableCell key={column} align={typeof row[column] === 'number' ? 'right' : 'left'}>
-                                    {row[column]}
+                                    {editRow === row._id ? (
+                                        <TextField
+                                            value={editData[column] || ''}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                // Kiểm tra kiểu dữ liệu để chuyển đổi
+                                                const updatedValue = typeof row[column] === 'number' ? Number(value) : value;
+                                                setEditData({ ...editData, [column]: updatedValue });
+                                            }}
+                                            type={typeof row[column] === 'number' ? 'number' : 'text'}
+                                        />
+                                    ) : (
+                                        row[column]
+                                    )}
                                 </TableCell>
                             ))}
                             <TableCell>
-                                <IconButton onClick={() => onDelete(row.id)} color="error">
+                                {editRow === row._id ? (
+                                    <>
+                                        <IconButton onClick={handleSave} color="primary">
+                                            <SaveIcon /> {/* Icon lưu */}
+                                        </IconButton>
+                                        <IconButton onClick={() => setEditRow(null)} color="secondary">
+                                            <CancelIcon /> {/* Icon hủy */}
+                                        </IconButton>
+                                    </>
+                                ) : (
+                                    <IconButton onClick={() => handleEditClick(row)} color="primary">
+                                        <EditIcon /> {/* Icon chỉnh sửa */}
+                                    </IconButton>
+                                )}
+                                <IconButton onClick={() => onDelete(row._id)} color="error">
                                     <RemoveCircleIcon />
                                 </IconButton>
                             </TableCell>
@@ -131,7 +174,7 @@ export default function PaginationTable({ rows, columns, onDelete }) {
 
                     {emptyRows > 0 && (
                         <TableRow style={{ height: 53 * emptyRows }}>
-                            <TableCell colSpan={columns.length + 1} /> {/* Adjusted colspan */}
+                            <TableCell colSpan={columns.length + 1} />
                         </TableRow>
                     )}
                 </TableBody>

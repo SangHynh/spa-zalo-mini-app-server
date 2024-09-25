@@ -31,7 +31,7 @@
     "react-select": "^5.8.1",
     "react-toastify": "^10.0.5",
     "swal": "^0.1.0",
-    "sweetalert2": "^11.14.0",
+    "sweetalert2": "^11.6.13",
     "tailwind-merge": "^2.5.2",
     "zustand": "^5.0.0-rc.2"
   },

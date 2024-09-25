@@ -10,7 +10,7 @@ router.get('/:id', serviceController.getServiceById);
 
 // POST 
 router.post('/', (req, res, next) => {
-    req.folder = process.env.PRODUCT_FOLDER; // Folder name in cloud
+    req.folder = process.env.SERVICE_FOLDER; // Folder name in cloud
     next();
 },
     upload.array('images', MAX_FILES), 
@@ -19,7 +19,7 @@ router.post('/', (req, res, next) => {
 
 // PUT
 router.put('/:id', (req, res, next) => {
-    req.folder = process.env.PRODUCT_FOLDER; // Folder name in cloud
+    req.folder = process.env.SERVICE_FOLDER; // Folder name in cloud
     next();
 },
     upload.array('images', MAX_FILES),

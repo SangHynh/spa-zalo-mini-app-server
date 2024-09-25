@@ -1,3 +1,4 @@
+const { deleteImage } = require("../middlewares/upload.middlewares")
 const Service = require("../models/service.model")
 
 class ServiceController {

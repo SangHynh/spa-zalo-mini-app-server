@@ -17,11 +17,11 @@ export const apiGetCategory = (id) => axios(
 )
 
 // POST CATEGORY
-export const apiCreateCategory = (formData) => axios(
+export const apiCreateCategory = (data) => axios(
     {
         url: "/api/categories/",
         method: "POST",
-        data: formData
+        data: data
     }
 )
 

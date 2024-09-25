@@ -181,8 +181,8 @@ function Row(props) {
             >
               <div className="flex gap-2">
                 <Tooltip title="Edit">
-                  <IconButton>
-                    <EditIcon className="text-green-500" />
+                  <IconButton color="primary" href={`${path.EDIT_PRODUCT}/${row._id}`}>
+                    <EditIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">

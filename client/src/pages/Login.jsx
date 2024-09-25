@@ -88,8 +88,23 @@ export default function SignIn() {
           }
         });
       }
+      else {
+        console.log(response.data.error.message)
+        Swal.fire({
+          icon: "error",
+          title: response.data.error.message,
+          showCancelButton: true,
+          cancelButtonText: "Cancel",
+        })
+      }
     } catch (err) {
       console.log(err.message);
+      Swal.fire({
+        icon: "success",
+        title: err.message,
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      })
     }
   };
 

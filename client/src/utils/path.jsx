@@ -16,10 +16,12 @@ const path = {
 
   CREATE_PRODUCT: "create-product",
   CREATE_SERVICE: "create-service",
+  EDIT_SERVICE: "edit-service",
   CREATE_CUSTOMER: "create-customer",
   CREATE_STAFF: "create-staff",
   EDIT_PRODUCT: "edit-product",
   CREATE_CATEGORY: "create-category",
+  EDIT_CATEGORY: "edit-category",
 };
 
 export default path;

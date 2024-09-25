@@ -87,6 +87,14 @@ const EditProduct = () => {
         setVariants(variants.filter(variant => variant.id !== id));
     };
 
+    const handleEditVariantRow = (updatedRow) => {
+        setVariants((prevVariants) =>
+            prevVariants.map((variant) =>
+                variant._id === updatedRow._id ? updatedRow : variant
+            )
+        );
+    };
+
     // HANDLE CREATE INGREDIENTS
     const [ingredients, setIngredients] = useState([]);
     const [ingredientId, setIngredientId] = useState(1);
@@ -116,6 +124,14 @@ const EditProduct = () => {
 
     const deleteIngredient = (id) => {
         setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
+    };
+
+    const handleEditIngredientRow = (updatedRow) => {
+        setIngredients((prevIngredients) =>
+            prevIngredients.map((ingredient) =>
+                ingredient._id === updatedRow._id ? updatedRow : ingredient
+            )
+        );
     };
 
     // PREVIEW PRODUCT
@@ -525,8 +541,9 @@ const EditProduct = () => {
                         {/* Variants table */}
                         <PaginationTable
                             rows={variants}
-                            columns={['volume', 'price', 'stock']}
+                            columns={['_id', 'volume', 'price', 'stock']}
                             onDelete={deleteVariant}
+                            onEditRow={handleEditVariantRow}
                         />
                     </Grid2>
                 </Grid2>
@@ -573,8 +590,9 @@ const EditProduct = () => {
                     <Grid2 size={8}>
                         <PaginationTable
                             rows={ingredients}
-                            columns={['name', 'percentage', 'usageInstructions']}
+                            columns={['_id', 'name', 'percentage', 'usageInstructions']}
                             onDelete={deleteIngredient}
+                            onEditRow={handleEditIngredientRow}
                         />
                     </Grid2>
                 </Grid2>

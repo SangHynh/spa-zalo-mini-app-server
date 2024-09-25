@@ -19,6 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { apiGetServices } from "../../apis/services";
+import path from "../../utils/path";
 
 function Row(props) {
   const { row, searchTerm } = props;
@@ -81,6 +82,9 @@ function Row(props) {
             <TableCell align="right" className="relative">
               {row.category}
             </TableCell>
+            <TableCell align="right" className="relative">
+              {row.subCategory}
+            </TableCell>
             <TableCell
               align="right"
               sx={{
@@ -101,8 +105,8 @@ function Row(props) {
             >
               <div className="flex items-center justify-center gap-2">
                 <Tooltip title="Edit">
-                  <IconButton>
-                    <EditIcon className="text-green-500" />
+                  <IconButton color="primary" href={`${path.EDIT_SERVICE}/${row._id}`}>
+                    <EditIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
@@ -205,6 +209,13 @@ const ServiceTable = ({ searchTerm }) => {
                 className="relative dark:text-black"
               >
                 {t("category")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="relative dark:text-black"
+              >
+                {t("sub-category")}
               </TableCell>
               <TableCell
                 align="center"

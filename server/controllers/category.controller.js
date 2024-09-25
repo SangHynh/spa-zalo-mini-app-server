@@ -1,4 +1,5 @@
 const Category = require("../models/category.model")
+const mongoose = require('mongoose');
 
 class CategoryController {
     // GET CATEGORIES
@@ -10,7 +11,7 @@ class CategoryController {
         } catch (error) {
             return res.status(500).json({
                 error: error,
-                message: 'An error occurred' 
+                message: 'An error occurred'
             })
         }
     }
@@ -22,7 +23,7 @@ class CategoryController {
             if (!category) {
                 return res.status(404).json({ message: 'Category not found' });
             }
-            return res.status(200).json({ category });
+            return res.status(200).json(category);
         } catch (error) {
             return res.status(500).json({
                 error: error,
@@ -30,7 +31,7 @@ class CategoryController {
             });
         }
     }
-    
+
     // POST CATEGORY
     async createCategory(req, res) {
         try {
@@ -56,19 +57,30 @@ class CategoryController {
         try {
             const { name, description, subCategory } = req.body;
 
-            const updatedCategory = await Category.findByIdAndUpdate(
-                req.params.id,
-                {
-                    name,
-                    description,
-                    subCategory: subCategory || []
-                },
-                { new: true }
-            );
-
-            if (!updatedCategory) {
+            const category = await Category.findById(req.params.id);
+            if (!category) {
                 return res.status(404).json({ message: 'Category not found' });
             }
+
+            category.name = name;
+            category.description = description;
+
+            // Cập nhật subCategory
+            const existingSubCategoryIds = category.subCategory.map(subCat => subCat._id.toString());
+
+            const updatedSubCategories = subCategory.map(subCat => {
+                if (existingSubCategoryIds.includes(subCat._id)) {
+                    // Nếu subCategory có ID, cập nhật
+                    return { ...subCat };
+                } else {
+                    // Nếu không có ID, thêm mới
+                    return { ...subCat, _id: new mongoose.Types.ObjectId() };
+                }
+            });
+
+            category.subCategory = updatedSubCategories;
+
+            const updatedCategory = await category.save();
 
             return res.status(200).json(updatedCategory);
         } catch (error) {

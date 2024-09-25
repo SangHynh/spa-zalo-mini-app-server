@@ -32,7 +32,7 @@ const ServiceManagement = () => {
         </div>
         <Button
           variant="outlined"
-          href={path.CREATE_PRODUCT}
+          href={path.CREATE_SERVICE}
           className="w-fit flex items-center gap-2"
         >
           <FaPlus />

@@ -19,6 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { apiGetCategories } from "../../apis/categories";
+import path from "../../utils/path";
 
 function Row(props) {
   const { row, searchTerm } = props;
@@ -95,8 +96,8 @@ function Row(props) {
             >
               <div className="flex items-center justify-center gap-2">
                 <Tooltip title="Edit">
-                  <IconButton>
-                    <EditIcon className="text-green-500" />
+                  <IconButton color="primary" href={`${path.EDIT_CATEGORY}/${row._id}`}>
+                    <EditIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
@@ -131,8 +132,8 @@ function Row(props) {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {row.subcategory &&
-                        row.subcategory.map((subRow) => (
+                      {row.subCategory &&
+                        row.subCategory.map((subRow) => (
                           <TableRow key={subRow._id}>
                             <TableCell
                               component="th"
@@ -142,7 +143,7 @@ function Row(props) {
                               {subRow._id}
                             </TableCell>
                             <TableCell align="center">
-                              {subRow.subName}
+                              {subRow.name}
                             </TableCell>
                             <TableCell align="center">
                               {subRow.description}

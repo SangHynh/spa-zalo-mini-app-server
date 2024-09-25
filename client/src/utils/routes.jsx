@@ -19,8 +19,10 @@ import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
 import CreateStaff from "../pages/users/CreateStaff";
 import EditProduct from "../pages/products/EditProducts";
-import CreatCategory from "../pages/categories/CreatCategory";
+import CreateCategory from "../pages/categories/CreateCategory";
 import CreateService from "../pages/services/CreateService";
+import EditService from "../pages/services/EditService";
+import EditCategory from "../pages/categories/EditCategory";
 
 const routes = [
   {
@@ -92,6 +94,10 @@ const routes = [
             element: <CreateService />,
           },
           {
+            path: path.EDIT_SERVICE + "/:id",
+            element: <EditService />,
+          },
+          {
             path: path.CREATE_CUSTOMER,
             element: <CreateCustomer />,
           },
@@ -101,7 +107,11 @@ const routes = [
           },
           {
             path: path.CREATE_CATEGORY,
-            element: <CreatCategory />,
+            element: <CreateCategory />,
+          },
+          {
+            path: path.EDIT_CATEGORY + "/:id",
+            element: <EditCategory />,
           },
         ],
       },

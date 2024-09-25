@@ -1,5 +1,6 @@
 const { deleteImage } = require('../middlewares/upload.middlewares');
 const Product = require('../models/product.model');
+const mongoose = require('mongoose');
 const moment = require('moment');
 
 // CREATE
@@ -68,6 +69,9 @@ exports.updateProduct = async (req, res) => {
 
     console.log(req.body)
 
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
     if (Array.isArray(req.body.existingImages)) {
       imageUrls.push(...req.body.existingImages);
     }
@@ -86,10 +90,43 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, {...req.body, images: imageUrls}, { new: true });
+    // Update variants
+    const existingVariants = product.variants.reduce((acc, variant) => {
+      acc[variant._id.toString()] = variant;
+      return acc;
+    }, {});
 
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-    return res.status(200).json(product);
+    req.body.variants.forEach(variant => {
+      if (existingVariants[variant._id]) {
+        existingVariants[variant._id] = { ...existingVariants[variant._id], ...variant };
+      } else {
+        existingVariants[new mongoose.Types.ObjectId()] = variant;
+      }
+    });
+
+    // Update ingredients
+    const existingIngredients = product.ingredients.reduce((acc, ingredient) => {
+      acc[ingredient._id.toString()] = ingredient;
+      return acc;
+    }, {});
+
+    req.body.ingredients.forEach(ingredient => {
+      if (existingIngredients[ingredient._id]) {
+        existingIngredients[ingredient._id] = { ...existingIngredients[ingredient._id], ...ingredient };
+      } else {
+        existingIngredients[new mongoose.Types.ObjectId()] = ingredient;
+      }
+    });
+
+    product.images = imageUrls;
+    product.variants = Object.values(existingVariants);
+    product.ingredients = Object.values(existingIngredients);
+    Object.assign(product, req.body);
+
+    const updatedProduct = await product.save();
+
+    return res.status(200).json(updatedProduct);
+
   } catch (err) {
     return res.status(400).json({ message: err.message });
   }
