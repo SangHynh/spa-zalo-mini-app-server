@@ -1,23 +1,32 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-    accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Account', required: true },
+const userSchema = new mongoose.Schema(
+  {
+    accountId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+      unique: true, 
+    },
     name: { type: String, required: true },
-    phone: { type: String, required: true, unique: true },
+    urlImage: {type: String, default: ""},
+    phone: { type: String, default: "" },
     membershipTier: {
-        type: String,
-        enum: ["Member", "Silver", "Gold", "Diamond"],
-        default: "Member"
+      type: String,
+      enum: ["Member", "Silver", "Gold", "Diamond"],
+      default: "Member",
     },
     points: { type: Number, default: 0 },
     history: { type: [String], default: [] },
     referralCode: { type: String },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
-}, {
-    timestamps: true
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;

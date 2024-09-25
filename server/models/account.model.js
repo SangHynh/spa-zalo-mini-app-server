@@ -14,7 +14,10 @@ const AccountSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    // Chỉ yêu cầu password nếu role là "admin"
+    required: function() {
+      return this.role === "admin";
+    },
   },
   role: {
     type: String,
@@ -38,20 +41,28 @@ AccountSchema.index(
 
 AccountSchema.pre("save", async function (next) {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
+    // Chỉ mã hóa mật khẩu nếu role là "admin" và password không null
+    if (this.role === "admin" && this.password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(this.password, salt);
+      this.password = hashedPassword;
+    }
     next();
   } catch (error) {
     next(error);
   }
 });
 
+// Hàm kiểm tra mật khẩu hợp lệ
 AccountSchema.methods.isValidPassword = async function (password) {
   try {
-    return await bcrypt.compare(password, this.password);
+    // Chỉ so sánh mật khẩu nếu role là admin
+    if (this.role === "admin") {
+      return await bcrypt.compare(password, this.password);
+    }
+    return false; // Người dùng user không có mật khẩu để so sánh
   } catch (error) {
-    throw error; 
+    throw error;
   }
 }
 

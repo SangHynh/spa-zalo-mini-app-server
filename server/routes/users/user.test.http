@@ -1,0 +1,3 @@
+# GET USER INFORMATION
+GET http://localhost:8080/api/users/user-info/{zaloId_here}
+Authorization: Bearer token_here

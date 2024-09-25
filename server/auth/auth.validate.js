@@ -1,29 +1,37 @@
 const createError = require("http-errors");
 
 const authValidate = (req, res, next) => {
-  const { email, password, zaloId } = req.body;
-  if (!email && !zaloId) {
-    return next(createError.BadRequest("Username is required"));
-  }
-  if (email) {
+  const { email, password, zaloId, role } = req.body;
+
+  // Kiểm tra vai trò và yêu cầu thông tin đăng nhập tương ứng
+  if (role === "user") {
+    // Người dùng chỉ cần zaloId
+    if (!zaloId) {
+      return next(createError.BadRequest("Zalo ID is required"));
+    }
+    const zaloIdRegex = /^[a-zA-Z0-9]+$/;
+    if (!zaloIdRegex.test(zaloId)) {
+      return next(createError.BadRequest("Invalid Zalo ID format"));
+    }
+  } else if (role === "admin") {
+    // Admin yêu cầu email và mật khẩu
+    if (!email) {
+      return next(createError.BadRequest("Email is required"));
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return next(createError.BadRequest("Invalid email format"));
     }
-  }
-  if (zaloId) {
-    const zaloIdRegex = /^[a-zA-Z0-9]+$/;
-    if (!zaloIdRegex.test(zaloId)) {
-      return next(
-        createError.BadRequest("Invalid user name")
-      );
+
+    if (!password || password.length < 6) {
+      return next(createError.BadRequest("Password must be at least 6 characters long"));
     }
+  } else {
+    // Nếu vai trò không hợp lệ
+    return next(createError.BadRequest("Invalid role"));
   }
-  if (!password || password.length < 6) {
-    return next(
-      createError.BadRequest("Password must be at least 6 characters long")
-    );
-  }
+
   next();
 };
 
