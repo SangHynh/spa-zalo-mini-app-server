@@ -107,7 +107,7 @@ function Row(props) {
               </div>
             </TableCell>
           </TableRow>
-          <TableRow>
+          <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
