@@ -1,11 +1,13 @@
-import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import path from "../utils/path";
+import ServiceTable from "./services/ServiceTable";
 import { useTranslation } from "react-i18next";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import path from "../utils/path";
-import CategoryTable from "./categories/CategoryTable";
 
-const CategoryManagement = () => {
+const ServiceManagement = () => {
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +18,7 @@ const CategoryManagement = () => {
 
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
-      <Typography variant="h5">{t("category_mgmt")}</Typography>
+      <Typography variant="h5">{t("service-mgmt")}</Typography>
       <div className="flex justify-between items-center">
         <div className="relative w-64">
           <input
@@ -30,16 +32,16 @@ const CategoryManagement = () => {
         </div>
         <Button
           variant="outlined"
-          href={path.CREATE_CATEGORY}
+          href={path.CREATE_PRODUCT}
           className="w-fit flex items-center gap-2"
         >
           <FaPlus />
           {t("create")}
         </Button>
       </div>
-      <CategoryTable searchTerm={searchTerm} />
+      <ServiceTable searchTerm={searchTerm} />
     </Box>
   );
 };
 
-export default CategoryManagement;
+export default ServiceManagement;

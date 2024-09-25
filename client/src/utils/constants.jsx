@@ -8,6 +8,7 @@ import { LuShoppingBag } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { IoSettingsSharp } from "react-icons/io5";
 import { GoDash } from "react-icons/go";
+import { TbMassage } from "react-icons/tb";
 
 export const getSidebar = (t) => [
   {
@@ -26,6 +27,13 @@ export const getSidebar = (t) => [
   },
   {
     id: 3,
+    name: t("service"),
+    path: `/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`,
+    icon: <TbMassage size={25} />,
+    type: "SINGLE",
+  },
+  {
+    id: 4,
     name: t("user"),
     icon: <FaUserCog size={25} />,
     type: "PARENT",
@@ -45,28 +53,28 @@ export const getSidebar = (t) => [
     ],
   },
   {
-    id: 4,
+    id: 5,
     name: t("category"),
     path: `/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`,
     icon: <MdCategory size={25} />,
     type: "SINGLE",
   },
   {
-    id: 5,
+    id: 6,
     name: t("booking"),
     path: `/${path.ADMIN_LAYOUT}/${path.BOOKING_MANAGEMENT}`,
     icon: <MdRoomService size={25} />,
     type: "SINGLE",
   },
   {
-    id: 6,
+    id: 7,
     name: t("order"),
     path: `/${path.ADMIN_LAYOUT}/${path.ORDER_MANAGEMENT}`,
     icon: <MdProductionQuantityLimits size={25} />,
     type: "SINGLE",
   },
   {
-    id: 7,
+    id: 8,
     name: t("general-config"),
     icon: <IoSettingsSharp size={25} />,
     type: "PARENT",

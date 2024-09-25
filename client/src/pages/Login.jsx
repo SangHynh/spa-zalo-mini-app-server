@@ -53,22 +53,22 @@ function Copyright() {
 }
 
 export default function SignIn() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       // console.log(email, password)
-      const response = await apiLogin({ email, password })
+      const response = await apiLogin({ email, password });
 
       // console.log(response)
 
       if (response.status === 200) {
         const data = await response.data;
 
-        console.log(data.accessToken, data.refreshToken)
+        console.log(data.accessToken, data.refreshToken);
 
         setCookie("accessToken", data.accessToken, 1 / 24);
         setCookie("refreshToken", data.refreshToken, 7);
@@ -82,16 +82,16 @@ export default function SignIn() {
           cancelButtonText: "Cancel",
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
-            navigate(`/${path.ADMIN_LAYOUT}/${path.MANAGE_PRODUCTS}`)
+            navigate(`/${path.ADMIN_LAYOUT}/${path.DASHBOARD}`);
           } else {
             window.location.reload();
           }
         });
       }
     } catch (err) {
-      console.log(err.message)
+      console.log(err.message);
     }
-  }
+  };
 
   return (
     <Container component="main" maxWidth="xs">

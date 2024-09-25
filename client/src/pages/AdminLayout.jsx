@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Drawer,
   List,
@@ -8,12 +8,13 @@ import {
   IconButton,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { getSidebar } from "../utils/constants";
 import Topheader from "../components/banners/Topheader";
 import { useTranslation } from "react-i18next";
 import { FaCaretDown, FaCaretRight } from "react-icons/fa";
 import { useTheme } from "@emotion/react";
+import Swal from "sweetalert2";
 
 const TOP_HEADER_HEIGHT = 64;
 const drawerWidth = 240;
@@ -42,6 +43,22 @@ const AdminLayout = () => {
 
   const { t } = useTranslation();
   const sidebar = getSidebar(t);
+
+  const navigate = useNavigate();
+  // useEffect(() => {
+  //   if ([]) {
+  //     Swal.fire({
+  //       icon: "info",
+  //       title: "Oops!",
+  //       text: "Bạn chưa đăng nhập!",
+  //       showConfirmButton: true,
+  //       confirmButtonText: "Đăng nhập",
+  //     }).then((response) => {
+  //       if (response.isConfirmed) navigate("/");
+  //       if (response.isDismissed) navigate("/");
+  //     });
+  //   }
+  // }, []);
 
   return (
     <>
@@ -166,6 +183,10 @@ const AdminLayout = () => {
             marginTop: `${TOP_HEADER_HEIGHT}px`,
           }}
         >
+          <div
+            className="fixed z-40 top-0 right-0 left-0 bg-white"
+            style={{ height: `${TOP_HEADER_HEIGHT}px` }}
+          ></div>
           <Outlet />
         </div>
       </main>

@@ -13,185 +13,310 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Container, ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { apiGetProducts } from "../../apis/products";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { useTheme } from "@emotion/react";
 
 function Row(props) {
-  const { row } = props;
+  const { row, searchTerm } = props;
+
+  // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
+  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+  // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
+  const isVisible =
+    row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+    row._id.toLowerCase().includes(lowerCaseSearchTerm);
+  // row.category.toLowerCase().includes(lowerCaseSearchTerm);
+
   const [open, setOpen] = React.useState(false);
 
   const { t } = useTranslation();
 
+  const handleCopy = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast.success("Copy thành công");
+      })
+      .catch((err) => {
+        toast.success("Copy thất bại");
+      });
+  };
+  const theme = useTheme();
+
   return (
-    <React.Fragment>
-      <TableRow
-        sx={{ "& > *": { borderBottom: "unset" } }}
-        className="bg-gray-100"
-      >
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
+    <>
+      {isVisible && (
+        <React.Fragment>
+          <TableRow
+            sx={{
+              "& > *": { borderBottom: "unset" },
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "#2F2F2F" : "#FFFFFF",
+            }}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row._id}
-        </TableCell>
-        <TableCell align="right">{row.name}</TableCell>
-        <TableCell align="right">
-          {new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(row.price)}
-        </TableCell>
-        <TableCell align="right">{row.category}</TableCell>
-        <TableCell align="right">{row.stock}</TableCell>
-        <TableCell align="right">
-          {new Date(row.expiryDate).toLocaleString("vi-VN", {
-            timeZone: "Asia/Ho_Chi_Minh",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false, // 24-hour format
-          })}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "250px" }}>
-          {row.benefits.join(", ")}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "350px" }}>
-          {row.description}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "10px" }}>
-          <Tooltip title="Edit">
-            <IconButton>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-        <TableCell align="right" sx={{ width: "10px" }}>
-          <Tooltip title="Delete">
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("variants")}
-              </Typography>
-              <Table
+            <TableCell className="relative">
+              <IconButton
+                aria-label="expand row"
                 size="small"
-                aria-label="purchases"
-                sx={{ tableLayout: "fixed", width: "100%" }}
+                onClick={() => setOpen(!open)}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">{t("volume")}</TableCell>
-                    <TableCell align="center">{t("price")}</TableCell>
-                    <TableCell align="center">{t("stock")}</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.variants.map((variantRow) => (
-                    <TableRow key={variantRow.volume}>
-                      <TableCell component="th" scope="row" align="center">
-                        {variantRow.volume}
-                      </TableCell>
-                      <TableCell align="center">{variantRow.price}</TableCell>
-                      <TableCell align="center">{variantRow.stock}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("ingredients")}
-              </Typography>
-              <Table
-                size="small"
-                aria-label="related-products"
-                sx={{ tableLayout: "fixed", width: "100%" }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">{t("name")}</TableCell>
-                    <TableCell align="center">{t("percentage")}</TableCell>
-                    <TableCell align="center">
-                      {t("usageInstructions")}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.ingredients &&
-                    row.ingredients.map((ingredient) => (
-                      <TableRow key={ingredient.name}>
-                        <TableCell component="th" scope="row" align="center">
-                          {ingredient.name}
-                        </TableCell>
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </TableCell>
+            <TableCell
+              component="th"
+              scope="row"
+              sx={{
+                maxWidth: "100px",
+                whiteSpace: "nowrap",
+                // overflowX: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              className="relative cursor-pointer"
+              onClick={() => handleCopy(row._id)}
+            >
+              {row._id}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "300px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.name}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(row.price)}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.category}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "100px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.stock}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {new Date(row.expiryDate).toLocaleString("vi-VN", {
+                timeZone: "Asia/Ho_Chi_Minh",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false, // 24-hour format
+              })}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "250px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.benefits.join(", ")}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "300px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.description}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ minWidth: "100px" }}
+              className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
+            >
+              <div className="flex gap-2">
+                <Tooltip title="Edit">
+                  <IconButton>
+                    <EditIcon className="text-green-500" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton>
+                    <DeleteIcon className="text-red-500" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("variants")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="purchases"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("volume")}</TableCell>
+                        <TableCell align="center">{t("price")}</TableCell>
+                        <TableCell align="center">{t("stock")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.variants &&
+                        row.variants.map((variantRow) => (
+                          <TableRow key={variantRow.volume}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {variantRow.volume}
+                            </TableCell>
+                            <TableCell align="center">
+                              {variantRow.price}
+                            </TableCell>
+                            <TableCell align="center">
+                              {variantRow.stock}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("ingredients")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="related-products"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("name")}</TableCell>
+                        <TableCell align="center">{t("percentage")}</TableCell>
                         <TableCell align="center">
-                          {ingredient.percentage}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ingredient.usageInstructions}
+                          {t("usageInstructions")}
                         </TableCell>
                       </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("images")}
-              </Typography>
-              {/* Image List */}
-              {row.images.length > 0 && (
-                <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
-                  {row.images.map((imgSrc, index) => (
-                    <ImageListItem key={index}>
-                      <img
-                        src={imgSrc}
-                        alt={`Uploaded ${index}`}
-                        loading="lazy"
-                      />
-                    </ImageListItem>
-                  ))}
-                </ImageList>
-              )}
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
+                    </TableHead>
+                    <TableBody>
+                      {row.ingredients &&
+                        row.ingredients.map((ingredient) => (
+                          <TableRow key={ingredient.name}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {ingredient.name}
+                            </TableCell>
+                            <TableCell align="center">
+                              {ingredient.percentage}
+                            </TableCell>
+                            <TableCell align="center">
+                              {ingredient.usageInstructions}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("images")}
+                  </Typography>
+                  {/* Image List */}
+                  {row.images.length > 0 && (
+                    <ImageList
+                      sx={{ height: 250, mt: 2 }}
+                      cols={5}
+                      rowHeight={150}
+                    >
+                      {row.images.map((imgSrc, index) => (
+                        <ImageListItem key={index}>
+                          <img
+                            src={imgSrc}
+                            alt={`Uploaded ${index}`}
+                            loading="lazy"
+                          />
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  )}
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        </React.Fragment>
+      )}
+    </>
   );
 }
 
-const ProductTable = () => {
+const ProductTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(0);
@@ -224,48 +349,85 @@ const ProductTable = () => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table">
-          <TableHead
-            sx={{
-              backgroundColor: "pink",
-              position: "sticky",
-              top: 0,
-              zIndex: 10,
-            }}
-          >
+        <Table aria-label="collapsible table" className="border-2 boder-black">
+          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
             <TableRow>
-              <TableCell />
-              <TableCell sx={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("name")}
+              <TableCell className="relative" />
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", maxWidth: "120px" }}
+                className="relative dark:text-black"
+              >
+                Id
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                className="relative dark:text-black"
+              >
+                {t("product-name")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
                 {t("price")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
                 {t("category")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="relative dark:text-black"
+              >
                 {t("stock")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
                 {t("expDate")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "250px" }}
+                className="relative dark:text-black"
+              >
                 {t("benefits")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                className="relative dark:text-black"
+              >
                 {t("description")}
               </TableCell>
-              <TableCell />
-              <TableCell />
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+              >
+                {t("operations")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <Row key={row._id} row={row} />
+                <Row
+                  key={row._id}
+                  row={row}
+                  searchTerm={searchTerm}
+                  className="bg-[343541]"
+                />
               ))}
           </TableBody>
         </Table>

@@ -13,185 +13,394 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Container, ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { apiGetProducts } from "../../apis/products";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { apiGetCustomers } from "../../apis/users";
 
 function Row(props) {
-  const { row } = props;
+  const { row, searchTerm } = props;
+
+  // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
+  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+  // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
+  const isVisible =
+    row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+    row._id.toLowerCase().includes(lowerCaseSearchTerm);
+
   const [open, setOpen] = React.useState(false);
 
   const { t } = useTranslation();
 
+  const handleCopy = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast.success("Copy thành công");
+      })
+      .catch((err) => {
+        toast.success("Copy thất bại");
+      });
+  };
+
   return (
-    <React.Fragment>
-      <TableRow
-        sx={{ "& > *": { borderBottom: "unset" } }}
-        className="bg-gray-100"
-      >
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
+    <>
+      {isVisible && (
+        <React.Fragment>
+          <TableRow
+            sx={{
+              "& > *": { borderBottom: "unset" },
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "#2F2F2F" : "#FFFFFF",
+            }}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row._id}
-        </TableCell>
-        <TableCell align="right">{row.name}</TableCell>
-        <TableCell align="right">
-          {new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(row.price)}
-        </TableCell>
-        <TableCell align="right">{row.category}</TableCell>
-        <TableCell align="right">{row.stock}</TableCell>
-        <TableCell align="right">
-          {new Date(row.expiryDate).toLocaleString("vi-VN", {
-            timeZone: "Asia/Ho_Chi_Minh",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false, // 24-hour format
-          })}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "250px" }}>
-          {row.benefits.join(", ")}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "350px" }}>
-          {row.description}
-        </TableCell>
-        <TableCell align="right" sx={{ width: "10px" }}>
-          <Tooltip title="Edit">
-            <IconButton>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-        <TableCell align="right" sx={{ width: "10px" }}>
-          <Tooltip title="Delete">
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("variants")}
-              </Typography>
-              <Table
+            <TableCell className="relative">
+              <IconButton
+                aria-label="expand row"
                 size="small"
-                aria-label="purchases"
-                sx={{ tableLayout: "fixed", width: "100%" }}
+                onClick={() => setOpen(!open)}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">{t("volume")}</TableCell>
-                    <TableCell align="center">{t("price")}</TableCell>
-                    <TableCell align="center">{t("stock")}</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.variants.map((variantRow) => (
-                    <TableRow key={variantRow.volume}>
-                      <TableCell component="th" scope="row" align="center">
-                        {variantRow.volume}
-                      </TableCell>
-                      <TableCell align="center">{variantRow.price}</TableCell>
-                      <TableCell align="center">{variantRow.stock}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("ingredients")}
-              </Typography>
-              <Table
-                size="small"
-                aria-label="related-products"
-                sx={{ tableLayout: "fixed", width: "100%" }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">{t("name")}</TableCell>
-                    <TableCell align="center">{t("percentage")}</TableCell>
-                    <TableCell align="center">
-                      {t("usageInstructions")}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.ingredients &&
-                    row.ingredients.map((ingredient) => (
-                      <TableRow key={ingredient.name}>
-                        <TableCell component="th" scope="row" align="center">
-                          {ingredient.name}
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </TableCell>
+            <TableCell
+              component="th"
+              scope="row"
+              sx={{
+                maxWidth: "100px",
+                whiteSpace: "nowrap",
+                // overflowX: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              className="relative cursor-pointer"
+              onClick={() => handleCopy(row._id)}
+            >
+              {row._id}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "300px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.name}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.phoneNumber}
+            </TableCell>
+            <TableCell
+              align="center"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.points}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "100px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.gender}
+            </TableCell>
+            <TableCell
+              align="center"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.cumulativePoints}
+            </TableCell>
+            <TableCell
+              align="center"
+              sx={{
+                minWidth: "100px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.age}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.skinType}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.hairType}
+            </TableCell>
+            <TableCell
+              component="th"
+              scope="row"
+              sx={{
+                minWidth: "120px",
+                whiteSpace: "nowrap",
+                // overflowX: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              className="relative cursor-pointer"
+              onClick={() => handleCopy(row._id)}
+            >
+              {row.refferalCode}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.refferedBy}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{ minWidth: "100px" }}
+              className="sticky right-0 z-10  bg-white dark:bg-[#2F2F2F]"
+            >
+              <div className="flex gap-2">
+                <Tooltip title="Edit">
+                  <IconButton>
+                    <EditIcon className="text-green-500" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton>
+                    <DeleteIcon className="text-red-500" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("favorite-services")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="purchases"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("service-id")}</TableCell>
+                        <TableCell align="center">
+                          {t("service-name")}
+                        </TableCell>
+                        <TableCell align="center">{t("usage-count")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.favoriteServices &&
+                        row.favoriteServices.map((favoriteServiceRow) => (
+                          <TableRow key={favoriteServiceRow._id}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {favoriteServiceRow._id}
+                            </TableCell>
+                            <TableCell align="center">
+                              {favoriteServiceRow.serviceName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {favoriteServiceRow.usageCount}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("product-suggestions")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="related-products"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("product-id")}</TableCell>
+                        <TableCell align="center">
+                          {t("product-name")}
                         </TableCell>
                         <TableCell align="center">
-                          {ingredient.percentage}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ingredient.usageInstructions}
+                          {t("suggested-score")}
                         </TableCell>
                       </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("images")}
-              </Typography>
-              {/* Image List */}
-              {row.images.length > 0 && (
-                <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
-                  {row.images.map((imgSrc, index) => (
-                    <ImageListItem key={index}>
-                      <img
-                        src={imgSrc}
-                        alt={`Uploaded ${index}`}
-                        loading="lazy"
-                      />
-                    </ImageListItem>
-                  ))}
-                </ImageList>
-              )}
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
+                    </TableHead>
+                    <TableBody>
+                      {row.productSuggestions &&
+                        row.productSuggestions.map((productSuggestion) => (
+                          <TableRow key={productSuggestion._id}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {productSuggestion._id}
+                            </TableCell>
+                            <TableCell align="center">
+                              {productSuggestion.productName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {productSuggestion.suggestedScore}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("discounts")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="related-products"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("voucher-id")}</TableCell>
+                        <TableCell align="center">{t("used-at")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.discountsUsed &&
+                        row.discountsUsed.map((discountUsed) => (
+                          <TableRow key={discountUsed._id}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {discountUsed._id}
+                            </TableCell>
+                            <TableCell align="center">
+                              {discountUsed.usedAt}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("cart")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="related-products"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("product-id")}</TableCell>
+                        <TableCell align="center">{t("name")}</TableCell>
+                        <TableCell align="center">{t("price")}</TableCell>
+                        <TableCell align="center">{t("quantity")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.carts &&
+                        row.carts.map((cart) => (
+                          <TableRow key={cart._id}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {cart._id}
+                            </TableCell>
+                            <TableCell align="center">
+                              {cart.productName}
+                            </TableCell>
+                            <TableCell align="center">{cart.price}</TableCell>
+                            <TableCell align="center">
+                              {cart.quantity}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        </React.Fragment>
+      )}
+    </>
   );
 }
 
-const CustomerTable = () => {
+const CustomerTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(0);
@@ -206,16 +415,16 @@ const CustomerTable = () => {
     setPage(0);
   };
 
-  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
 
-  // GET PRODUCTS
+  // GET CUSTOMERS
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await apiGetProducts();
-      if (response.status === 200) setProducts(response.data);
+    const fetchCustomers = async () => {
+      const response = await apiGetCustomers();
+      if (response.status === 200) setCustomers(response.data);
     };
 
-    fetchProducts();
+    fetchCustomers();
   }, []);
 
   return (
@@ -224,48 +433,101 @@ const CustomerTable = () => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table">
-          <TableHead
-            sx={{
-              backgroundColor: "pink",
-              position: "sticky",
-              top: 0,
-              zIndex: 10,
-            }}
-          >
+        <Table aria-label="collapsible table" className="border-2 boder-black">
+          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
             <TableRow>
-              <TableCell />
-              <TableCell sx={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("name")}
+              <TableCell className="relative" />
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", maxWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                Id
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("price")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                className="relative dark:text-black"
+              >
+                {t("customer-name")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("category")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("phone")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("stock")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("points")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("expDate")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                {t("gender")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("benefits")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("cumulative-points")}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                {t("description")}
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", maxWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                {t("age")}
               </TableCell>
-              <TableCell />
-              <TableCell />
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("skin-style")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("hair-style")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "120px" }}
+                className="relative dark:text-black"
+              >
+                {t("referral-code")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("referred-by")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+              >
+                {t("operations")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products
+            {customers
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <Row key={row._id} row={row} />
+                <Row key={row._id} row={row} searchTerm={searchTerm} />
               ))}
           </TableBody>
         </Table>
@@ -273,7 +535,7 @@ const CustomerTable = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={products.length}
+        count={customers.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

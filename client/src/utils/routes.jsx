@@ -13,10 +13,13 @@ import {
   RanknPoint,
   CustomerManagement,
   StaffManagement,
+  ServiceManagement,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
 import CreateStaff from "../pages/users/CreateStaff";
+import CreatCategory from "../pages/categories/CreatCategory";
+import CreateService from "../pages/services/CreateService";
 
 const routes = [
   {
@@ -38,6 +41,10 @@ const routes = [
           {
             path: path.PRODUCT_MANAGEMENT,
             element: <ProductManagement />,
+          },
+          {
+            path: path.SERVICE_MANAGEMENT,
+            element: <ServiceManagement />,
           },
           {
             path: path.CUSTOMER_MANAGEMENT,
@@ -76,12 +83,20 @@ const routes = [
             element: <CreateProduct />,
           },
           {
+            path: path.CREATE_SERVICE,
+            element: <CreateService />,
+          },
+          {
             path: path.CREATE_CUSTOMER,
             element: <CreateCustomer />,
           },
           {
             path: path.CREATE_STAFF,
             element: <CreateStaff />,
+          },
+          {
+            path: path.CREATE_CATEGORY,
+            element: <CreatCategory />,
           },
         ],
       },
