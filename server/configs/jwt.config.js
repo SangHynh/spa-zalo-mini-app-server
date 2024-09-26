@@ -35,10 +35,7 @@ module.exports = {
           err.name === "JsonWebTokenError" ? "Unauthorized" : err.message;
         return next(createError.Unauthorized(message));
       }
-      const userId = payload.aud;
       req.payload = payload;
-      console.log("user ID: ", userId);
-      resolve(payload);
       next();
     });
   },

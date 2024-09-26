@@ -1,13 +1,13 @@
 
-GET http://localhost:8080
+GET https://spa-zalo-mini-app-server-6.onrender.com/
 Authorization: Bearer token_here
 
 ### REGISTER ROUTE USER
-POST http://localhost:8080/auth/register
+POST https://spa-zalo-mini-app-server-6.onrender.com/auth/register
 Content-Type: application/json
 
 {
-    "zaloId": "123456789",
+    "zaloId": "123456489",
     "role": "user",
     "name": "Nguyễn Văn A",
     "urlImage": ""
