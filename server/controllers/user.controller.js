@@ -1,13 +1,14 @@
 const User = require('../models/user.model');
+const Account = require('../models/account.model');
 
-exports.createUser = async (req, res) => {
+// Controller để tạo người dùng mới
+const createUser = async (req, res) => {
   try {
-    const { name, phone, role, membershipTier, points, history, referralCode, discountsUsed, serviceHistory } = req.body;
+    const { name, phone, membershipTier, points, history, referralCode, discountsUsed, serviceHistory } = req.body;
 
     const user = new User({
       name,
       phone,
-      role,
       membershipTier,
       points,
       history,
@@ -24,7 +25,8 @@ exports.createUser = async (req, res) => {
   }
 };
 
-exports.getAllUsers = async (req, res) => {
+// Controller để lấy tất cả người dùng
+const getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -34,7 +36,8 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserById = async (req, res) => {
+// Controller để lấy thông tin người dùng theo ID
+const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -47,7 +50,8 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+// Controller để sửa người dùng theo ID
+const updateUser = async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
@@ -64,7 +68,8 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-exports.deleteUser = async (req, res) => {
+// Controller để xóa người dùng theo ID
+const deleteUser = async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
@@ -75,4 +80,80 @@ exports.deleteUser = async (req, res) => {
     console.error("Error deleting user:", error.message);
     res.status(500).json({ message: error.message });
   }
+};
+
+// Lấy thông tin người dùng theo ID Zalo
+const getUserInfo = async (req, res) => {
+  const { zaloId } = await req.params; // Lấy zaloId từ path parameters
+  try {
+    // Tìm kiếm người dùng theo zaloId từ mô hình Account
+    const account = await Account.findOne({ zaloId });
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+    // Tìm kiếm người dùng theo accountId từ mô hình User
+    const user = await User.findOne({ accountId: account._id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Trả về thông tin người dùng cùng với zaloId
+    const userInfo = {
+      _id: user._id,
+      accountId: user.accountId,
+      name: user.name,
+      urlImage: user.urlImage,
+      phone: user.phone,
+      membershipTier: user.membershipTier,
+      points: user.points,
+      zaloId: account.zaloId, 
+    };
+    res.status(200).json(userInfo);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Cập nhật thông tin người dùng theo ID Zalo
+const updateUserInfo = async (req, res) => {
+  const { zaloId } = req.params; 
+  const { name, phone } = req.body;   
+  try {
+    // Tìm kiếm người dùng theo zaloId từ mô hình Account
+    const account = await Account.findOne({ zaloId });
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+    // Tìm kiếm người dùng theo accountId từ mô hình User
+    const user = await User.findOne({ accountId: account._id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    await user.save();
+    const userInfo = {
+      _id: user._id,
+      accountId: user.accountId,
+      name: user.name,
+      phone: user.phone
+    };
+    res.status(200).json({ message: "User info updated successfully", userInfo });
+  } catch (error) {
+    console.error("Error updating user:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+module.exports = {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserInfo,
+  updateUserInfo
 };

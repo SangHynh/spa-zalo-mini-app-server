@@ -101,7 +101,7 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.phoneNumber}
+              {row.phone}
             </TableCell>
             <TableCell
               align="center"

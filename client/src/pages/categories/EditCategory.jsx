@@ -34,7 +34,7 @@ const EditCategory = () => {
     const createSubCategory = () => {
         if (subCategoryName && subCategoryDescription) {
             const newSubCategory = {
-                id: subCategoryId, // Generate unique ID for each subCategory
+                _id: subCategoryId, // Generate unique ID for each subCategory
                 name: subCategoryName,
                 description: subCategoryDescription,
             };

@@ -34,7 +34,7 @@ const CreateCategory = () => {
   const createSubCategory = () => {
     if (subCategoryName && subCategoryDescription) {
       const newSubCategory = {
-        id: subCategoryId, // Generate unique ID for each subCategory
+        _id: subCategoryId, // Generate unique ID for each subCategory
         name: subCategoryName,
         description: subCategoryDescription,
       };
@@ -75,7 +75,7 @@ const CreateCategory = () => {
     const data = {
       name: categoryName,
       description: categoryDescription,
-      subCategory: subCategories
+      subCategory: subCategories.map(({ _id, ...rest }) => rest)
     }
 
     try {
@@ -180,7 +180,7 @@ const CreateCategory = () => {
             {/* SubCategories table */}
             <PaginationTable
               rows={subCategories}
-              columns={['name', 'description']}
+              columns={['_id', 'name', 'description']}
               onDelete={deleteSubCategory}
             />
           </Grid2>

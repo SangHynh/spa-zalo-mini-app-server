@@ -5,13 +5,15 @@ class CartController {
     // GET CART BY USER ID
     async getCartByUserId(req, res) {
         try {
-            const { accountId } = req.payload.aud
+            const accountId = req.payload.aud
+
+            console.log(req.payload.aud)
             // const { userId } = req.params.id;
-            const response = await User.findOne({ accountId: accountId }).populate("carts");
+            const response = await User.findOne({ accountId: accountId });
 
             if (!response) return res.status(404).json("User not found")
 
-            return res.status(200).json(response)
+            return res.status(200).json({ carts: response.carts })
         } catch (error) {
             return res.status(500).json({
                 error: error,
@@ -23,11 +25,11 @@ class CartController {
     // ADD CART'S ITEM
     async addCartItem(req, res) {
         try {
-            const { productId } = req.params.id;
-            
+            const productId = req.params.id;
+
             const { quantity } = req.body;
 
-            const { accountId } = req.payload.aud
+            const accountId = req.payload.aud
             // const { userId } = req.params.id;
             const user = await User.findOne({ accountId: accountId });
 
@@ -66,9 +68,9 @@ class CartController {
     // REDUCE CART'S ITEM
     async reduceCartItem(req, res) {
         try {
-            const { productId } = req.params.id;
+            const productId = req.params.id;
             const { quantity } = req.body;
-            const { accountId } = req.payload.aud;
+            const accountId = req.payload.aud
 
             const user = await User.findOne({ accountId: accountId });
             if (!user) return res.status(404).json("User not found");
@@ -99,9 +101,9 @@ class CartController {
     // REMOVE CART'S ITEM
     async removeCartItem(req, res) {
         try {
-            const { productId } = req.params.id;
+            const productId = req.params.id;
 
-            const { accountId } = req.payload.aud
+            const accountId = req.payload.aud
             // const { userId } = req.params.id;
             const user = await User.findOne({ accountId: accountId });
 

@@ -1,6 +1,7 @@
 const BookingHistory = require("../models/bookinghistory.model");
 const Service = require("../models/service.model");
 const User = require("../models/user.model");
+const moment = require('moment');
 
 class BookingController {
     // GET BOOKING HISTORIES
@@ -10,7 +11,7 @@ class BookingController {
             return res.status(200).json(response)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -19,15 +20,22 @@ class BookingController {
     // GET BOOKING HISTORIES BY USERID
     async getBookingHistoriesByUserId(req, res) {
         try {
-            const user = await User.findOne({ accountId: req.payload.aud })
+            const accountId = req.payload.aud
+
+            const user = await User.findOne({ accountId: accountId });
 
             if (!user) return res.status(404).json({ message: "User not found" })
 
-            const response = await BookingHistory.find({ where: { customerId: user._id } });
+            // console.log(user)
+
+            const response = await BookingHistory.find({ customerId: user._id });
+
+            // console.log(response)
+
             return res.status(200).json(response)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -36,11 +44,12 @@ class BookingController {
     // GET BOOKING BY ID
     async getBookingById(req, res) {
         try {
-            const response = await BookingHistory.findOne(req.params.id);
+            const response = await BookingHistory.findById(req.params.id);
+
             return res.status(200).json(response)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -49,17 +58,17 @@ class BookingController {
     // CREATE BOOKING
     async createBooking(req, res) {
         try {
-            const { accountId } = req.payload.aud
+            const accountId = req.payload.aud
             // const { userId } = req.params.id
 
-            const { serviceId } = req.body.serviceId
+            const { serviceId } = req.body
 
-            const user = await User.findOne({ where: { accountId: accountId } });
+            const user = await User.findOne({ accountId: accountId });
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const service = await Service.findOne({ where: { id: serviceId } })
+            const service = await Service.findById(serviceId)
             if (!service) {
                 return res.status(404).json({ message: 'Service not found' });
             }
@@ -84,8 +93,7 @@ class BookingController {
             return res.status(201).json(newBooking)
         } catch (error) {
             return res.status(500).json({
-                error: error,
-                message: 'An error occurred'
+                error: error.message,
             });
         }
     }
@@ -94,11 +102,11 @@ class BookingController {
     async updateBooking(req, res) {
         try {
             // TODO:
-            const { accountId } = req.payload.aud;
-            const { bookingId } = req.params.id;
+            const accountId = req.payload.aud;
+            const bookingId = req.params.id;
             const { serviceId, date, ...updateData } = req.body;
 
-            const user = await User.findOne({ where: { accountId } });
+            const user = await User.findOne({ accountId: accountId });
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -109,7 +117,7 @@ class BookingController {
             }
 
             if (serviceId) {
-                const service = await Service.findOne({ where: { id: serviceId } });
+                const service = await Service.findById(serviceId)
                 if (!service) {
                     return res.status(404).json({ message: 'Service not found' });
                 }
@@ -141,7 +149,7 @@ class BookingController {
     // CANCEL BOOKING (FOR CUSTOMER)
     async cancelBooking(req, res) {
         try {
-            const booking = await BookingHistory.findOne(req.params.id);
+            const booking = await BookingHistory.findById(req.params.id);
 
             if (!booking) return res.status(404).json({ message: 'Booking not found' })
 
@@ -164,7 +172,7 @@ class BookingController {
     async updateBookingStatus(req, res) {
         try {
             // TODO:
-            const booking = await BookingHistory.findOne(req.params.id);
+            const booking = await BookingHistory.findById(req.params.id);
 
             if (!booking) return res.status(404).json({ message: 'Booking not found' })
 
@@ -187,7 +195,7 @@ class BookingController {
     async removeBooking(req, res) {
         try {
             // TODO:
-            const { bookingId } = req.params.id;
+            const bookingId = req.params.id;
 
             const booking = await BookingHistory.findById(bookingId);
             if (!booking) {
@@ -195,7 +203,7 @@ class BookingController {
             }
 
             // Remove the booking
-            const deletedBooking = await BookingHistory.deleteOne(bookingId);
+            const deletedBooking = await BookingHistory.findByIdAndDelete(bookingId);
             if (!deletedBooking) {
                 return res.status(400).json({ message: 'Cannot delete booking' });
             }
@@ -210,4 +218,4 @@ class BookingController {
     }
 }
 
-exports.module = BookingController;
+module.exports = new BookingController();

@@ -81,18 +81,26 @@ module.exports = {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         (err, payload) => {
-          if (err) return reject(createError.Unauthorized());
+          if (err) return reject(createError.Unauthorized("Invalid token"));
           const userId = payload.aud;
-          //Kiểm tra refresh token tồn tại trong redis
-          redis.GET(userId, (err, result) => {
-            if (err) {
+          // Tìm token trong redis để xem có hợp lệ không
+          redis
+            .GET(userId)
+            .then((result) => {
+              if (!result) {
+                // token không tìm thấy trong redis (chưa được lưu, đăng xuất, bị xoá khỏi cachce)
+                return reject(createError.Unauthorized("Token not found"));
+              }
+              if (refreshToken === result) {
+                return resolve(userId);
+              }
+              // refresh token cũ bị thay thế bởi token mới nên không hợp lệ
+              reject(createError.Unauthorized("Token is expired"));
+            })
+            .catch((err) => {
               console.log(err.message);
               reject(createError.InternalServerError());
-            }
-            if (refreshToken === result) return resolve(userId);
-            reject(createError.Unauthorized());
-          });
-          resolve(userId);
+            });
         }
       );
     });

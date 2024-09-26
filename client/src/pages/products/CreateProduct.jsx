@@ -56,7 +56,7 @@ const CreateProduct = () => {
     const createVariant = () => {
         if (variantVolume && variantPrice && variantStock) {
             const newVariant = {
-                id: variantId, // Generate unique ID for each variant
+                _id: variantId, // Generate unique ID for each variant
                 volume: variantVolume,
                 price: variantPrice,
                 stock: variantStock
@@ -90,7 +90,7 @@ const CreateProduct = () => {
     const createIngredient = () => {
         if (ingredientName && ingredientPercentage) {
             const newIngredient = {
-                id: ingredientId,
+                _id: ingredientId,
                 name: ingredientName,
                 percentage: ingredientPercentage,
                 usageInstructions: ingredientUsageInstructions || 'N/A' // Default if not provided
@@ -174,8 +174,8 @@ const CreateProduct = () => {
         formData.append('stock', calculateTotalStock());
         formData.append('expiryDate', productExpiredDate.format('DD/MM/YYYY'));
         formData.append('benefits', JSON.stringify(productBenefits));
-        formData.append('variants', JSON.stringify(variants));
-        formData.append('ingredients', JSON.stringify(ingredients));
+        formData.append('variants', JSON.stringify(variants.map(({ _id, ...rest }) => rest)));
+        formData.append('ingredients', JSON.stringify(ingredients.map(({ _id, ...rest }) => rest)));
 
         // Append images
         for (let index = 0; index < images.length; index++) {
@@ -465,7 +465,7 @@ const CreateProduct = () => {
                         {/* Variants table */}
                         <PaginationTable
                             rows={variants}
-                            columns={['volume', 'price', 'stock']}
+                            columns={['id', 'volume', 'price', 'stock']}
                             onDelete={deleteVariant}
                         />
                     </Grid2>
@@ -513,7 +513,7 @@ const CreateProduct = () => {
                     <Grid2 size={8}>
                         <PaginationTable
                             rows={ingredients}
-                            columns={['name', 'percentage', 'usageInstructions']}
+                            columns={['id', 'name', 'percentage', 'usageInstructions']}
                             onDelete={deleteIngredient}
                         />
                     </Grid2>

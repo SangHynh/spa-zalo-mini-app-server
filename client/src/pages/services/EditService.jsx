@@ -211,9 +211,6 @@ const EditService = () => {
 
     return (
         <Container className="m-5">
-            <Backdrop open={loading} sx={{ color: '#fff', zIndex: 9999 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
 
             <Typography variant="h5" gutterBottom>
                 New Service

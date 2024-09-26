@@ -3,7 +3,7 @@ import axios from "../utils/axios";
 // CUSTOMERS
 export const apiGetCustomers = () =>
   axios({
-    url: "/api/customers/",
+    url: "/api/users/",
     method: "GET",
   });
 

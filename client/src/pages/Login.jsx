@@ -61,7 +61,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       // console.log(email, password)
-      const response = await apiLogin({ email, password });
+      const response = await apiLogin({ email, password, role: 'admin' });
 
       // console.log(response)
 
