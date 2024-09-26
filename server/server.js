@@ -25,17 +25,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     // Nếu không có origin (ví dụ như khi gọi từ Postman), cho phép tất cả
+//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: function(origin, callback) {
-    // Nếu không có origin (ví dụ như khi gọi từ Postman), cho phép tất cả
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+  origin: '*', // Cho phép tất cả các nguồn
+  credentials: true 
 }));
+
 
 app.use(loggingMiddleware);
 app.use("/auth", authRoute);
