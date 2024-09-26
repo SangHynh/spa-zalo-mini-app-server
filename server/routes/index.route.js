@@ -6,6 +6,7 @@ const category = require('./categories')
 const cart = require('./carts')
 const service = require('./services')
 const voucher = require('./vouchers')
+const payment = require('./payments')
 const { verifyAccessToken } = require("../configs/jwt.config");
 
 
@@ -18,6 +19,7 @@ const initRoutes = (app) => {
     app.use('/api/carts', verifyAccessToken, cart)
     app.use('/api/services', verifyAccessToken, service)
     app.use('/api/vouchers', verifyAccessToken, voucher)
+    app.use('/api/payments', payment)
 }
 
 module.exports = initRoutes

@@ -5,9 +5,12 @@ class CartController {
     // GET CART BY USER ID
     async getCartByUserId(req, res) {
         try {
-            // const { userId } = req.payload.userId
-            const { userId } = req.params.id;
-            const response = await User.findById(userId).populate("carts");
+            const { accountId } = req.payload.aud
+            // const { userId } = req.params.id;
+            const response = await User.findOne({ accountId: accountId }).populate("carts");
+
+            if (!response) return res.status(404).json("User not found")
+
             return res.status(200).json(response)
         } catch (error) {
             return res.status(500).json({
@@ -16,25 +19,25 @@ class CartController {
             });
         }
     }
-    
+
     // ADD CART'S ITEM
     async addCartItem(req, res) {
         try {
-            const { productId, quantity } = req.body;
+            const { productId } = req.params.id;
+            
+            const { quantity } = req.body;
 
-            // const { userId } = req.payload.userId
-            const { userId } = req.params.id;
+            const { accountId } = req.payload.aud
+            // const { userId } = req.params.id;
+            const user = await User.findOne({ accountId: accountId });
 
-            const user = await User.findById(userId);
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
+            if (!user) return res.status(404).json("User not found")
 
             const product = await Product.findById(productId)
             if (!product) {
                 return res.status(404).json({ message: 'Product not found' })
             }
-            
+
             const existingItem = user.carts.find(item => item.productId.toString() === productId);
             if (existingItem) {
                 existingItem.quantity += quantity;
@@ -60,18 +63,49 @@ class CartController {
         }
     }
 
+    // REDUCE CART'S ITEM
+    async reduceCartItem(req, res) {
+        try {
+            const { productId } = req.params.id;
+            const { quantity } = req.body;
+            const { accountId } = req.payload.aud;
+
+            const user = await User.findOne({ accountId: accountId });
+            if (!user) return res.status(404).json("User not found");
+
+            const cartItem = user.carts.find(item => item.productId.toString() === productId);
+            if (!cartItem) {
+                return res.status(404).json({ message: 'Product not found in cart' });
+            }
+
+            if (cartItem.quantity - quantity < 1) {
+                return res.status(400).json({ message: 'Cannot reduce quantity below 1 (Call removeCartItem)' });
+            }
+
+            cartItem.quantity -= quantity;
+
+            await user.save();
+
+            return res.status(200).json({ message: 'Cart item quantity reduced', carts: user.carts });
+        } catch (error) {
+            return res.status(500).json({
+                error: error,
+                message: 'An error occurred while reducing cart item quantity'
+            });
+        }
+    }
+
+
     // REMOVE CART'S ITEM
     async removeCartItem(req, res) {
         try {
-            const { productId } = req.body;
+            const { productId } = req.params.id;
 
-            // const { userId } = req.payload.userId
-            const { userId } = req.params.id;
+            const { accountId } = req.payload.aud
+            // const { userId } = req.params.id;
+            const user = await User.findOne({ accountId: accountId });
 
-            const user = await User.findById(userId);
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
+            if (!user) return res.status(404).json("User not found")
 
             user.carts = user.carts.filter(item => item.productId.toString() !== productId);
 

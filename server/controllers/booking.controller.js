@@ -19,7 +19,11 @@ class BookingController {
     // GET BOOKING HISTORIES BY USERID
     async getBookingHistoriesByUserId(req, res) {
         try {
-            const response = await BookingHistory.find({ where: { customerId: req.params.id} });
+            const user = await User.findOne({ accountId: req.payload.aud })
+
+            if (!user) return res.status(404).json({ message: "User not found" })
+
+            const response = await BookingHistory.find({ where: { customerId: user._id } });
             return res.status(200).json(response)
         } catch (error) {
             return res.status(500).json({
@@ -45,11 +49,12 @@ class BookingController {
     // CREATE BOOKING
     async createBooking(req, res) {
         try {
-            // const { userId } = req.payload.userId
-            const { userId } = req.params.id
+            const { accountId } = req.payload.aud
+            // const { userId } = req.params.id
+
             const { serviceId } = req.body.serviceId
-            
-            const user = await User.findOne({ where: { id: userId } });
+
+            const user = await User.findOne({ where: { accountId: accountId } });
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -65,7 +70,7 @@ class BookingController {
 
             const booking = new BookingHistory({
                 ...req.body,
-                customerId: userId,
+                customerId: user._id,
                 serviceId: serviceId,
                 serviceName: service.name
             })
@@ -89,6 +94,64 @@ class BookingController {
     async updateBooking(req, res) {
         try {
             // TODO:
+            const { accountId } = req.payload.aud;
+            const { bookingId } = req.params.id;
+            const { serviceId, date, ...updateData } = req.body;
+
+            const user = await User.findOne({ where: { accountId } });
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const booking = await BookingHistory.findOne({ _id: bookingId, customerId: user._id });
+            if (!booking) {
+                return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            if (serviceId) {
+                const service = await Service.findOne({ where: { id: serviceId } });
+                if (!service) {
+                    return res.status(404).json({ message: 'Service not found' });
+                }
+                booking.serviceId = serviceId;
+                booking.serviceName = service.name;
+            }
+
+            if (date) {
+                booking.date = moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+            }
+
+            Object.assign(booking, updateData);
+
+            // Save the updated booking
+            const updatedBooking = await booking.save();
+            if (!updatedBooking) {
+                return res.status(400).json({ message: 'Cannot update booking' });
+            }
+
+            return res.status(200).json(updatedBooking);
+        } catch (error) {
+            return res.status(500).json({
+                error: error,
+                message: 'An error occurred'
+            });
+        }
+    }
+
+    // CANCEL BOOKING (FOR CUSTOMER)
+    async cancelBooking(req, res) {
+        try {
+            const booking = await BookingHistory.findOne(req.params.id);
+
+            if (!booking) return res.status(404).json({ message: 'Booking not found' })
+
+            booking.status = 'cancelled';
+
+            const savedBooking = await booking.save()
+
+            if (!savedBooking) return res.status(400).json({ message: 'Cannot cancel booking' })
+
+            return res.status(200).json(savedBooking)
         } catch (error) {
             return res.status(500).json({
                 error: error,
@@ -101,6 +164,17 @@ class BookingController {
     async updateBookingStatus(req, res) {
         try {
             // TODO:
+            const booking = await BookingHistory.findOne(req.params.id);
+
+            if (!booking) return res.status(404).json({ message: 'Booking not found' })
+
+            booking.status = req.body.status;
+
+            const savedBooking = await booking.save()
+
+            if (!savedBooking) return res.status(400).json({ message: 'Cannot update booking status' })
+
+            return res.status(200).json(savedBooking)
         } catch (error) {
             return res.status(500).json({
                 error: error,
@@ -113,6 +187,20 @@ class BookingController {
     async removeBooking(req, res) {
         try {
             // TODO:
+            const { bookingId } = req.params.id;
+
+            const booking = await BookingHistory.findById(bookingId);
+            if (!booking) {
+                return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            // Remove the booking
+            const deletedBooking = await BookingHistory.deleteOne(bookingId);
+            if (!deletedBooking) {
+                return res.status(400).json({ message: 'Cannot delete booking' });
+            }
+
+            return res.status(200).json({ message: 'Booking removed successfully' });
         } catch (error) {
             return res.status(500).json({
                 error: error,
