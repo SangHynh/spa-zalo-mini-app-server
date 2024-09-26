@@ -1,9 +1,29 @@
 
 GET http://localhost:8080
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjY3NTc5MTcsImV4cCI6MTcyNjc2MTUxNywiYXVkIjoiNjZlYzNjMTFiOGY3MTAzNDliNDZmNzUwIn0.o2Ijtx3zbfU4hUjZGg1o59tc0HYK9_9gTPcKNOCAnk8
+Authorization: Bearer token_here
 
-### REGISTER ROUTE
+### REGISTER ROUTE USER
 POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "zaloId": "123456789",
+    "role": "user",
+    "name": "Nguyễn Văn A",
+    "urlImage": ""
+}
+
+### REGISTER ROUTE ADMIN CMS
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "role": "admin"
+}
+
+### LOGIN ROUTE USER
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
@@ -11,14 +31,16 @@ Content-Type: application/json
     "role": "user"
 }
 
-### LOGIN ROUTE
+### LOGIN ROUTE ADMIN
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@gmail.com",
-    "password": "123456"
+    "email": "admin@gmail.com",
+    "password": "123456",
+    "role": "admin"
 }
+
 
 ### REFRESH TOKEN
 POST http://localhost:8080/auth/refresh-token
@@ -33,5 +55,5 @@ DELETE http://localhost:8080/auth/logout
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjY3MzU2OTAsImV4cCI6MTcyNzM0MDQ5MCwiYXVkIjoiNjZlOWIxNDY1NjE2OGY4OGEzMzBkZTg1In0.nYp5At1iy9GlHpe51WjMnv-M4N23lbghIgUEJ7lRQhE"
+    "refreshToken": ""
 }
