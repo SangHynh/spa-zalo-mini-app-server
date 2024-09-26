@@ -94,7 +94,7 @@ const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) throw createError.BadRequest();
-    const userId = await verifyRefreshToken(refreshToken);
+    const userId = await verifyRefreshToken(refreshToken);    
     const accessToken = await signAccessToken(userId);
     const refToken = await signRefreshToken(userId);
     res.send({ accessToken: accessToken, refreshToken: refToken });

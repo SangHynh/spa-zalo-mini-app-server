@@ -12,4 +12,5 @@ const initRoutes = (app) => {
     app.use('/api/users',verifyAccessToken, user)
 }
 
+
 module.exports = initRoutes

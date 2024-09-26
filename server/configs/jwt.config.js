@@ -35,7 +35,10 @@ module.exports = {
           err.name === "JsonWebTokenError" ? "Unauthorized" : err.message;
         return next(createError.Unauthorized(message));
       }
+      const userId = payload.aud;
       req.payload = payload;
+      console.log("user ID: ", userId);
+      resolve(payload);
       next();
     });
   },
@@ -95,7 +98,7 @@ module.exports = {
                 return resolve(userId);
               }
               // refresh token cũ bị thay thế bởi token mới nên không hợp lệ
-              reject(createError.Unauthorized("Token is expired")); 
+              reject(createError.Unauthorized("Token is expired"));
             })
             .catch((err) => {
               console.log(err.message);
