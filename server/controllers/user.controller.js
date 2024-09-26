@@ -114,6 +114,37 @@ const getUserInfo = async (req, res) => {
   }
 };
 
+// Cập nhật thông tin người dùng theo ID Zalo
+const updateUserInfo = async (req, res) => {
+  const { zaloId } = req.params; 
+  const { name, phone } = req.body;   
+  try {
+    // Tìm kiếm người dùng theo zaloId từ mô hình Account
+    const account = await Account.findOne({ zaloId });
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+    // Tìm kiếm người dùng theo accountId từ mô hình User
+    const user = await User.findOne({ accountId: account._id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    await user.save();
+    const userInfo = {
+      _id: user._id,
+      accountId: user.accountId,
+      name: user.name,
+      phone: user.phone
+    };
+    res.status(200).json({ message: "User info updated successfully", userInfo });
+  } catch (error) {
+    console.error("Error updating user:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 
 
@@ -123,5 +154,6 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
-  getUserInfo
+  getUserInfo,
+  updateUserInfo
 };
