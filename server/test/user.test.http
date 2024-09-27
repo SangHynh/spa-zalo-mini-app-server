@@ -1,0 +1,13 @@
+### GET USER INFORMATION
+GET https://localhost:8080/api/users/user-info/12345648999
+Authorization: Bearer token_here
+
+### UPDATE USER INFORMATION
+PUT http://localhost:8080/api/users/update-user-info/12345648999
+Content-Type: application/json
+Authorization: Bearer token_here
+
+{
+    "name": "Nguyen Van B",
+    "phone": "0123456789"
+}

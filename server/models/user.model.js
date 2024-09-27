@@ -21,11 +21,16 @@ const userSchema = new mongoose.Schema(
     referralCode: { type: String },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
-  },
-  {
-    timestamps: true,
-  }
-);
+    productSuggestions: [
+        {
+            productId: { type: String },  // ID của sản phẩm
+            productName: { type: String },  // Tên sản phẩm
+            suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
+        }
+    ]
+}, {
+    timestamps: true
+});
 
 const User = mongoose.model("User", userSchema);
 

@@ -24,6 +24,9 @@ const AccountSchema = new Schema({
     enum: ["admin", "user"],
     required: true,
   },
+  user:{
+    
+  }
 });
 
 // Index cho email chỉ khi role là admin và email không null

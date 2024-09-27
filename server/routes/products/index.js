@@ -7,7 +7,6 @@ const MAX_FILES = 10;
 // GET
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
-
 // POST 
 router.post('/', (req, res, next) => {
     req.folder = process.env.PRODUCT_FOLDER; // Folder name in cloud
