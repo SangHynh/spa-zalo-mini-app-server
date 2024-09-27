@@ -16,7 +16,7 @@ class CartController {
             return res.status(200).json({ carts: response.carts })
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -59,7 +59,7 @@ class CartController {
             return res.status(200).json({ message: 'Product added to cart', carts: user.carts });
         } catch (error) {
             return res.status(400).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -91,12 +91,11 @@ class CartController {
             return res.status(200).json({ message: 'Cart item quantity reduced', carts: user.carts });
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred while reducing cart item quantity'
             });
         }
     }
-
 
     // REMOVE CART'S ITEM
     async removeCartItem(req, res) {
@@ -116,7 +115,7 @@ class CartController {
             return res.status(200).json({ message: 'Product removed from cart', carts: user.carts });
         } catch (error) {
             return res.status(400).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }

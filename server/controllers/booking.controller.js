@@ -140,7 +140,7 @@ class BookingController {
             return res.status(200).json(updatedBooking);
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -162,7 +162,7 @@ class BookingController {
             return res.status(200).json(savedBooking)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -185,7 +185,7 @@ class BookingController {
             return res.status(200).json(savedBooking)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -211,7 +211,7 @@ class BookingController {
             return res.status(200).json({ message: 'Booking removed successfully' });
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }

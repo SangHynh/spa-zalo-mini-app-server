@@ -9,7 +9,7 @@ class ServiceController {
             return res.status(200).json(services)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             })
         }
@@ -25,7 +25,7 @@ class ServiceController {
             return res.status(200).json(service)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             })
         }

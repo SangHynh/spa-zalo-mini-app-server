@@ -1,4 +1,5 @@
 const Voucher = require("../models/voucher.model")
+const moment = require('moment');
 
 class VoucherController {
     // GET VOUCHERS
@@ -24,7 +25,7 @@ class VoucherController {
             return res.status(200).json({ voucher });
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -46,10 +47,17 @@ class VoucherController {
             });
 
             const savedVoucher = await voucher.save();
+
+            if (!savedVoucher) {
+                return res.status(400).json({
+                    message: 'Cannot create voucher'
+                });
+            }
+
             return res.status(201).json(savedVoucher);
         } catch (error) {
-            return res.status(400).json({
-                error: error,
+            return res.status(500).json({
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -81,7 +89,7 @@ class VoucherController {
             return res.status(200).json(updatedVoucher);
         } catch (error) {
             return res.status(400).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -99,7 +107,7 @@ class VoucherController {
             return res.status(200).json({ message: 'Voucher deleted successfully' });
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }

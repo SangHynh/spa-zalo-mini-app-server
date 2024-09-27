@@ -10,7 +10,7 @@ class CategoryController {
             return res.status(200).json(categories)
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             })
         }
@@ -26,7 +26,7 @@ class CategoryController {
             return res.status(200).json(category);
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -46,7 +46,7 @@ class CategoryController {
             return res.status(201).json(savedCategory);
         } catch (error) {
             return res.status(400).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -85,7 +85,7 @@ class CategoryController {
             return res.status(200).json(updatedCategory);
         } catch (error) {
             return res.status(400).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
@@ -103,7 +103,7 @@ class CategoryController {
             return res.status(200).json({ message: 'Category deleted successfully' });
         } catch (error) {
             return res.status(500).json({
-                error: error,
+                error: error.message,
                 message: 'An error occurred'
             });
         }
