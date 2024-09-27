@@ -6,10 +6,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Account",
       required: true,
-      unique: true, 
+      unique: true,
     },
     name: { type: String, required: true },
-    urlImage: {type: String, default: ""},
+    urlImage: { type: String, default: "" },
     phone: { type: String, default: "" },
     membershipTier: {
       type: String,
@@ -22,14 +22,21 @@ const userSchema = new mongoose.Schema(
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
     productSuggestions: [
-        {
-            productId: { type: String },  // ID của sản phẩm
-            productName: { type: String },  // Tên sản phẩm
-            suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
-        }
-    ]
-}, {
-    timestamps: true
+      {
+        productId: { type: String },  // ID của sản phẩm
+        productName: { type: String },  // Tên sản phẩm
+        suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
+      }
+    ],
+    carts: [{
+      productId: { type: mongoose.Schema.Types.ObjectId },
+      productName: { type: String, required: true },
+      price: { type: Number, required: true },
+      quantity: { type: Number, required: true, min: 1 },
+      images: { type: [String], default: [] },
+    }]
+  }, {
+  timestamps: true
 });
 
 const User = mongoose.model("User", userSchema);

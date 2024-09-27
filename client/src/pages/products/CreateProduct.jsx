@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,7 +7,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { benefits, categories, VisuallyHiddenInput } from "../../utils/constants";
+import { benefits, VisuallyHiddenInput } from "../../utils/constants";
 import PaginationTable from "../../components/tables/PaginationTable";
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { apiCreateProducts } from "../../apis/products";
@@ -19,6 +19,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import path from "../../utils/path";
+import { apiGetCategories } from "../../apis/categories";
+import PreviewProduct from "./PreviewProduct";
+import { useLoading } from "../../context/LoadingProvider";
 
 const CreateProduct = () => {
     // HANDLE IMAGES UPLOAD
@@ -53,7 +56,7 @@ const CreateProduct = () => {
     const createVariant = () => {
         if (variantVolume && variantPrice && variantStock) {
             const newVariant = {
-                id: variantId, // Generate unique ID for each variant
+                _id: variantId, // Generate unique ID for each variant
                 volume: variantVolume,
                 price: variantPrice,
                 stock: variantStock
@@ -87,7 +90,7 @@ const CreateProduct = () => {
     const createIngredient = () => {
         if (ingredientName && ingredientPercentage) {
             const newIngredient = {
-                id: ingredientId,
+                _id: ingredientId,
                 name: ingredientName,
                 percentage: ingredientPercentage,
                 usageInstructions: ingredientUsageInstructions || 'N/A' // Default if not provided
@@ -108,12 +111,39 @@ const CreateProduct = () => {
         setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
     };
 
+    // FETCH CATEGORIES
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const response = await apiGetCategories()
+            if (response.status === 200) setCategories(response.data)
+        }
+
+        fetchCategories()
+    }, [])
+
+    // Display sub category
+    const handleCategoryChange = (event) => {
+        const selectedCategory = event.target.value;
+        setProductCategory(selectedCategory);
+
+        const category = categories.find(cat => cat._id === selectedCategory._id);
+        setSubCategories(category ? category.subCategory : []);
+        setProductSubCategory('');
+
+        console.log(productCategory)
+        console.log(productSubCategory)
+    };
+
     // PREVIEW PRODUCT
     // Calculate total stock
     const [productName, setProductName] = useState('')
     const [productDescription, setProductDescription] = useState('')
     const [productAmount, setProductAmount] = useState('')
     const [productCategory, setProductCategory] = useState('')
+    const [productSubCategory, setProductSubCategory] = useState('')
     const [productBenefits, setProductBenefits] = useState([])
     const [productExpiredDate, setProductExpiredDate] = useState(dayjs())
 
@@ -126,23 +156,26 @@ const CreateProduct = () => {
     const handleClose = () => setOpen(false);
 
     // SUBMIT
-    const [loading, setLoading] = useState(false);
+    const { showLoading, hideLoading } = useLoading();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        showLoading();
 
         const formData = new FormData();
         formData.append('name', productName);
         formData.append('description', productDescription);
         formData.append('price', productAmount);
-        formData.append('category', productCategory);
+        formData.append('categoryId', productCategory._id);
+        formData.append('category', productCategory.name);
+        formData.append('subCategoryId', productSubCategory._id);
+        formData.append('subCategory', productSubCategory.name);
         formData.append('stock', calculateTotalStock());
         formData.append('expiryDate', productExpiredDate.format('DD/MM/YYYY'));
         formData.append('benefits', JSON.stringify(productBenefits));
-        formData.append('variants', JSON.stringify(variants));
-        formData.append('ingredients', JSON.stringify(ingredients));
+        formData.append('variants', JSON.stringify(variants.map(({ _id, ...rest }) => rest)));
+        formData.append('ingredients', JSON.stringify(ingredients.map(({ _id, ...rest }) => rest)));
 
         // Append images
         for (let index = 0; index < images.length; index++) {
@@ -187,7 +220,7 @@ const CreateProduct = () => {
                     cancelButtonText: "Cancel",
                 }).then(({ isConfirmed }) => {
                     if (isConfirmed) {
-                        navigate(`/${path.ADMIN_LAYOUT}/${path.MANAGE_PRODUCTS}`)
+                        navigate(`/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`)
                     } else {
                         window.location.reload();
                     }
@@ -197,15 +230,12 @@ const CreateProduct = () => {
             console.error('Error creating product:', error);
             // Handle error (e.g., show an error message)
         } finally {
-            setLoading(false);
+            hideLoading();
         }
     };
 
     return (
         <Container className="m-5">
-            <Backdrop open={loading} sx={{ color: '#fff', zIndex: 9999 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
 
             <Typography variant="h5" gutterBottom>
                 New Product
@@ -294,27 +324,50 @@ const CreateProduct = () => {
                             />
                         </FormControl>
                     </Grid2>
-                    <Grid2 size={4}>
+                    <Grid2 size={6}>
                         {/* Category */}
                         <TextField
-                            id="productCategory"
                             select
                             fullWidth
                             label="Category"
-                            defaultValue="Category"
                             variant="standard"
                             margin="dense"
                             value={productCategory}
-                            onChange={(e) => setProductCategory(e.target.value)}
+                            onChange={handleCategoryChange}
                         >
-                            {categories.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
+                            {categories.map((category) => (
+                                <MenuItem key={category._id} value={category}>
+                                    {category.name}
                                 </MenuItem>
                             ))}
                         </TextField>
                     </Grid2>
-                    <Grid2 size={4}>
+                    <Grid2 size={6}>
+                        {/* SubCategory */}
+                        <TextField
+                            select
+                            fullWidth
+                            label="SubCategory"
+                            variant="standard"
+                            margin="dense"
+                            value={productSubCategory}
+                            onChange={(e) => setProductSubCategory(e.target.value)}
+                            disabled={!productCategory}
+                        >
+                            {!productCategory ? (
+                                <MenuItem value="">
+                                    Choose category first
+                                </MenuItem>
+                            ) : (
+                                subCategories.map((subCategory) => (
+                                    <MenuItem key={subCategory._id} value={subCategory}>
+                                        {subCategory.name}
+                                    </MenuItem>
+                                ))
+                            )}
+                        </TextField>
+                    </Grid2>
+                    <Grid2 size={6}>
                         {/* Benefits */}
                         <Autocomplete
                             multiple
@@ -351,7 +404,7 @@ const CreateProduct = () => {
                             )}
                         />
                     </Grid2>
-                    <Grid2 size={4}>
+                    <Grid2 size={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                                 <DatePicker
@@ -412,7 +465,7 @@ const CreateProduct = () => {
                         {/* Variants table */}
                         <PaginationTable
                             rows={variants}
-                            columns={['volume', 'price', 'stock']}
+                            columns={['id', 'volume', 'price', 'stock']}
                             onDelete={deleteVariant}
                         />
                     </Grid2>
@@ -460,7 +513,7 @@ const CreateProduct = () => {
                     <Grid2 size={8}>
                         <PaginationTable
                             rows={ingredients}
-                            columns={['name', 'percentage', 'usageInstructions']}
+                            columns={['id', 'name', 'percentage', 'usageInstructions']}
                             onDelete={deleteIngredient}
                         />
                     </Grid2>
@@ -485,111 +538,21 @@ const CreateProduct = () => {
                 </Grid2>
 
                 {/* Preview Product Before Create */}
-                <Modal open={open} onClose={handleClose}>
-                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '75%', height: '80vh', bgcolor: 'background.paper', boxShadow: 24, p: 4, overflow: 'auto' }}>
-                        <Typography variant="h6" component="h2">
-                            Product Preview
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Name:</strong> {productName}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Total Stock:</strong> {calculateTotalStock()}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Amount:</strong> {productAmount} VND
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Category:</strong> {productCategory}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Expired Date:</strong> {productExpiredDate.format('DD/MM/YYYY')}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Description:</strong> {productDescription}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            <strong>Benefits:</strong> {productBenefits.join(', ')}
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}><strong>Images:</strong></Typography>
-                        {images.length > 0 && (
-                            <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
-                                {images.map((imgSrc, index) => (
-                                    <ImageListItem key={index}>
-                                        <img src={imgSrc} alt={`Uploaded ${index}`} loading="lazy" />
-                                    </ImageListItem>
-                                ))}
-                            </ImageList>
-                        )}
-                        <Typography sx={{ mt: 2 }}><strong>Variants:</strong></Typography>
-                        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                            {variants.length > 0 ? variants.map((variant) => (
-                                // <li key={variant.id}>
-                                //     {variant.volume} - {variant.stock} in stock, {variant.price} VNĐ
-                                // </li>
-                                <ListItem key={variant.id}>
-                                    <ListItemText
-                                        primary={
-                                            <React.Fragment>
-                                                <Typography>
-                                                    {variant.volume} - {variant.stock} in stock
-                                                </Typography>
-                                            </React.Fragment>
-                                        }
-                                        secondary={
-                                            <React.Fragment>
-                                                <Typography
-                                                    component="span"
-                                                    variant="body2"
-                                                    sx={{ color: 'text.primary', display: 'inline' }}
-                                                >
-                                                    Price: {variant.price} VNĐ
-                                                </Typography>
-                                            </React.Fragment>
-                                        }
-                                    />
-                                </ListItem>
-                            )) : 'No variants added.'}
-                        </List>
-                        <Typography sx={{ mt: 2 }}><strong>Ingredients:</strong></Typography>
-                        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                            {ingredients.length > 0 ? ingredients.map((ingredient) => (
-                                <ListItem key={ingredient.id}>
-                                    <ListItemText
-                                        primary={
-                                            // ingredient.name
-                                            <React.Fragment>
-                                                <Typography>
-                                                    {ingredient.name} - {ingredient.percentage}%
-                                                </Typography>
-                                            </React.Fragment>
-                                        }
-                                        secondary={
-                                            <React.Fragment>
-                                                <Typography
-                                                    component="span"
-                                                    variant="body2"
-                                                    sx={{ color: 'text.primary', display: 'inline' }}
-                                                >
-                                                    {/* {ingredient.percentage}% */}
-                                                    Usage: {ingredient.usageInstructions}
-                                                </Typography>
-                                            </React.Fragment>
-                                        }
-                                    />
-                                </ListItem>
-                            )) : 'No ingredients added.'}
-                        </List>
-
-                        <Grid2 container fullWidth spacing={2} sx={{ mt: 2, justifyContent: 'flex-end' }}>
-                            <Grid2>
-                                <Button onClick={handleClose} sx={{ mt: 2 }} variant="outlined">
-                                    Close
-                                </Button>
-                            </Grid2>
-                        </Grid2>
-                    </Box>
-                </Modal>
+                <PreviewProduct
+                    open={open}
+                    handleClose={handleClose}
+                    productName={productName}
+                    productAmount={productAmount}
+                    productCategory={productCategory}
+                    productSubCategory={productSubCategory}
+                    productExpiredDate={productExpiredDate}
+                    productDescription={productDescription}
+                    productBenefits={productBenefits}
+                    images={images}
+                    variants={variants}
+                    ingredients={ingredients}
+                    calculateTotalStock={calculateTotalStock}
+                />
             </form>
 
         </Container>
