@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../../controllers/user.controller');
+const productController = require('../../controllers/product.controller');
 const {validateUpdateUserInfo} = require('../../validations/user.validation');
 const { verifyAccessToken } = require('../../configs/jwt.config')
 
-const productController = require('../../controllers/product.controller');
 router.post('/', userController.createUser); 
 router.get('/', userController.getAllUsers);   
 router.get('/:id', userController.getUserById);  

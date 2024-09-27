@@ -24,7 +24,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+// const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 // app.use(cors({
 //   origin: function(origin, callback) {
 //     // Nếu không có origin (ví dụ như khi gọi từ Postman), cho phép tất cả

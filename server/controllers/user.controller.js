@@ -143,7 +143,7 @@ const updateUserInfo = async (req, res) => {
     console.error("Error updating user:", error.message);
   }
 };
-exports.suggestProductsForUser = async (req, res) => {
+const suggestProductsForUser = async (req, res) => {
   try {
     // Lấy thông tin của khách hàng hiện tại từ req.params.id
     const customerId = req.params.id;
@@ -215,5 +215,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserInfo,
-  updateUserInfo
+  updateUserInfo,
+  suggestProductsForUser
 };
