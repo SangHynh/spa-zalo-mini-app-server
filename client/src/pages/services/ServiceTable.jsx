@@ -56,7 +56,7 @@ function Row(props) {
       icon: "warning",
       title: "Bạn có chắc muốn xóa dịch vụ này, thao tác sẽ không thể hoàn trả",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.isConfirmed) {
         showLoading();
@@ -72,7 +72,7 @@ function Row(props) {
         hideLoading();
       }
     });
-  }
+  };
 
   return (
     <>
@@ -98,19 +98,28 @@ function Row(props) {
               align="right"
               component="th"
               scope="row"
+              sx={{
+                maxWidth: "100px",
+                whiteSpace: "nowrap",
+                // overflowX: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
               className="relative cursor-pointer"
               onClick={() => handleCopy(row._id)}
             >
               {row._id}
             </TableCell>
-            <TableCell align="right" className="relative">
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "300px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
               {row.name}
-            </TableCell>
-            <TableCell align="right" className="relative">
-              {row.category}
-            </TableCell>
-            <TableCell align="right" className="relative">
-              {row.subCategory}
             </TableCell>
             <TableCell
               align="right"
@@ -121,9 +130,39 @@ function Row(props) {
               }}
               className="relative"
             >
+              {row.category}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.subCategory}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                maxWidth: "400px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
               {row.description}
             </TableCell>
-            <TableCell align="right" className="relative">
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "150px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
               {row.price}
             </TableCell>
             <TableCell
@@ -132,7 +171,10 @@ function Row(props) {
             >
               <div className="flex items-center justify-center gap-2">
                 <Tooltip title="Edit">
-                  <IconButton color="primary" href={`${path.EDIT_SERVICE}/${row._id}`}>
+                  <IconButton
+                    color="primary"
+                    href={`${path.EDIT_SERVICE}/${row._id}`}
+                  >
                     <EditIcon />
                   </IconButton>
                 </Tooltip>

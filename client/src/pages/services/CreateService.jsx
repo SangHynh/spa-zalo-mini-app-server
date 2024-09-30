@@ -1,29 +1,53 @@
 import React, { useEffect, useState } from "react";
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { Autocomplete, Backdrop, Checkbox, CircularProgress, Container, FormControl, Grid2, IconButton, ImageList, ImageListItem, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Modal, styled, TextField } from "@mui/material";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import {
+  Autocomplete,
+  Backdrop,
+  Checkbox,
+  CircularProgress,
+  Container,
+  FormControl,
+  Grid2,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  Input,
+  InputAdornment,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  MenuItem,
+  Modal,
+  styled,
+  TextField,
+} from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { benefits, VisuallyHiddenInput } from "../../utils/constants";
 import PaginationTable from "../../components/tables/PaginationTable";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { apiCreateServices } from "../../apis/services";
 import Swal from "sweetalert2";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import PreviewService from "./PreviewService";
 import { useLoading } from "../../context/LoadingProvider";
+import { useTranslation } from "react-i18next";
 
 const CreateService = () => {
+  const { t } = useTranslation();
+
   // HANDLE IMAGES UPLOAD
   // State to hold uploaded image files
   const [images, setImages] = useState([]);
@@ -42,7 +66,9 @@ const CreateService = () => {
   };
 
   const handleRemoveImage = (indexToRemove) => {
-    setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
+    setImages((prevImages) =>
+      prevImages.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   // FETCH CATEGORIES
@@ -51,32 +77,32 @@ const CreateService = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await apiGetCategories()
-      if (response.status === 200) setCategories(response.data)
-    }
+      const response = await apiGetCategories();
+      if (response.status === 200) setCategories(response.data);
+    };
 
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   // Display sub category
   const handleCategoryChange = (event) => {
     const selectedCategory = event.target.value;
     setServiceCategory(selectedCategory);
 
-    const category = categories.find(cat => cat._id === selectedCategory._id);
+    const category = categories.find((cat) => cat._id === selectedCategory._id);
     setSubCategories(category ? category.subCategory : []);
-    setServiceSubCategory('');
+    setServiceSubCategory("");
 
-    console.log(serviceCategory)
-    console.log(serviceSubCategory)
+    console.log(serviceCategory);
+    console.log(serviceSubCategory);
   };
 
   // PREVIEW SERVICE
-  const [serviceName, setServiceName] = useState('')
-  const [serviceDescription, setServiceDescription] = useState('')
-  const [serviceAmount, setServiceAmount] = useState('')
-  const [serviceCategory, setServiceCategory] = useState('')
-  const [serviceSubCategory, setServiceSubCategory] = useState('')
+  const [serviceName, setServiceName] = useState("");
+  const [serviceDescription, setServiceDescription] = useState("");
+  const [serviceAmount, setServiceAmount] = useState("");
+  const [serviceCategory, setServiceCategory] = useState("");
+  const [serviceSubCategory, setServiceSubCategory] = useState("");
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -91,13 +117,13 @@ const CreateService = () => {
     showLoading();
 
     const formData = new FormData();
-    formData.append('name', serviceName);
-    formData.append('description', serviceDescription);
-    formData.append('price', serviceAmount);
-    formData.append('categoryId', serviceCategory._id);
-    formData.append('category', serviceCategory.name);
-    formData.append('subCategoryId', serviceSubCategory._id);
-    formData.append('subCategory', serviceSubCategory.name);
+    formData.append("name", serviceName);
+    formData.append("description", serviceDescription);
+    formData.append("price", serviceAmount);
+    formData.append("categoryId", serviceCategory._id);
+    formData.append("category", serviceCategory.name);
+    formData.append("subCategoryId", serviceSubCategory._id);
+    formData.append("subCategory", serviceSubCategory.name);
 
     // Append images
     for (let index = 0; index < images.length; index++) {
@@ -110,13 +136,13 @@ const CreateService = () => {
       // Kiểm tra định dạng của hình ảnh
       const type = blob.type; // Lấy loại MIME (ví dụ: image/jpeg, image/png)
 
-      let extension = '';
-      if (type === 'image/jpeg') {
-        extension = 'jpg';
-      } else if (type === 'image/png') {
-        extension = 'png';
-      } else if (type === 'image/gif') {
-        extension = 'gif';
+      let extension = "";
+      if (type === "image/jpeg") {
+        extension = "jpg";
+      } else if (type === "image/png") {
+        extension = "png";
+      } else if (type === "image/gif") {
+        extension = "gif";
       } else {
         console.error("Unsupported image type:", type);
         continue; // Bỏ qua hình ảnh này nếu không phải định dạng hỗ trợ
@@ -130,7 +156,7 @@ const CreateService = () => {
       const response = await apiCreateServices(formData);
 
       // console.log(response.data)
-      console.log(response.status)
+      console.log(response.status);
 
       if (response.status === 201) {
         Swal.fire({
@@ -142,36 +168,37 @@ const CreateService = () => {
           cancelButtonText: "Cancel",
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
-            navigate(`/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`)
+            navigate(`/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`);
           } else {
             window.location.reload();
           }
         });
       }
     } catch (error) {
-      console.error('Error creating service:', error);
+      console.error("Error creating service:", error);
       // Handle error (e.g., show an error message)
     } finally {
       hideLoading();
     }
   };
 
+  const handleCancel = () => {
+    navigate(`/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`);
+  };
+
   return (
     <Container className="m-5">
-
       <Typography variant="h5" gutterBottom>
-        New Service
+        {t("new-service")}
       </Typography>
 
       <form onSubmit={handleSubmit}>
-
         {/* Name */}
         <TextField
           id="serviceName"
-          label="Service Name"
+          label={t("service-name")}
           variant="standard"
           fullWidth
-          placeholder="Service name..."
           margin="dense"
           value={serviceName}
           onChange={(e) => setServiceName(e.target.value)}
@@ -180,11 +207,10 @@ const CreateService = () => {
         {/* Description */}
         <TextField
           id="serviceDescription"
-          label="Description"
+          label={t("description")}
           multiline
           fullWidth
           rows={4}
-          placeholder="Description..."
           variant="standard"
           margin="dense"
           value={serviceDescription}
@@ -195,10 +221,12 @@ const CreateService = () => {
           <Grid2 size={12}>
             {/* Price */}
             <FormControl fullWidth margin="dense" variant="standard">
-              <InputLabel htmlFor="servicePrice">Amount</InputLabel>
+              <InputLabel htmlFor="servicePrice">{t("price")}</InputLabel>
               <Input
                 id="servicePrice"
-                endAdornment={<InputAdornment position="end">VNĐ</InputAdornment>}
+                endAdornment={
+                  <InputAdornment position="end">VNĐ</InputAdornment>
+                }
                 value={serviceAmount}
                 onChange={(e) => setServiceAmount(e.target.value)}
               />
@@ -209,7 +237,7 @@ const CreateService = () => {
             <TextField
               select
               fullWidth
-              label="Category"
+              label={t("category")}
               variant="standard"
               margin="dense"
               value={serviceCategory}
@@ -227,7 +255,7 @@ const CreateService = () => {
             <TextField
               select
               fullWidth
-              label="SubCategory"
+              label={t("sub-category")}
               variant="standard"
               margin="dense"
               value={serviceSubCategory}
@@ -235,9 +263,7 @@ const CreateService = () => {
               disabled={!serviceCategory}
             >
               {!serviceCategory ? (
-                <MenuItem value="">
-                  Choose category first
-                </MenuItem>
+                <MenuItem value="">Choose category first</MenuItem>
               ) : (
                 subCategories.map((subCategory) => (
                   <MenuItem key={subCategory._id} value={subCategory}>
@@ -257,7 +283,7 @@ const CreateService = () => {
               startIcon={<CloudUploadIcon />}
               sx={{ mt: 2 }}
             >
-              Upload files
+              {t("upload-files")}
               <VisuallyHiddenInput
                 type="file"
                 onChange={handleFileUpload}
@@ -271,7 +297,11 @@ const CreateService = () => {
               <ImageList sx={{ height: 250, mt: 2 }} cols={5} rowHeight={150}>
                 {images.map((imgSrc, index) => (
                   <ImageListItem key={index}>
-                    <img src={imgSrc} alt={`Uploaded ${index}`} loading="lazy" />
+                    <img
+                      src={imgSrc}
+                      alt={`Uploaded ${index}`}
+                      loading="lazy"
+                    />
 
                     <IconButton
                       sx={{
@@ -293,20 +323,25 @@ const CreateService = () => {
           </Grid2>
         </Grid2>
 
-        <Grid2 container fullWidth spacing={2} sx={{ mt: 2, justifyContent: 'flex-end' }}>
+        <Grid2
+          container
+          fullWidth
+          spacing={2}
+          sx={{ mt: 2, justifyContent: "flex-end" }}
+        >
           <Grid2>
             <Button type="submit" variant="contained" color="success">
-              Create
+              {t("create")}
             </Button>
           </Grid2>
           <Grid2>
             <Button variant="outlined" color="success" onClick={handleOpen}>
-              Preview
+              {t("preview")}
             </Button>
           </Grid2>
           <Grid2>
-            <Button variant="outlined" color="warning">
-              Cancel
+            <Button variant="outlined" color="warning" onClick={handleCancel}>
+              {t("cancel")}
             </Button>
           </Grid2>
         </Grid2>
@@ -323,7 +358,6 @@ const CreateService = () => {
           images={images}
         />
       </form>
-
     </Container>
   );
 };

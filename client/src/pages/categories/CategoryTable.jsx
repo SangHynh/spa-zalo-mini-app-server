@@ -53,9 +53,10 @@ function Row(props) {
   const handleDelete = (id) => {
     Swal.fire({
       icon: "warning",
-      title: "Bạn có chắc muốn xóa danh mục này, thao tác sẽ không thể hoàn trả",
+      title:
+        "Bạn có chắc muốn xóa danh mục này, thao tác sẽ không thể hoàn trả",
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: "Yes",
     }).then(async (result) => {
       if (result.isConfirmed) {
         showLoading();
@@ -71,7 +72,7 @@ function Row(props) {
         hideLoading();
       }
     });
-  }
+  };
 
   return (
     <>
@@ -108,7 +109,7 @@ function Row(props) {
             <TableCell
               align="right"
               sx={{
-                minWidth: "150px",
+                maxWidth: "400px",
                 overflowX: "auto",
                 whiteSpace: "nowrap",
               }}
@@ -122,7 +123,10 @@ function Row(props) {
             >
               <div className="flex items-center justify-center gap-2">
                 <Tooltip title="Edit">
-                  <IconButton color="primary" href={`${path.EDIT_CATEGORY}/${row._id}`}>
+                  <IconButton
+                    color="primary"
+                    href={`${path.EDIT_CATEGORY}/${row._id}`}
+                  >
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
@@ -168,9 +172,7 @@ function Row(props) {
                             >
                               {subRow._id}
                             </TableCell>
-                            <TableCell align="center">
-                              {subRow.name}
-                            </TableCell>
+                            <TableCell align="center">{subRow.name}</TableCell>
                             <TableCell align="center">
                               {subRow.description}
                             </TableCell>
