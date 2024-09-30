@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const Product = require("../models/product.model");
 const generateRandomPhoneNumber = require("../utils/genData.util");
+const createTestData = require("../utils/generateTestData");
 
 async function connect() {
   try {
@@ -12,6 +13,9 @@ async function connect() {
     });
     console.log("Connected to MongoDB successfully");
     //await testAdd();
+
+    // GENERATE TEST DATA
+    // createTestData()
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err);
   }
