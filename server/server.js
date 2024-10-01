@@ -53,7 +53,7 @@ initRoutes(app);
 connect();
 
 // Test route
-app.get("/", verifyAccessToken, async (req, res, next) => {
+app.get("/", async (req, res, next) => {
   res.send("Hello kitty");
 });
 
