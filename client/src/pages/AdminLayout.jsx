@@ -29,10 +29,13 @@ const AdminLayout = () => {
       : "rgba(0, 0, 0, 0.08)"; // Màu active cho chế độ sáng
 
   const [activeTabs, setActiveTabs] = useState([]);
+
   const handleActiveTabs = (tabId) => {
-    if (activeTabs.some((el) => el === tabId))
-      setActiveTabs((prev) => prev.filter((el) => !el == tabId));
-    else setActiveTabs((prev) => [...prev, tabId]);
+    if (activeTabs.some((el) => el === tabId)) {
+      setActiveTabs((prev) => prev.filter((el) => el !== tabId));
+    } else {
+      setActiveTabs((prev) => [...prev, tabId]);
+    }
   };
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -85,6 +88,8 @@ const AdminLayout = () => {
               transition: "width 0.3s ease",
               marginTop: `${TOP_HEADER_HEIGHT}px`,
               border: theme.palette.mode === "dark" ? "none" : "",
+              overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc
+              maxHeight: `calc(100vh - ${TOP_HEADER_HEIGHT}px)`, // Giới hạn chiều cao
             },
           }}
         >

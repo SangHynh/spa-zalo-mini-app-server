@@ -111,7 +111,7 @@ function Row(props) {
               {row._id}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
                 minWidth: "300px",
                 overflowX: "auto",
@@ -122,9 +122,9 @@ function Row(props) {
               {row.name}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
-                minWidth: "150px",
+                minWidth: "200px",
                 overflowX: "auto",
                 whiteSpace: "nowrap",
               }}
@@ -133,9 +133,9 @@ function Row(props) {
               {row.category}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
-                minWidth: "150px",
+                minWidth: "200px",
                 overflowX: "auto",
                 whiteSpace: "nowrap",
               }}
@@ -144,7 +144,7 @@ function Row(props) {
               {row.subCategory}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
                 maxWidth: "400px",
                 overflowX: "auto",
@@ -163,14 +163,17 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.price}
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(row.price)}
             </TableCell>
             <TableCell
               align="center"
               className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
             >
               <div className="flex items-center justify-center gap-2">
-                <Tooltip title="Edit">
+                <Tooltip title={t("edit")}>
                   <IconButton
                     color="primary"
                     href={`${path.EDIT_SERVICE}/${row._id}`}
@@ -178,7 +181,7 @@ function Row(props) {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete">
+                <Tooltip title={t("delete")}>
                   <IconButton onClick={() => handleDelete(row._id)}>
                     <DeleteIcon className="text-red-500" />
                   </IconButton>
@@ -187,7 +190,7 @@ function Row(props) {
             </TableCell>
           </TableRow>
           <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="h6" gutterBottom component="div">
@@ -254,8 +257,8 @@ const ServiceTable = ({ searchTerm }) => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table" className="border-2 boder-black">
-          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
+        <Table aria-label="collapsible table" className="border">
+          <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" sx={{ maxWidth: "100px" }} />
               <TableCell
@@ -303,7 +306,7 @@ const ServiceTable = ({ searchTerm }) => {
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold" }}
-                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("operations")}
               </TableCell>
@@ -326,7 +329,7 @@ const ServiceTable = ({ searchTerm }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={t("rowsOfPage")}
+        labelRowsPerPage={t("rows-per-page")}
       />
     </>
   );

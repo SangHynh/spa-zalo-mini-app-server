@@ -9,6 +9,7 @@ export { default as OrderManagement } from "./OrderManagement";
 export { default as BookingManagement } from "./BookingManagement";
 export { default as CategoryManagement } from "./CategoryManagement";
 export { default as AffiliateMarketing } from "./AffiliateMarketing";
+export { default as RecommendSystem } from "./RecommendSystem";
 export { default as Commission } from "./Commission";
 export { default as RanknPoint } from "./RanknPoint";
 export { default as ProductTable } from "./products/ProductTable";

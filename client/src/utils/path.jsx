@@ -11,6 +11,7 @@ const path = {
   BOOKING_MANAGEMENT: "booking-management",
   CATEGORY_MANAGEMENT: "category-management",
   AFFILIATE_MARKETING: "affiliate-marketing",
+  RECOMMEND_SYSTEM: "recommend-system",
   COMMISSION: "commission",
   RANK_POINT: "rank-point",
 

@@ -201,12 +201,12 @@ function Row(props) {
               className="sticky right-0 z-10  bg-white dark:bg-[#2F2F2F]"
             >
               <div className="flex gap-2">
-                <Tooltip title="Edit">
-                  <IconButton>
-                    <EditIcon className="text-green-500" />
+                <Tooltip title={t("edit")}>
+                  <IconButton color="primary">
+                    <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete">
+                <Tooltip title={t("delete")}>
                   <IconButton>
                     <DeleteIcon className="text-red-500" />
                   </IconButton>
@@ -433,8 +433,8 @@ const CustomerTable = ({ searchTerm }) => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table" className="border-2 boder-black">
-          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
+        <Table aria-label="collapsible table" className="border">
+          <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" />
               <TableCell
@@ -517,7 +517,7 @@ const CustomerTable = ({ searchTerm }) => {
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("operations")}
               </TableCell>
@@ -540,7 +540,7 @@ const CustomerTable = ({ searchTerm }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={t("rowsOfPage")}
+        labelRowsPerPage={t("rows-per-page")}
       />
     </>
   );

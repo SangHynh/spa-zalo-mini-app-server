@@ -80,19 +80,19 @@ export const getSidebar = (t) => [
     type: "PARENT",
     subs: [
       {
-        id: 11,
+        id: 81,
         icon: <GoDash />,
         path: `/${path.ADMIN_LAYOUT}/${path.AFFILIATE_MARKETING}`,
         name: t("affiliate-marketing"),
       },
       {
-        id: 12,
+        id: 82,
         icon: <GoDash />,
         path: `/${path.ADMIN_LAYOUT}/${path.COMMISSION}`,
         name: t("commission"),
       },
       {
-        id: 13,
+        id: 83,
         icon: <GoDash />,
         path: `/${path.ADMIN_LAYOUT}/${path.RANK_POINT}`,
         name: t("rank-point"),

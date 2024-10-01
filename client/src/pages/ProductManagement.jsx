@@ -18,7 +18,7 @@ const ProductManagement = () => {
 
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
-      <Typography variant="h5">{t("product_mgmt")}</Typography>
+      <Typography variant="h5">{t("product-mgmt")}</Typography>
       <div className="flex justify-between items-center">
         <div className="relative w-64">
           <input
@@ -31,7 +31,8 @@ const ProductManagement = () => {
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
         <Button
-          variant="outlined"
+          variant="contained"
+          color="secondary"
           href={path.CREATE_PRODUCT}
           className="w-fit flex items-center gap-2"
         >

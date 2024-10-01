@@ -440,7 +440,7 @@ const CreateProduct = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DatePicker"]}>
                 <DatePicker
-                  label={t("expDate")}
+                  label={t("exp-date")}
                   variant="standard"
                   fullWidth
                   margin="dense"
@@ -495,14 +495,16 @@ const CreateProduct = () => {
               />
             </FormControl>
           </Grid2>
-          <Grid2 size={8}>
-            <Box className="border-gray-300 shadow-xl dark:border-2 rounded-md ml-10 mt-4">
-              <PaginationTable
-                rows={variants}
-                columns={["id", "volume", "price", "stock"]}
-                onDelete={deleteVariant}
-              />
-            </Box>
+          <Grid2 size={1}></Grid2>
+          <Grid2
+            size={7}
+            className="border-gray-300 shadow-xl dark:border-2 rounded-md"
+          >
+            <PaginationTable
+              rows={variants}
+              columns={["id", "volume", "price", "stock"]}
+              onDelete={deleteVariant}
+            />
           </Grid2>
         </Grid2>
 

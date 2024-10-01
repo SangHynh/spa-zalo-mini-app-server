@@ -16,6 +16,7 @@ import TablePagination from "@mui/material/TablePagination";
 import { ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import WidgetsIcon from "@mui/icons-material/Widgets";
 import { apiDeleteProduct, apiGetProducts } from "../../apis/products";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -115,7 +116,7 @@ function Row(props) {
               {row._id}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
                 minWidth: "300px",
                 overflowX: "auto",
@@ -124,6 +125,50 @@ function Row(props) {
               className="relative"
             >
               {row.name}
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.category}
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.subCategory}
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                minWidth: "250px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.benefits.join(", ")}
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                maxWidth: "400px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {row.description}
             </TableCell>
             <TableCell
               align="right"
@@ -138,17 +183,6 @@ function Row(props) {
                 style: "currency",
                 currency: "VND",
               }).format(row.price)}
-            </TableCell>
-            <TableCell
-              align="right"
-              sx={{
-                minWidth: "150px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.category}
             </TableCell>
             <TableCell
               align="right"
@@ -182,33 +216,11 @@ function Row(props) {
             </TableCell>
             <TableCell
               align="right"
-              sx={{
-                minWidth: "250px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.benefits.join(", ")}
-            </TableCell>
-            <TableCell
-              align="right"
-              sx={{
-                maxWidth: "400px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.description}
-            </TableCell>
-            <TableCell
-              align="right"
               sx={{ minWidth: "100px" }}
               className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
             >
               <div className="flex gap-2">
-                <Tooltip title="Edit">
+                <Tooltip title={t("edit")}>
                   <IconButton
                     color="primary"
                     href={`${path.EDIT_PRODUCT}/${row._id}`}
@@ -216,16 +228,21 @@ function Row(props) {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete">
+                <Tooltip title={t("delete")}>
                   <IconButton onClick={() => handleDelete(row._id)}>
                     <DeleteIcon className="text-red-500" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t("config")}>
+                  <IconButton href={`${path.RECOMMEND_SYSTEM}/${row._id}`}>
+                    <WidgetsIcon className="text-green-500" />
                   </IconButton>
                 </Tooltip>
               </div>
             </TableCell>
           </TableRow>
           <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="h6" gutterBottom component="div">
@@ -269,7 +286,7 @@ function Row(props) {
             </TableCell>
           </TableRow>
           <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="h6" gutterBottom component="div">
@@ -315,7 +332,7 @@ function Row(props) {
             </TableCell>
           </TableRow>
           <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="h6" gutterBottom component="div">
@@ -382,8 +399,8 @@ const ProductTable = ({ searchTerm }) => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table" className="border-2 boder-black">
-          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
+        <Table aria-label="collapsible table" className="border">
+          <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" />
               <TableCell
@@ -402,31 +419,17 @@ const ProductTable = ({ searchTerm }) => {
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "150px" }}
-                className="relative dark:text-black"
-              >
-                {t("price")}
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
                 className="relative dark:text-black"
               >
                 {t("category")}
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="relative dark:text-black"
-              >
-                {t("stock")}
-              </TableCell>
-              <TableCell
-                align="center"
                 sx={{ fontWeight: "bold", minWidth: "200px" }}
                 className="relative dark:text-black"
               >
-                {t("expDate")}
+                {t("sub-category")}
               </TableCell>
               <TableCell
                 align="center"
@@ -444,8 +447,29 @@ const ProductTable = ({ searchTerm }) => {
               </TableCell>
               <TableCell
                 align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("price")}
+              </TableCell>
+              <TableCell
+                align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+                className="relative dark:text-black"
+              >
+                {t("stock")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("exp-date")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("operations")}
               </TableCell>
@@ -473,7 +497,7 @@ const ProductTable = ({ searchTerm }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={t("rowsOfPage")}
+        labelRowsPerPage={t("rows-per-page")}
       />
     </>
   );

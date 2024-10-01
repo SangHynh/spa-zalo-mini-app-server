@@ -122,7 +122,7 @@ function Row(props) {
               className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
             >
               <div className="flex items-center justify-center gap-2">
-                <Tooltip title="Edit">
+                <Tooltip title={t("edit")}>
                   <IconButton
                     color="primary"
                     href={`${path.EDIT_CATEGORY}/${row._id}`}
@@ -130,7 +130,7 @@ function Row(props) {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete">
+                <Tooltip title={t("delete")}>
                   <IconButton onClick={() => handleDelete(row._id)}>
                     <DeleteIcon className="text-red-500" />
                   </IconButton>
@@ -223,8 +223,8 @@ const CategoryTable = ({ searchTerm }) => {
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
       >
-        <Table aria-label="collapsible table" className="border-2 boder-black">
-          <TableHead className="sticky top-0 z-20 dark:bg-gray-100">
+        <Table aria-label="collapsible table" className="border">
+          <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" sx={{ maxWidth: "100px" }} />
               <TableCell
@@ -251,7 +251,7 @@ const CategoryTable = ({ searchTerm }) => {
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold" }}
-                className="sticky right-0 z-10 bg-white dark:bg-gray-100 dark:text-black"
+                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("operations")}
               </TableCell>
@@ -274,7 +274,7 @@ const CategoryTable = ({ searchTerm }) => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={t("rowsOfPage")}
+        labelRowsPerPage={t("rows-per-page")}
       />
     </>
   );

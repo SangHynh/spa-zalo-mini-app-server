@@ -31,7 +31,8 @@ const ServiceManagement = () => {
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
         <Button
-          variant="outlined"
+          variant="contained"
+          color="secondary"
           href={path.CREATE_SERVICE}
           className="w-fit flex items-center gap-2"
         >
