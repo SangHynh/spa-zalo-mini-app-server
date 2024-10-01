@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/MPhong03/api-server-demo#readme",
   "dependencies": {
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.21.0",
     "cors": "^2.8.5",
