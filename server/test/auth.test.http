@@ -3,7 +3,7 @@ GET https://spa-zalo-mini-app-server-6.onrender.com/
 Authorization: Bearer token_here
 
 ### REGISTER ROUTE USER
-POST https://spa-zalo-mini-app-server-6.onrender.com/auth/register
+POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {

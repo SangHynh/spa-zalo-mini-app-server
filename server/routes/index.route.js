@@ -6,7 +6,7 @@ const service = require('./services')
 const voucher = require('./vouchers')
 const payment = require('./payments')
 const booking = require('./bookings')
-
+const recommendations = require('./recommendations')
 const initRoutes = (app) => {
     app.use('/api/products', product)
     app.use('/api/users', user)
@@ -16,6 +16,7 @@ const initRoutes = (app) => {
     app.use('/api/vouchers', voucher)
     app.use('/api/payments', payment)
     app.use('/api/bookings', booking)
+    app.use('/api/recommendations',recommendations)
 }
 
 
