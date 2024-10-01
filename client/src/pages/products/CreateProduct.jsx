@@ -77,7 +77,15 @@ const CreateProduct = () => {
     }
 
     const deleteVariant = (id) => {
-        setVariants(variants.filter(variant => variant.id !== id));
+        setVariants(variants.filter(variant => variant._id !== id));
+    };
+
+    const handleEditVariantRow = (updatedRow) => {
+        setVariants((prevVariants) =>
+            prevVariants.map((variant) =>
+                variant._id === updatedRow._id ? updatedRow : variant
+            )
+        );
     };
 
     // HANDLE CREATE INGREDIENTS
@@ -108,7 +116,15 @@ const CreateProduct = () => {
     };
 
     const deleteIngredient = (id) => {
-        setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
+        setIngredients(ingredients.filter(ingredient => ingredient._id !== id));
+    };
+
+    const handleEditIngredientRow = (updatedRow) => {
+        setIngredients((prevIngredients) =>
+            prevIngredients.map((ingredient) =>
+                ingredient._id === updatedRow._id ? updatedRow : ingredient
+            )
+        );
     };
 
     // FETCH CATEGORIES
@@ -467,6 +483,7 @@ const CreateProduct = () => {
                             rows={variants}
                             columns={['id', 'volume', 'price', 'stock']}
                             onDelete={deleteVariant}
+                            onEditRow={handleEditVariantRow}
                         />
                     </Grid2>
                 </Grid2>
@@ -515,6 +532,7 @@ const CreateProduct = () => {
                             rows={ingredients}
                             columns={['id', 'name', 'percentage', 'usageInstructions']}
                             onDelete={deleteIngredient}
+                            onEditRow={handleEditIngredientRow}
                         />
                     </Grid2>
                 </Grid2>

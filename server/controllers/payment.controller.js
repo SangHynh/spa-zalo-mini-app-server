@@ -22,13 +22,15 @@ class PaymentController {
                 .sort()
                 .map(
                     (key) =>
-                        `${key}=${typeof body[key] === 'object'
+                        `${key}=${typeof body[key] === "object"
                             ? JSON.stringify(body[key])
                             : body[key]
                         }`
                 )
                 .join('&');
-            // biến môi trường ZALO_CHECKOUT_SECRET_KEY lấy ở bước 3
+
+            // console.log(dataMac)
+
             const mac = CryptoJS.HmacSHA256(
                 dataMac,
                 process.env.ZALO_CHECKOUT_SECRET_KEY
@@ -61,7 +63,9 @@ class PaymentController {
                 str,
                 process.env.ZALO_CHECKOUT_SECRET_KEY
             ).toString();
+
             if (reqMac == mac) {
+                console.log(str)
                 return res.json({
                     returnCode: 1,
                     returnMessage: 'Success',
@@ -80,6 +84,51 @@ class PaymentController {
             });
         }
     }
+
+    // async callback(req, res) {
+    //     try {
+    //         const { data, mac, overallMac } = req.body || {};
+
+    //         if (!data || !mac) {
+    //             return res.json({
+    //                 returnCode: 0,
+    //                 returnMessage: 'Missing data or mac',
+    //             });
+    //         }
+
+    //         const { appId, amount, description, orderId, message, resultCode, transId } = data || {};
+    //         if (!amount || !orderId || !appId || !description || !message || !resultCode || !transId) {
+    //             return res.json({
+    //                 returnCode: 0,
+    //                 returnMessage: 'Missing method or orderId or appId',
+    //             });
+    //         }
+    //         dataForMac = `appId=${appId}&amount=${amount}&description=${description}&orderId=${orderId}&message=${message}&resultCode=${resultCode}&transId=${transId}`;
+    //         const reqMac = CryptoJS.HmacSHA256(
+    //             dataForMac,
+    //             process.env.ZALO_CHECKOUT_SECRET_KEY
+    //         ).toString();
+
+    //         if (reqMac == mac) {
+    //             console.log(str)
+    //             return res.json({
+    //                 returnCode: 1,
+    //                 returnMessage: 'Success',
+    //             });
+    //         } else {
+    //             return res.json({
+    //                 returnCode: 0,
+    //                 returnMessage: 'Fail',
+    //             });
+    //         }
+    //     } catch (e) {
+    //         console.log(e);
+    //         return res.json({
+    //             returnCode: 0,
+    //             returnMessage: 'Fail',
+    //         });
+    //     }
+    // }
 }
 
 module.exports = new PaymentController();
