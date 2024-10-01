@@ -1,5 +1,7 @@
 const CryptoJS = require('crypto-js');
 const TestOrder = require('../models/testorder.model');
+const Order = require('../models/order.model');
+const moment = require('moment');
 
 class PaymentController {
     async createTestOrder(req, res) {
@@ -9,6 +11,59 @@ class PaymentController {
             const order = await TestOrder.create(data)
 
             return res.status(201).json(order);
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+
+    // CREATE ORDER
+    async createOrder(req, res) {
+        try {
+            req.body.products = JSON.parse(req.body.products);
+
+            if (req.body.orderDate) {
+                req.body.orderDate = moment(req.body.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+            }
+
+            const data = req.body;
+
+            const order = await Order.create(data)
+
+            return res.status(201).json(order);
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+
+    // GET ORDER
+    async getOrder(req, res) {
+        try {
+            const order = await Order.findById(req.params.id)
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+            return res.status(200).json(order);
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+
+    // UPDATE ORDER
+    async updateOrderWithZaloOrderId(req, res) {
+        try {
+            const { transactionId, paymentStatus } = req.body;
+
+            const order = await Order.findById(req.params.id);
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            order.transactionId = transactionId;
+            order.paymentStatus = paymentStatus;
+
+            const updatedOrder = await order.save();
+
+            return res.status(200).json(updatedOrder);
         } catch (error) {
             return res.status(500).json(error.message);
         }
@@ -65,7 +120,7 @@ class PaymentController {
             ).toString();
 
             if (reqMac == mac) {
-                console.log(str)
+                // console.log("SUCCESS: ", str)
                 return res.json({
                     returnCode: 1,
                     returnMessage: 'Success',
@@ -82,6 +137,78 @@ class PaymentController {
                 returnCode: 0,
                 returnMessage: 'Fail',
             });
+        }
+    }
+
+    async createMacForGetOrderStatus(req, res) {
+        try {
+            const { appId, orderId, privateKey } = req.body;
+
+            const dataMac = data = `appId=${appId}&orderId=${orderId}&privateKey=${privateKey}`;
+
+            // console.log(dataMac)
+
+            const mac = CryptoJS.HmacSHA256(
+                dataMac,
+                process.env.ZALO_CHECKOUT_SECRET_KEY
+            ).toString();
+            return res.status(200).json({ mac });
+        } catch (e) {
+            return res.status(500).json(e.message);
+        }
+    }
+
+    async createMacForUpdateOrderStatus(req, res) {
+        try {
+            const { appId, orderId, privateKey, resultCode } = req.body;
+            
+            const dataMac = data = `appId=${appId}&orderId=${orderId}&resultCode=${resultCode}&privateKey=${privateKey}`;
+
+            // console.log(dataMac)
+
+            const mac = CryptoJS.HmacSHA256(
+                dataMac,
+                process.env.ZALO_CHECKOUT_SECRET_KEY
+            ).toString();
+            return res.status(200).json({ mac });
+        } catch (e) {
+            return res.status(500).json(e.message);
+        }
+    }
+
+    async createMacForCreateRefund(req, res) {
+        try {
+            const { appId, transId, privateKey, amount, description } = req.body;
+            
+            const dataMac = data = `appId=${appId}&transId=${transId}&amount=${amount}&description=${description}&privateKey=${privateKey}`;
+
+            // console.log(dataMac)
+
+            const mac = CryptoJS.HmacSHA256(
+                dataMac,
+                process.env.ZALO_CHECKOUT_SECRET_KEY
+            ).toString();
+            return res.status(200).json({ mac });
+        } catch (e) {
+            return res.status(500).json(e.message);
+        }
+    }
+
+    async createMacForGetRefundStatus(req, res) {
+        try {
+            const { appId, refundId, privateKey } = req.body;
+            
+            const dataMac = data = `appId=${appId}&refundId=${refundId}&privateKey=${privateKey}`;
+
+            // console.log(dataMac)
+
+            const mac = CryptoJS.HmacSHA256(
+                dataMac,
+                process.env.ZALO_CHECKOUT_SECRET_KEY
+            ).toString();
+            return res.status(200).json({ mac });
+        } catch (e) {
+            return res.status(500).json(e.message);
         }
     }
 
