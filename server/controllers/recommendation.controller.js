@@ -3,56 +3,7 @@ const Product = require('../models/product.model');
 const mongoose = require('mongoose');
 const moment = require('moment');
 const User = require('../models/user.model');
-// CREATE
-exports.createProduct = async (req, res) => {
-  try {
-    if (!req.files) {
-      return res.status(400).json({ error: 'No images uploaded' });
-    }
-
-    // Convert Text to Json
-    req.body.variants = JSON.parse(req.body.variants);
-    req.body.ingredients = JSON.parse(req.body.ingredients);
-    req.body.benefits = JSON.parse(req.body.benefits);
-
-    const imageUrls = req.files.map(file => file.path);
-
-    if (req.body.expiryDate) {
-      req.body.expiryDate = moment(req.body.expiryDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    }
-
-    const product = new Product({
-      ...req.body,
-      images: imageUrls
-    })
-    
-    const savedProduct = await product.save();
-    return res.status(201).json(savedProduct);
-  } catch (err) {
-    return res.status(400).json({ message: err.message });
-  }
-};
-
-// GET ALL
-exports.getAllProducts = async (req, res) => {
-  try {
-    const products = await Product.find();
-    return res.status(200).json(products);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-// GET BY ID
-exports.getProductById = async (req, res, next) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-    return res.status(200).json(product);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
+const Recommendation = require('../models/recommendation.model');
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id;
   const productName = req.params.productName;
@@ -245,8 +196,9 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
 };
 // SUGGEST PRODUCTS FOR USER
 exports.configureProductRecommendations = async (req, res) => {
-  const mainProductId = req.body.mainProductId; // Lấy mainProductId từ body
-  const suggestions = req.body.suggestions; // Mảng sản phẩm gợi ý từ body
+  const mainProductId = req.body.mainProductId;
+  const suggestions = req.body.suggestions;
+
   console.log('Main Product ID:', mainProductId);
   console.log('Suggestions:', suggestions);
 
@@ -257,17 +209,57 @@ exports.configureProductRecommendations = async (req, res) => {
       return res.status(404).json({ message: "Main product not found" });
     }
 
-    // Chỉ trả về thông tin cần thiết về sản phẩm chính và các gợi ý
+    const suggestionEntries = [];
+    for (const suggestion of suggestions) {
+      const { productId } = suggestion;
+
+      // Tìm sản phẩm gợi ý
+      const suggestedProduct = await Product.findById(productId);
+      if (!suggestedProduct) {
+        return res.status(404).json({ message: "Sub product not found" });
+      }
+
+      suggestionEntries.push({
+        productId: productId,
+        productName: suggestedProduct.name
+      });
+    }
+
+    // Kiểm tra và lưu vào cơ sở dữ liệu
+    if (suggestionEntries.length > 0) {
+      // Kiểm tra xem đã có recommendation với mainProductId chưa
+      let recommendation = await Recommendation.findOne({ mainProductId: mainProductId });
+
+      if (recommendation) {
+        // Nếu đã có, cập nhật sản phẩm gợi ý
+        recommendation.products = suggestionEntries;
+        await recommendation.save();
+        console.log('Recommendations updated successfully');
+      } else {
+        // Nếu chưa có, tạo mới recommendation
+        recommendation = new Recommendation({
+          mainProductId: mainProductId,
+          mainProductName: mainProduct.name, // Đổi tên thuộc tính cho đúng với schema
+          products: suggestionEntries // Đảm bảo tên thuộc tính khớp với schema
+        });
+
+        await recommendation.save();
+        console.log('Recommendations collection created successfully');
+      }
+
+      console.log(`Added recommendations for main product: ${mainProduct.name}`);
+    } else {
+      console.log('No suggestions available to insert');
+    }
+
     res.status(200).json({
       message: "Recommendations processed successfully",
       mainProduct: {
         id: mainProduct._id,
         name: mainProduct.name,
       },
-      suggestions: suggestions.map(suggestion => ({
-        productId: suggestion.productId,
-        productName: suggestion.productName,
-      }))
+      suggestions: suggestionEntries,
+      collection: "Recommendation"
     });
   } catch (error) {
     console.error("Error processing product recommendations:", error.message);
@@ -275,108 +267,3 @@ exports.configureProductRecommendations = async (req, res) => {
   }
 };
 
-// UPDATE
-exports.updateProduct = async (req, res) => {
-  try {
-    console.log(req.body)
-    // Convert Text to Json
-    req.body.variants = JSON.parse(req.body.variants);
-    req.body.ingredients = JSON.parse(req.body.ingredients);
-    req.body.benefits = JSON.parse(req.body.benefits);
-    req.body.existingImages = JSON.parse(req.body.existingImages);
-    req.body.deleteImages = JSON.parse(req.body.deleteImages);
-
-    const imageUrls = req.files.map(file => file.path);
-
-    console.log(req.body)
-
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    if (Array.isArray(req.body.existingImages)) {
-      imageUrls.push(...req.body.existingImages);
-    }
-
-    if (req.body.expiryDate) {
-      req.body.expiryDate = moment(req.body.expiryDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    }
-
-    if (Array.isArray(req.body.deleteImages)) {
-      req.body.deleteImages.forEach(url => {
-        const publicId = url
-          .split('/').slice(-2).join('/') // Get the last two parts: folder and filename
-          .split('.')[0];
-        
-        deleteImage(publicId);
-      });
-    }
-
-    // Update variants
-    const existingVariants = product.variants.reduce((acc, variant) => {
-      acc[variant._id.toString()] = variant;
-      return acc;
-    }, {});
-
-    req.body.variants.forEach(variant => {
-      if (existingVariants[variant._id]) {
-        existingVariants[variant._id] = { ...existingVariants[variant._id], ...variant };
-      } else {
-        existingVariants[new mongoose.Types.ObjectId()] = variant;
-      }
-    });
-
-    // Update ingredients
-    const existingIngredients = product.ingredients.reduce((acc, ingredient) => {
-      acc[ingredient._id.toString()] = ingredient;
-      return acc;
-    }, {});
-
-    req.body.ingredients.forEach(ingredient => {
-      if (existingIngredients[ingredient._id]) {
-        existingIngredients[ingredient._id] = { ...existingIngredients[ingredient._id], ...ingredient };
-      } else {
-        existingIngredients[new mongoose.Types.ObjectId()] = ingredient;
-      }
-    });
-
-    product.images = imageUrls;
-    product.variants = Object.values(existingVariants);
-    product.ingredients = Object.values(existingIngredients);
-    Object.assign(product, req.body);
-
-    const updatedProduct = await product.save();
-
-    return res.status(200).json(updatedProduct);
-
-  } catch (err) {
-    return res.status(400).json({ message: err.message });
-  }
-};
-
-// DELETE
-exports.deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // Ensure product is deleted
-    if (Array.isArray(product.images) && product.images.length > 0) {
-      const deleteImagePromises = product.images.map(async (url) => {
-        const publicIdWithFolder = url
-          .split('/').slice(-2).join('/')
-          .split('.')[0];
-
-        return await deleteImage(publicIdWithFolder);
-      });
-
-      // Wait for all image deleted
-      await Promise.all(deleteImagePromises);
-    }
-    return res.status(200).json({ message: 'Product deleted successfully' });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
