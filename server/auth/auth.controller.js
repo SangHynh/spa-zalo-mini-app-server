@@ -79,7 +79,6 @@ const login = async (req, res, next) => {
     if (!role || !["admin", "user"].includes(role)) {
       throw createError.BadRequest("Invalid role");
     }
-
     // Kiểm tra đăng nhập cho admin qua email
     if (role === "admin" && email) {
       const admin = await Admin.findOne({ email });
@@ -94,17 +93,17 @@ const login = async (req, res, next) => {
       return res.send({ accessToken, refreshToken });
     } else if (role === "user" && zaloAccessToken) {
       // Kiểm tra đăng nhập qua Zalo Access Token
-      const data = await zaloService(zaloAccessToken);
-      if (!data || !data.id) { // Kiểm tra nếu data không tồn tại hoặc không có id
-        throw createError.BadRequest("Invalid Zalo Access Token");
-      }
-
+      const data = await zaloService(zaloAccessToken)
+        .then((data) => data)
+        .catch((error) => {
+          throw createError.BadRequest("Invalid Zalo Access Token");
+        });
+        
       const zaloId = data.id;
       const user = await User.findOne({ zaloId });
 
       if (!user) throw createError.NotFound("User not found");
 
-      // Chỉ lấy thông tin cần thiết từ user
       const userProfile = {
         zaloId: user.zaloId,
         name: user.name,
@@ -112,7 +111,7 @@ const login = async (req, res, next) => {
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
       };
-
+      if (!user) throw createError.NotFound("User not found");
       // Tạo access token và refresh token sau khi đăng nhập thành công
       const accessToken = await signAccessToken(user.id);
       const refreshToken = await signRefreshToken(user.id);
@@ -124,7 +123,6 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const refreshToken = async (req, res, next) => {
   try {
