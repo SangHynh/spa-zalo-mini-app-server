@@ -8,7 +8,7 @@ const keepAliveMiddleware = async (req, res, next) => {
     const response = await axios.get(`${process.env.KEEP_ALIVE_URL}`);     
     console.log('From keep-alive-server:', response.data);
   } catch (error) {
-    console.error('Error from keep-alive-server:', error.message);
+    // console.error('Error from keep-alive-server:', error.message);
   }
   next();
 };

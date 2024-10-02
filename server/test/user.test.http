@@ -8,6 +8,6 @@ Content-Type: application/json
 Authorization: Bearer token_here
 
 {
-    "name": "Nguyen Van B",
+    "name": "Nguyen Van A",
     "phone": "0123456789"
 }

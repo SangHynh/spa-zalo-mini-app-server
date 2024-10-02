@@ -1,0 +1,40 @@
+
+GET https://spa-zalo-mini-app-server-6.onrender.com/
+Authorization: Bearer token_here
+
+### REGISTER ROUTE ADMIN CMS
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": "admin"
+}
+
+### LOGIN ROUTE ADMIN
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": "admin"
+}
+
+
+### REFRESH TOKEN
+POST http://localhost:8080/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}
+
+### LOGOUT ROUTE
+DELETE http://localhost:8080/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}

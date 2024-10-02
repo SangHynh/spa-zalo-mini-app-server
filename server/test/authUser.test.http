@@ -2,24 +2,15 @@
 GET https://spa-zalo-mini-app-server-6.onrender.com/
 Authorization: Bearer token_here
 
+# -------- READ services/README.md to get ZALO_TOKEN ---------
+
 ### REGISTER ROUTE USER
-POST https://spa-zalo-mini-app-server-6.onrender.com/auth/register
-Content-Type: application/json
-
-{
-    "zaloId": "123456489",
-    "role": "user",
-    "name": "Nguyễn Văn A",
-    "urlImage": ""
-}
-
-### REGISTER ROUTE ADMIN CMS
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-    "email": "admin@gmail.com",
-    "role": "admin"
+    "zaloAccessToken": "ZALO_TOKEN_HERE",
+    "role": "user"
 }
 
 ### LOGIN ROUTE USER
@@ -27,20 +18,9 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "zaloId": "123456789",
+    "zaloAccessToken": "ZALO_TOKEN_HERE",
     "role": "user"
 }
-
-### LOGIN ROUTE ADMIN
-POST http://localhost:8080/auth/login
-Content-Type: application/json
-
-{
-    "email": "admin@gmail.com",
-    "password": "123456",
-    "role": "admin"
-}
-
 
 ### REFRESH TOKEN
 POST http://localhost:8080/auth/refresh-token

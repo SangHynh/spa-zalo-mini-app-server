@@ -2,14 +2,13 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    accountId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+    zaloId: {
+      type: String,
       required: true,
       unique: true,
     },
     name: { type: String, required: true },
-    urlImage: { type: String, default: "" },
+    avatar: { type: String, default: "" },
     phone: { type: String, default: "" },
     membershipTier: {
       type: String,

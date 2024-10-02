@@ -8,9 +8,7 @@ Tài liệu này cung cấp hướng dẫn chi tiết về việc cài đặt Re
 
 Tải Redis từ GitHub thông qua liên kết dưới đây:
 
-```bash
-https://github.com/tporadowski/redis/releases
-```
+- [Google] (https://github.com/tporadowski/redis/releases)
 
 Chọn tệp `.msi` của phiên bản Redis mới nhất để tải về.
 
@@ -50,9 +48,7 @@ Redis Insight là công cụ giúp quản lý và giám sát Redis thông qua gi
 ### Bước 1: Tải Redis Insight
 Tải Redis Insight từ trang chủ chính thức của Redis:
 
-```bash
-https://redis.io/insight/
-```
+- [Google] (https://redis.io/insight/)
 
 ### Bước 2: Cài Đặt Redis Insight
 
@@ -68,3 +64,21 @@ Tạo một kết nối mới
     Port: 6379 (hoặc port mà Redis Server đang chạy)
 
 Sau khi kết nối thành công, bạn có thể sử dụng giao diện để giám sát, phân tích và quản lý cơ sở dữ liệu Redis của mình.
+
+### Bước 4: Sử dụng Redis Cloud
+
+Tạo tài khoản Redis Cloud
+
+- [Google] (https://redis.io/try-free/)
+
+
+Sau đó tạo CSDL Redis, lấy thông tin điền vào file `.env`
+
+```bash
+REDIS_PORT='redis-cloud-port'
+REDIS_HOST='redis-cloud-host'
+REDIS_PASSWORD='redis-cloud-password'
+REDIS_USERNAME='redis-cloud-username'
+```
+
+

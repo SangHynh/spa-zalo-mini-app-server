@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "genkey": "nodemon ./helpers/generate_keys.js"
+    "genkey": "nodemon ./helpers/generate_keys.js",
+    "checkZaloToken": "nodemon ./services/testZalo.service.js"
   },
   "repository": {
     "type": "git",

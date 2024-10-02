@@ -1,5 +1,5 @@
 const User = require('../models/user.model');
-const Account = require('../models/account.model');
+const Admin = require('../models/admin.model');
 
 // Controller để tạo người dùng mới
 const createUser = async (req, res) => {
@@ -86,12 +86,12 @@ const deleteUser = async (req, res) => {
 const getUserInfo = async (req, res) => {
   const { zaloId } = await req.params; // Lấy zaloId từ path parameters
   try {
-    // Tìm kiếm người dùng theo zaloId từ mô hình Account
-    const account = await Account.findOne({ zaloId });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
+    // Tìm kiếm người dùng theo zaloId từ mô hình Admin
+    const admin = await Admin.findOne({ zaloId });
+    if (!admin) {
+      return res.status(404).json({ message: "User not found" });
     }
-    // Tìm kiếm người dùng theo accountId từ mô hình User
+    // Tìm kiếm người dùng theo adminId từ mô hình User
     const user = await User.findOne({ accountId: account._id });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
