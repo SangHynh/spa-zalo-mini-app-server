@@ -34,9 +34,10 @@ const zaloService = async (accessToken) => {
     const response = await axios(options);
     return response.data;
   } catch (error) {
-    console.error(error);
-    
+    console.error("Zalo Service Error:", error.response ? error.response.data : error.message);
+    throw createError.BadRequest("Invalid Zalo Access Token");
   }
+  
 };
 
 module.exports = zaloService;
