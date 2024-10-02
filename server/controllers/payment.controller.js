@@ -19,15 +19,30 @@ class PaymentController {
     // CREATE ORDER
     async createOrder(req, res) {
         try {
-            req.body.products = JSON.parse(req.body.products);
+            let data = req.body;
 
-            if (req.body.orderDate) {
-                req.body.orderDate = moment(req.body.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+            // Kiểm tra nếu body có object cart
+            if (data.items) {
+                const { name, total, items } = data;
+
+                // Chuyển đổi các items trong cart thành products cho bảng Order
+                data.products = items.map(item => ({
+                    productId: item.product.id,
+                    name: item.product.name,
+                    price: item.product.price,
+                    quantity: item.quantity,
+                }));
+            } else {
+                // Nếu không phải cart, xử lý trường products thông thường
+                data.products = JSON.parse(data.products);
             }
 
-            const data = req.body;
-
-            const order = await Order.create(data)
+            if (data.orderDate) {
+                data.orderDate = moment(data.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+            }
+    
+            // Tạo order
+            const order = await Order.create(data);
 
             return res.status(201).json(order);
         } catch (error) {
@@ -161,7 +176,7 @@ class PaymentController {
     async createMacForUpdateOrderStatus(req, res) {
         try {
             const { appId, orderId, privateKey, resultCode } = req.body;
-            
+
             const dataMac = data = `appId=${appId}&orderId=${orderId}&resultCode=${resultCode}&privateKey=${privateKey}`;
 
             // console.log(dataMac)
@@ -179,7 +194,7 @@ class PaymentController {
     async createMacForCreateRefund(req, res) {
         try {
             const { appId, transId, privateKey, amount, description } = req.body;
-            
+
             const dataMac = data = `appId=${appId}&transId=${transId}&amount=${amount}&description=${description}&privateKey=${privateKey}`;
 
             // console.log(dataMac)
@@ -197,7 +212,7 @@ class PaymentController {
     async createMacForGetRefundStatus(req, res) {
         try {
             const { appId, refundId, privateKey } = req.body;
-            
+
             const dataMac = data = `appId=${appId}&refundId=${refundId}&privateKey=${privateKey}`;
 
             // console.log(dataMac)
