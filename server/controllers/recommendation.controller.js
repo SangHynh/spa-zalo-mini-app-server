@@ -1,16 +1,16 @@
-const { deleteImage } = require('../middlewares/upload.middlewares');
-const Product = require('../models/product.model');
-const mongoose = require('mongoose');
-const moment = require('moment');
-const User = require('../models/user.model');
-const Recommendation = require('../models/recommendation.model');
+const { deleteImage } = require("../middlewares/upload.middlewares");
+const Product = require("../models/product.model");
+const mongoose = require("mongoose");
+const moment = require("moment");
+const User = require("../models/user.model");
+const Recommendation = require("../models/recommendation.model");
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id;
   const productName = req.params.productName;
   try {
     // Tìm kiếm sản phẩm dựa trên tên với regex
     const products = await Product.find({
-      name: { $regex: productName, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+      name: { $regex: productName, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa chữ thường
     });
 
     if (!products || products.length === 0) {
@@ -32,7 +32,9 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
     for (const product of products) {
       // Tìm kiếm sản phẩm trong mảng productSuggestions của user
       const existingProduct = user.productSuggestions.find(
-        (suggestedProduct) => suggestedProduct.productId && suggestedProduct.productId.toString() === product._id.toString()
+        (suggestedProduct) =>
+          suggestedProduct.productId &&
+          suggestedProduct.productId.toString() === product._id.toString()
       );
 
       if (existingProduct) {
@@ -43,7 +45,7 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
         user.productSuggestions.push({
           productId: product._id,
           productName: product.name,
-          suggestedScore: 1
+          suggestedScore: 1,
         });
       }
     }
@@ -54,7 +56,7 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
     // Chỉ trả về thông tin cần thiết
     res.status(200).json({
       message: "Updated successfully",
-      productSuggestions: updatedUser.productSuggestions
+      productSuggestions: updatedUser.productSuggestions,
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
@@ -62,13 +64,12 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   }
 };
 
-
 exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.params.id; // User ID cố định
   const productId = req.body.productID; // Lấy productId từ URL
   const rating = parseInt(req.body.rating, 10); // Lấy rating từ URL và chuyển đổi thành số
-  console.log('rating', rating);
-  console.log('productId', productId);
+  console.log("rating", rating);
+  console.log("productId", productId);
   try {
     // Tìm sản phẩm trước
     const product = await Product.findById(productId);
@@ -89,18 +90,26 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
 
     // Tìm kiếm sản phẩm trong mảng productSuggestions của user
     const existingProduct = user.productSuggestions.find(
-      (suggestedProduct) => suggestedProduct.productId && suggestedProduct.productId.toString() === productId
+      (suggestedProduct) =>
+        suggestedProduct.productId &&
+        suggestedProduct.productId.toString() === productId
     );
 
     // Hàm điều chỉnh suggestedScore dựa trên đánh giá
     const adjustSuggestedScore = (rating) => {
       switch (rating) {
-        case 1: return -2;
-        case 2: return -1;
-        case 3: return 1;
-        case 4: return 2;
-        case 5: return 3;
-        default: return 0;
+        case 1:
+          return -2;
+        case 2:
+          return -1;
+        case 3:
+          return 1;
+        case 4:
+          return 2;
+        case 5:
+          return 3;
+        default:
+          return 0;
       }
     };
 
@@ -112,7 +121,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
       user.productSuggestions.push({
         productId: product._id,
         productName: product.name,
-        suggestedScore: adjustSuggestedScore(rating)
+        suggestedScore: adjustSuggestedScore(rating),
       });
     }
 
@@ -122,7 +131,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
     // Chỉ trả về thông tin cần thiết
     res.status(200).json({
       message: "Updated successfully",
-      productSuggestions: updatedUser.productSuggestions
+      productSuggestions: updatedUser.productSuggestions,
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
@@ -159,7 +168,9 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
 
       // Tìm kiếm sản phẩm trong mảng productSuggestions của user
       const existingProduct = user.productSuggestions.find(
-        (suggestedProduct) => suggestedProduct.productId && suggestedProduct.productId.toString() === productId
+        (suggestedProduct) =>
+          suggestedProduct.productId &&
+          suggestedProduct.productId.toString() === productId
       );
 
       if (existingProduct) {
@@ -170,7 +181,7 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
         user.productSuggestions.push({
           productId: product._id,
           productName: product.name,
-          suggestedScore: 0
+          suggestedScore: 0,
         });
       }
 
@@ -187,7 +198,7 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
     // Chỉ trả về thông tin cần thiết
     res.status(200).json({
       message: "Updated successfully",
-      productSuggestions: updatedUser.productSuggestions
+      productSuggestions: updatedUser.productSuggestions,
     });
   } catch (error) {
     console.error("Error updating suggested scores:", error.message);
@@ -199,8 +210,8 @@ exports.configureProductRecommendations = async (req, res) => {
   const mainProductId = req.body.mainProductId;
   const suggestions = req.body.suggestions;
 
-  console.log('Main Product ID:', mainProductId);
-  console.log('Suggestions:', suggestions);
+  console.log("Main Product ID:", mainProductId);
+  console.log("Suggestions:", suggestions);
 
   try {
     // Tìm sản phẩm chính
@@ -221,35 +232,39 @@ exports.configureProductRecommendations = async (req, res) => {
 
       suggestionEntries.push({
         productId: productId,
-        productName: suggestedProduct.name
+        productName: suggestedProduct.name,
       });
     }
 
     // Kiểm tra và lưu vào cơ sở dữ liệu
     if (suggestionEntries.length > 0) {
       // Kiểm tra xem đã có recommendation với mainProductId chưa
-      let recommendation = await Recommendation.findOne({ mainProductId: mainProductId });
+      let recommendation = await Recommendation.findOne({
+        mainProductId: mainProductId,
+      });
 
       if (recommendation) {
         // Nếu đã có, cập nhật sản phẩm gợi ý
         recommendation.products = suggestionEntries;
         await recommendation.save();
-        console.log('Recommendations updated successfully');
+        console.log("Recommendations updated successfully");
       } else {
         // Nếu chưa có, tạo mới recommendation
         recommendation = new Recommendation({
           mainProductId: mainProductId,
           mainProductName: mainProduct.name, // Đổi tên thuộc tính cho đúng với schema
-          products: suggestionEntries // Đảm bảo tên thuộc tính khớp với schema
+          products: suggestionEntries, // Đảm bảo tên thuộc tính khớp với schema
         });
 
         await recommendation.save();
-        console.log('Recommendations collection created successfully');
+        console.log("Recommendations collection created successfully");
       }
 
-      console.log(`Added recommendations for main product: ${mainProduct.name}`);
+      console.log(
+        `Added recommendations for main product: ${mainProduct.name}`
+      );
     } else {
-      console.log('No suggestions available to insert');
+      console.log("No suggestions available to insert");
     }
 
     res.status(200).json({
@@ -259,11 +274,30 @@ exports.configureProductRecommendations = async (req, res) => {
         name: mainProduct.name,
       },
       suggestions: suggestionEntries,
-      collection: "Recommendation"
+      collection: "Recommendation",
     });
   } catch (error) {
     console.error("Error processing product recommendations:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+// GET PRODUCT RECOMMENDATIONS
+exports.getProductRecommendations = async (req, res) => {
+  const { mainProductId } = req.params;
 
+  try {
+    // Tìm gợi ý cho sản phẩm chính
+    const recommendation = await Recommendation.findOne({ mainProductId });
+
+    if (!recommendation) {
+      return res
+        .status(404)
+        .json({ message: "No recommendations found for this product" });
+    }
+
+    res.status(200).json(recommendation);
+  } catch (error) {
+    console.error("Error fetching recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

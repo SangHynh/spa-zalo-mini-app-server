@@ -16,8 +16,12 @@ import { FaSearch } from "react-icons/fa";
 import PreviewRecommend from "./recommends/PreviewRecommend";
 import { toast } from "react-toastify";
 import Loading from "../components/loading/Loading";
-import { apiUpdateProductRS } from "../apis/recommend-system";
+import {
+  apiConfigProductRS,
+  apiGetProductRecommendations,
+} from "../apis/recommend-system";
 import path from "../utils/path";
+import Swal from "sweetalert2";
 
 const RecommendSystem = () => {
   const { t } = useTranslation();
@@ -49,37 +53,66 @@ const RecommendSystem = () => {
     fetchProduct();
   }, [id]);
 
-  // GET PRODUCTS
+  // GET PRODUCTS và GET RECOMMENDATIONS
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await apiGetProducts();
-        if (response.status === 200) {
-          const transformedRows = response.data.map((product) => ({
+        // Fetch products
+        const productsResponse = await apiGetProducts();
+        if (productsResponse.status === 200) {
+          const transformedRows = productsResponse.data.map((product) => ({
             id: product._id,
             name: product.name,
             category: product.category,
             subCategory: product.subCategory,
+            isRecommended: false, // Khởi tạo
           }));
           setProducts(transformedRows);
-          setRows(transformedRows);
+
+          // Fetch recommendations
+          const recommendationsResponse = await apiGetProductRecommendations(
+            id
+          );
+          if (recommendationsResponse.status === 200) {
+            const recommendedProductIds =
+              recommendationsResponse.data.products.map((product) =>
+                product.productId.toString()
+              );
+
+            // Đánh dấu isRecommended
+            const updatedRows = transformedRows.map((row) => ({
+              ...row,
+              isRecommended: recommendedProductIds.includes(row.id),
+            }));
+
+            // Sắp xếp các sản phẩm gợi ý lên đầu
+            const sortedRows = [...updatedRows].sort((a, b) => {
+              if (a.isRecommended && !b.isRecommended) return -1;
+              if (!a.isRecommended && b.isRecommended) return 1;
+              return 0;
+            });
+
+            setRows(sortedRows);
+          } else {
+            setRows(transformedRows);
+          }
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchData();
+  }, [id]);
 
   const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "name", headerName: `${t("product-name")}` },
-    { field: "category", headerName: `${t("category")}` },
-    { field: "subCategory", headerName: `${t("sub-category")}` },
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "name", headerName: `${t("product-name")}`, flex: 1 },
+    { field: "category", headerName: `${t("category")}`, flex: 1 },
+    { field: "subCategory", headerName: `${t("sub-category")}`, flex: 1 },
   ];
 
   const paginationModel = { pageSize: 5, page: 0 };
@@ -94,61 +127,105 @@ const RecommendSystem = () => {
         product.name.toLowerCase().includes(value.toLowerCase()) ||
         product.id.toLowerCase().includes(value.toLowerCase())
     );
+
     if (filteredRows.length === 0) {
       console.warn("No products found");
     }
-    setRows(filteredRows);
+
+    // Áp dụng isRecommended và sắp xếp lại
+    const updatedRows = filteredRows.map((row) => ({
+      ...row,
+      isRecommended: rows.find((r) => r.id === row.id)?.isRecommended || false,
+    }));
+
+    const sortedRows = [...updatedRows].sort((a, b) => {
+      if (a.isRecommended && !b.isRecommended) return -1;
+      if (!a.isRecommended && b.isRecommended) return 1;
+      return 0;
+    });
+
+    setRows(sortedRows);
   };
 
+  // Cập nhật selectedIds mỗi khi rows thay đổi
+  useEffect(() => {
+    const recommendedProductIds = rows
+      .filter((row) => row.isRecommended)
+      .map((row) => row.id);
+    setSelectedIds(recommendedProductIds); // Chọn các sản phẩm gợi ý
+  }, [rows]);
+
   const handleSelectionChange = (newSelection) => {
-    console.log(newSelection);
-    setSelectedIds(newSelection);
-    const selectedRows = products.filter((product) =>
+    setSelectedIds(newSelection); // Cập nhật các ID được chọn
+    const selectedRows = rows.filter((product) =>
       newSelection.includes(product.id)
     );
-    setSelectedProducts(selectedRows);
+    setSelectedProducts(selectedRows); // Cập nhật các sản phẩm được chọn
   };
 
   const handleOpen = () => {
-    if (selectedProducts.length > 0) {
-      console.log(selectedProducts);
-      setOpen(true);
-    } else {
-      toast.info(`${t("no-change")}`);
-    }
+    const selectedRows = rows.filter((row) => selectedIds.includes(row.id));
+    // console.log(selectedRows);
+    setSelectedProducts(selectedRows);
+    setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleUpdate = async () => {
-    if (selectedProducts.length > 0) {
-      const selectedIds = selectedProducts.map((product) => product.id);
+  // const handleUpdate = async () => {
+  //   // Lọc ra các sản phẩm không phải gợi ý
+  //   const newlySelectedProducts = selectedProducts.filter(
+  //     (product) => !product.isRecommended
+  //   );
 
-      const data = {
-        id,
-        selectedIds,
-      };
+  //   // Kiểm tra sản phẩm đã bị bỏ chọn
+  //   const removedRecommendedProducts = selectedProducts.filter(
+  //     (product) => product.isRecommended && !selectedIds.includes(product.id)
+  //   );
 
-      console.log("Data gửi lên API:", data);
+  //   // Kiểm tra xem có sự thay đổi không
+  //   const hasChanges =
+  //     newlySelectedProducts.length > 0 || removedRecommendedProducts.length > 0;
 
-      try {
-        const response = await apiUpdateProductRS(data);
-        if (response.status === 200) {
-          console.log("Phản hồi từ API:", response.data);
-          toast.success(`${t("update-success")}`);
-        } else {
-          toast.error(`${t("update-failed")}`);
-        }
-      } catch (error) {
-        console.error("Lỗi khi gửi dữ liệu:", error);
-        toast.error(`${t("update-failed")}`);
-      }
-    } else {
-      toast.info(`${t("no-change")}`);
-    }
-  };
+  //   if (!hasChanges) {
+  //     toast.info(`${t("no-change")}`); // Không có gì thay đổi
+  //     return; // Dừng hàm nếu không có thay đổi
+  //   }
+
+  //   // Tiến hành xử lý cập nhật
+  //   const suggestions = newlySelectedProducts.map((product) => ({
+  //     productId: product.id,
+  //   }));
+
+  //   const data = {
+  //     mainProductId: id,
+  //     suggestions,
+  //   };
+
+  //   console.log("Data gửi lên API:", data);
+
+  //   try {
+  //     const response = await apiConfigProductRS(id, data);
+  //     if (response.status === 200) {
+  //       Swal.fire({
+  //         title: `${t("update-success")}`,
+  //         icon: "success",
+  //         confirmButtonText: "OK",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload(); // Reload
+  //         }
+  //       });
+  //     } else {
+  //       toast.error(`${t("update-failed")}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi gửi dữ liệu:", error);
+  //     toast.error(`${t("update-failed")}`);
+  //   }
+  // };
 
   const handleCancel = () => {
     navigate(`/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`);
@@ -206,7 +283,7 @@ const RecommendSystem = () => {
               color="secondary"
             />
           }
-          label={t("show-available-suggestions")}
+          label={t("show-suggested-products")}
         />
       </div>
       <Paper sx={{ width: "100%" }}>
@@ -217,11 +294,16 @@ const RecommendSystem = () => {
         ) : (
           <DataGrid
             rows={rows}
-            columns={columns.map((col) => ({ ...col, flex: 1 }))}
+            columns={columns}
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
             onRowSelectionModelChange={handleSelectionChange}
+            rowSelectionModel={selectedIds} // Sử dụng state để lưu ID của các sản phẩm được chọn
+            disableSelectionOnClick
+            getRowClassName={(params) =>
+              params.row.isRecommended ? "recommended-row" : ""
+            }
           />
         )}
       </Paper>
@@ -236,7 +318,7 @@ const RecommendSystem = () => {
           type="submit"
           variant="contained"
           color="success"
-          onClick={handleUpdate}
+          // onClick={handleUpdate}
         >
           {t("update")}
         </Button>
