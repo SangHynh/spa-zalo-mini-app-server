@@ -76,6 +76,7 @@ const register = async (req, res, next) => {
       throw createError.BadRequest("Invalid role or missing required fields");
     }
   } catch (error) {
+    console.log("Error:", error);
     next(error);
   }
 };
