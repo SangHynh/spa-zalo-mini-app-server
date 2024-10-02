@@ -46,6 +46,7 @@ const register = async (req, res, next) => {
         .catch((error) => {
           throw createError.BadRequest("Invalid Zalo Access Token");
         });
+        console.log(data);
       const zaloId = data.id;
       const name = data.name;
       const avatar = data.picture.data.url;
