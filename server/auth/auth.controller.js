@@ -13,13 +13,17 @@ const { getUserInfo } = require("../controllers/user.controller");
 
 const register = async (req, res, next) => {
   try {
-    const { email, password, role, zaloAccessToken } = req.body;
+    const { role} = req.body;
     // Kiểm tra role không khớp
     if (!role || !["admin", "user"].includes(role)) {
       throw createError.BadRequest("Invalid role");
     }
     // Kiểm tra xem email hoặc zaloId có bị trùng lặp không
-    if (role === "admin" && email) {
+    if (role === "admin") {
+      const { email, password} = req.body;
+      if (!email || !password) {
+        throw createError.BadRequest("Email and password are required");
+      }
       const doesExist = await Admin.findOne({ email });
       if (doesExist) {
         throw createError.Conflict(`Admin is already registered`);
@@ -32,7 +36,11 @@ const register = async (req, res, next) => {
       const refreshToken = await signRefreshToken(savedAdmin.id);
       // Trả về kết quả đăng ký thành công
       return res.send({ accessToken, refreshToken });
-    } else if (role === "user" && zaloAccessToken) {
+    } else if (role === "user" ) {
+      const { zaloAccessToken } = req.body;
+      if (!zaloAccessToken) {
+        throw createError.BadRequest("Zalo Access Token is required");
+      }
       const data = await zaloService(zaloAccessToken)
         .then((data) => data)
         .catch((error) => {
