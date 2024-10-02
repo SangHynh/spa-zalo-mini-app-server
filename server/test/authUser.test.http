@@ -1,8 +1,8 @@
 
-GET https://spa-zalo-mini-app-server-6.onrender.com/
+GET http://localhost:8080/
 Authorization: Bearer token_here
 
-# -------- READ services/README.md to get ZALO_TOKEN ---------
+# -------- READ docs/README.md to get ZALO_TOKEN ---------
 
 ### REGISTER ROUTE USER
 POST http://localhost:8080/auth/register

@@ -1,3 +1,5 @@
+/* npm run checkZaloToken */
+
 const axios = require("axios");
 const crypto = require("crypto");
 require("dotenv").config();

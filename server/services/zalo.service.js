@@ -6,6 +6,7 @@ const createError = require("http-errors");
 
 /* Hàm này để xác thực token Zalo có hợp lệ không */
 const zaloService = async (accessToken) => {
+
   // Hàm tính toán appsecret_proof
   const calculateHMacSHA256 = (data, secretKey) => {
     const hmac = crypto.createHmac("sha256", secretKey);
@@ -33,7 +34,8 @@ const zaloService = async (accessToken) => {
     const response = await axios(options);
     return response.data;
   } catch (error) {
-    throw createError.InternalServerError(error);
+    console.error(error);
+    
   }
 };
 

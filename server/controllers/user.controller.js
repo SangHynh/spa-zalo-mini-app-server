@@ -82,7 +82,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Lấy thông tin người dùng theo ID Zalo
+/* // Lấy thông tin người dùng theo ID Zalo
 const getUserInfo = async (req, res) => {
   const { zaloId } = await req.params; // Lấy zaloId từ path parameters
   try {
@@ -101,11 +101,11 @@ const getUserInfo = async (req, res) => {
       _id: user._id,
       accountId: user.accountId,
       name: user.name,
-      urlImage: user.urlImage,
+      avatar: user.avatar,
       phone: user.phone,
       membershipTier: user.membershipTier,
-      points: user.points,
       zaloId: account.zaloId, 
+      referralCode: 
     };
     res.status(200).json(userInfo);
   } catch (error) {
@@ -142,7 +142,7 @@ const updateUserInfo = async (req, res) => {
   } catch (error) {
     console.error("Error updating user:", error.message);
   }
-};
+}; */
 const suggestProductsForUser = async (req, res) => {
   try {
     // Lấy thông tin của khách hàng hiện tại từ req.params.id
@@ -214,7 +214,7 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
-  getUserInfo,
-  updateUserInfo,
+  /* getUserInfo,
+  updateUserInfo, */
   suggestProductsForUser
 };
