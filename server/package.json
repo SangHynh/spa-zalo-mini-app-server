@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "genkey": "nodemon ./helpers/generate_keys.js",
-    "checkZaloToken": "nodemon ./services/testZalo.service.js"
+    "checkZaloToken": "nodemon ./helpers/testZalo.js"
   },
   "repository": {
     "type": "git",
