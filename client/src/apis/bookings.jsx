@@ -17,10 +17,10 @@ export const apiGetBooking = (id) => axios(
 )
 
 // UPDATE CATEGORY
-export const apiUpdateBookingStatus = (id, status) => axios(
+export const apiUpdateBookingStatus = (id, data) => axios(
     {
         url: "/api/bookings/status/" + id,
         method: "PUT",
-        status
+        data
     }
 )

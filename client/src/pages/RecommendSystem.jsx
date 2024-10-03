@@ -179,7 +179,7 @@ const RecommendSystem = () => {
       .filter((row) => row.isRecommended)
       .map((row) => row.id);
 
-    const currentlySelectedProductIds = selectedIds;
+    const currentlySelectedProductIds = selectedIds.map(id => ({ productId: id }));
 
     const initiallySelectedButNowUnselected =
       initiallyRecommendedProductIds.filter(

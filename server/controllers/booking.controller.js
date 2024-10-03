@@ -207,6 +207,8 @@ class BookingController {
 
             if (!booking) return res.status(404).json({ message: 'Booking not found' })
 
+            console.log(req.body.status)
+
             booking.status = req.body.status;
 
             const savedBooking = await booking.save()

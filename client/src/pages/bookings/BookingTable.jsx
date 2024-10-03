@@ -70,8 +70,12 @@ function Row(props) {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 showLoading();
-                const res = await apiUpdateBookingStatus(id, status);
-                if (res) {
+                const data = {
+                    status: status
+                }
+                console.log(data)
+                const res = await apiUpdateBookingStatus(id, data);
+                if (res.status === 200) {
                     Swal.fire("Cập nhật thành công!", "", "success").then(() => {
                         // Tải lại trang sau khi thông báo thành công
                         window.location.reload();
@@ -280,7 +284,7 @@ function Row(props) {
                                 <Tooltip title={t("complete")}>
                                     <IconButton
                                         color="primary"
-                                        onClick={() => handleUpdateStatus(row._id, 'completed')}
+                                        onClick={() => handleUpdateStatus(row._id, "completed")}
                                         disabled={row.status === 'completed'}
                                     >
                                         <CheckCircleIcon sx={{ color: row.status === 'completed' ? 'gray.400' : green[500] }} />
@@ -288,7 +292,7 @@ function Row(props) {
                                 </Tooltip>
                                 <Tooltip title={t("pending")}>
                                     <IconButton
-                                        onClick={() => handleUpdateStatus(row._id, 'pending')}
+                                        onClick={() => handleUpdateStatus(row._id, "pending")}
                                         disabled={row.status === 'pending'}
                                     >
                                         <PendingIcon sx={{ color: row.status === 'pending' ? 'gray.400' : blue[500] }} />
@@ -296,7 +300,7 @@ function Row(props) {
                                 </Tooltip>
                                 <Tooltip title={t("cancel")}>
                                     <IconButton
-                                        onClick={() => handleUpdateStatus(row._id, 'cancelled')}
+                                        onClick={() => handleUpdateStatus(row._id, "cancelled")}
                                         disabled={row.status === 'cancelled'}
                                     >
                                         <CancelIcon sx={{ color: row.status === 'cancelled' ? 'gray.400' : red[500] }} />
