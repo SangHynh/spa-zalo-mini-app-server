@@ -48,8 +48,8 @@ const register = async (req, res, next) => {
         });
         console.log(data);
       const zaloId = data.id;
-      const name = data.name;
-      const avatar = data.picture.data.url;
+      const name = data?.name;
+      const avatar = data?.picture?.data?.url;
       const doesExist = await User.findOne({ zaloId });
       if (doesExist) {
         throw createError.Conflict(`User is already registered`);

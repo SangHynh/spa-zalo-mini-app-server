@@ -9,7 +9,7 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-    "zaloAccessToken": "FMEKJKnKo6GtP9HFHbN1O31ldKrTNuXvKpIaDrrrbdajGSfDMtF2P44qxJ9hMieUUHwUVGz9eoagB_5q1HJTEIL2tcKD5lK5U53RM70-nX5HTEj3QqN2CLqao4Ln59yNPrkIUNDhmrHoA-41HqlLNtKSW3T-AgrTTa-iBGCFas1uGRHE5WMYFMD6esTEBPK7Ts2xUtmfXm5SSuPfPKAa0M5uW5bAIPKrRNEfVHeNkL1jPf0TV22WJaf6Wc1h38GkG6EbSMmogm5AKOzPQ3cZRKzafoTk1uqD7c6GUm8rkom2M8faT0Mz2rnMXsPP9OKNOa-HMd8_Wmv_MBTIMXQ854fzctbOChSoSNcGHGj9bYLECp130cKPIa_5PG",
+    "zaloAccessToken": "ZALO_TOKEN_HERE",
     "role": "user"
 }
 

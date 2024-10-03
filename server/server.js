@@ -9,7 +9,6 @@ const initRoutes = require("./routes/index.route");
 const loggingMiddleware = require("./middlewares/logger.middleware");
 const authRoute = require("./auth/auth.route");
 const { verifyAccessToken } = require("./configs/jwt.config");
-const keepAliveMiddleware = require("./middlewares/keepalive.middleware");
 require("./configs/redis.config");
 require("./configs/jwt.config");
 
@@ -42,9 +41,6 @@ app.use(cors({
 }));
 
 app.use(loggingMiddleware);
-
-// Sử dụng middleware keep-alive
-app.use(keepAliveMiddleware);
 
 app.use("/auth", authRoute);
 

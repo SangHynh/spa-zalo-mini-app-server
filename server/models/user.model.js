@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    name: { type: String, required: true },
-    avatar: { type: String, default: "" },
-    phone: { type: String, default: "" },
+    name: { type: String, required: true, unique: false },
+    avatar: { type: String, default: "", unique: false },
+    phone: { type: String, default: null, unique: true, sparse: true },
     membershipTier: {
       type: String,
       enum: ["Member", "Silver", "Gold", "Diamond"],
