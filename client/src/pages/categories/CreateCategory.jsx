@@ -1,35 +1,59 @@
 import React, { useEffect, useState } from "react";
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { Autocomplete, Backdrop, Checkbox, CircularProgress, Container, FormControl, Grid2, IconButton, ImageList, ImageListItem, Input, InputAdornment, InputLabel, List, ListItem, ListItemText, MenuItem, Modal, styled, TextField } from "@mui/material";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import {
+  Autocomplete,
+  Backdrop,
+  Checkbox,
+  CircularProgress,
+  Container,
+  FormControl,
+  Grid2,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  Input,
+  InputAdornment,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  MenuItem,
+  Modal,
+  styled,
+  TextField,
+} from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { benefits, VisuallyHiddenInput } from "../../utils/constants";
 import PaginationTable from "../../components/tables/PaginationTable";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { apiCreateCategory } from "../../apis/categories";
 import Swal from "sweetalert2";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import PreviewCategory from "./PreviewCategory";
 import { useLoading } from "../../context/LoadingProvider";
+import { useTranslation } from "react-i18next";
 
 const CreateCategory = () => {
+  const { t } = useTranslation();
+
   // HANDLE CREATE SUBCATEGORIES
   // Create subCategory button
-  const [subCategories, setSubCategories] = useState([])
+  const [subCategories, setSubCategories] = useState([]);
   const [subCategoryId, setSubCategoryId] = useState(1);
-  const [subCategoryName, setSubCategoryName] = useState('')
-  const [subCategoryDescription, setSubCategoryDescription] = useState('')
+  const [subCategoryName, setSubCategoryName] = useState("");
+  const [subCategoryDescription, setSubCategoryDescription] = useState("");
 
   const createSubCategory = () => {
     if (subCategoryName && subCategoryDescription) {
@@ -45,20 +69,22 @@ const CreateCategory = () => {
       setSubCategoryId(subCategoryId + 1);
 
       // Clear input fields after creating a subCategory
-      setSubCategoryName('');
-      setSubCategoryDescription('');
+      setSubCategoryName("");
+      setSubCategoryDescription("");
     } else {
       alert("Please fill in all fields.");
     }
-  }
+  };
 
   const deleteSubCategory = (id) => {
-    setSubCategories(subCategories.filter(subCategory => subCategory.id !== id));
+    setSubCategories(
+      subCategories.filter((subCategory) => subCategory.id !== id)
+    );
   };
 
   // PREVIEW CATEGORY
-  const [categoryName, setCategoryName] = useState('')
-  const [categoryDescription, setCategoryDescription] = useState('')
+  const [categoryName, setCategoryName] = useState("");
+  const [categoryDescription, setCategoryDescription] = useState("");
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -70,19 +96,19 @@ const CreateCategory = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    showLoading()
+    showLoading();
 
     const data = {
       name: categoryName,
       description: categoryDescription,
-      subCategory: subCategories.map(({ _id, ...rest }) => rest)
-    }
+      subCategory: subCategories.map(({ _id, ...rest }) => rest),
+    };
 
     try {
       const response = await apiCreateCategory(data);
 
       // console.log(response.data)
-      console.log(response.status)
+      console.log(response.status);
 
       if (response.status === 201) {
         Swal.fire({
@@ -94,36 +120,38 @@ const CreateCategory = () => {
           cancelButtonText: "Cancel",
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
-            navigate(`/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`)
+            navigate(`/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`);
           } else {
             window.location.reload();
           }
         });
       }
     } catch (error) {
-      console.error('Error creating category:', error);
+      console.error("Error creating category:", error);
       // Handle error (e.g., show an error message)
     } finally {
-      hideLoading()
+      hideLoading();
     }
+  };
+
+  const handleCancel = () => {
+    navigate(`/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`);
   };
 
   return (
     <Container className="m-5">
-
       <Typography variant="h5" gutterBottom>
-        New Category
+        {t("new-category")}
       </Typography>
 
       <form onSubmit={handleSubmit}>
-
         {/* Name */}
         <TextField
           id="categoryName"
-          label="Category Name"
+          label={t("category-name")}
           variant="standard"
           fullWidth
-          placeholder="Category name..."
+          // placeholder="Category name..."
           margin="dense"
           value={categoryName}
           onChange={(e) => setCategoryName(e.target.value)}
@@ -132,11 +160,11 @@ const CreateCategory = () => {
         {/* Description */}
         <TextField
           id="categoryDescription"
-          label="Description"
+          label={t("description")}
           multiline
           fullWidth
           rows={4}
-          placeholder="Description..."
+          // placeholder="Description..."
           variant="standard"
           margin="dense"
           value={categoryDescription}
@@ -147,7 +175,7 @@ const CreateCategory = () => {
         <Grid2 container fullWidth spacing={1} sx={{ mt: 2 }}>
           <Grid2 size={12}>
             <Typography variant="h6" gutterBottom>
-              Create subCategory of product
+              {t("create-subcategory")}
               <IconButton color="secondary" onClick={createSubCategory}>
                 <ControlPointIcon />
               </IconButton>
@@ -157,7 +185,9 @@ const CreateCategory = () => {
           <Grid2 size={4}>
             {/* Name */}
             <FormControl fullWidth margin="dense" variant="standard">
-              <InputLabel htmlFor="subCategoryName">Name</InputLabel>
+              <InputLabel htmlFor="subCategoryName">
+                {t("sub-category-name")}
+              </InputLabel>
               <Input
                 id="subCategoryName"
                 value={subCategoryName}
@@ -166,7 +196,9 @@ const CreateCategory = () => {
             </FormControl>
             {/* Description */}
             <FormControl fullWidth margin="dense" variant="standard">
-              <InputLabel htmlFor="subCategoryDescription">Description</InputLabel>
+              <InputLabel htmlFor="subCategoryDescription">
+                {t("description")}
+              </InputLabel>
               <Input
                 id="subCategoryDescription"
                 value={subCategoryDescription}
@@ -176,30 +208,38 @@ const CreateCategory = () => {
               />
             </FormControl>
           </Grid2>
-          <Grid2 size={8}>
-            {/* SubCategories table */}
-            <PaginationTable
-              rows={subCategories}
-              columns={['_id', 'name', 'description']}
-              onDelete={deleteSubCategory}
-            />
+          <Grid2 size={1}></Grid2>
+          <Grid2 size={7}>
+            <Box className="border-gray-300 shadow-xl border-2 rounded-md ml-10 mt-4">
+              {/* SubCategories table */}
+              <PaginationTable
+                rows={subCategories}
+                columns={["_id", "name", "description"]}
+                onDelete={deleteSubCategory}
+              />
+            </Box>
           </Grid2>
         </Grid2>
 
-        <Grid2 container fullWidth spacing={2} sx={{ mt: 2, justifyContent: 'flex-end' }}>
+        <Grid2
+          container
+          fullWidth
+          spacing={2}
+          sx={{ mt: 2, justifyContent: "flex-end" }}
+        >
           <Grid2>
             <Button type="submit" variant="contained" color="success">
-              Create
+              {t("create")}
             </Button>
           </Grid2>
           <Grid2>
             <Button variant="outlined" color="success" onClick={handleOpen}>
-              Preview
+              {t("preview")}
             </Button>
           </Grid2>
           <Grid2>
-            <Button variant="outlined" color="warning">
-              Cancel
+            <Button variant="outlined" color="warning" onClick={handleCancel}>
+              {t("cancel")}
             </Button>
           </Grid2>
         </Grid2>
@@ -213,7 +253,6 @@ const CreateCategory = () => {
           subCategories={subCategories}
         />
       </form>
-
     </Container>
   );
 };

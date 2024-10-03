@@ -15,27 +15,27 @@ export const getSidebar = (t) => [
     id: 1,
     name: t("dashboard"),
     path: `/${path.ADMIN_LAYOUT}/${path.DASHBOARD}`,
-    icon: <RiDashboardLine size={25} />,
+    icon: <img src="/dashboard.png" alt="" className="w-7 h-7" />,
     type: "SINGLE",
   },
   {
     id: 2,
     name: t("product"),
     path: `/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`,
-    icon: <LuShoppingBag size={25} />,
+    icon: <img src="/product.png" alt="" className="w-7 h-7" />,
     type: "SINGLE",
   },
   {
     id: 3,
     name: t("service"),
     path: `/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`,
-    icon: <TbMassage size={25} />,
+    icon: <img src="/spa.png" alt="" className="w-7 h-7" />,
     type: "SINGLE",
   },
   {
     id: 4,
     name: t("user"),
-    icon: <FaUserCog size={25} />,
+    icon: <img src="/user.png" alt="" className="w-7 h-7" />,
     type: "PARENT",
     subs: [
       {
@@ -56,27 +56,27 @@ export const getSidebar = (t) => [
     id: 5,
     name: t("category"),
     path: `/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`,
-    icon: <MdCategory size={25} />,
+    icon: <img src="/category1.png" alt="" className="w-7 h-7" />,
     type: "SINGLE",
   },
   {
     id: 6,
     name: t("booking"),
     path: `/${path.ADMIN_LAYOUT}/${path.BOOKING_MANAGEMENT}`,
-    icon: <MdRoomService size={25} />,
+    icon: <img src="/booking.png" alt="" className="w-8 h-8" />,
     type: "SINGLE",
   },
   {
     id: 7,
     name: t("order"),
     path: `/${path.ADMIN_LAYOUT}/${path.ORDER_MANAGEMENT}`,
-    icon: <MdProductionQuantityLimits size={25} />,
+    icon: <img src="/order.png" alt="" className="w-7 h-7 ml-1" />,
     type: "SINGLE",
   },
   {
     id: 8,
     name: t("general-config"),
-    icon: <IoSettingsSharp size={25} />,
+    icon: <img src="/setting.png" alt="" className="w-7 h-7" />,
     type: "PARENT",
     subs: [
       {

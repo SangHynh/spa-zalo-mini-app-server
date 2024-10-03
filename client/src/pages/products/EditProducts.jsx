@@ -99,7 +99,7 @@ const EditProduct = () => {
   const createVariant = () => {
     if (variantVolume && variantPrice && variantStock) {
       const newVariant = {
-        id: variantId, // Generate unique ID for each variant
+        _id: variantId, // Generate unique ID for each variant
         volume: variantVolume,
         price: variantPrice,
         stock: variantStock,
@@ -120,7 +120,7 @@ const EditProduct = () => {
   };
 
   const deleteVariant = (id) => {
-    setVariants(variants.filter((variant) => variant.id !== id));
+    setVariants(variants.filter((variant) => variant._id !== id));
   };
 
   const handleEditVariantRow = (updatedRow) => {
@@ -142,7 +142,7 @@ const EditProduct = () => {
   const createIngredient = () => {
     if (ingredientName && ingredientPercentage) {
       const newIngredient = {
-        id: ingredientId,
+        _id: ingredientId,
         name: ingredientName,
         percentage: ingredientPercentage,
         usageInstructions: ingredientUsageInstructions || "N/A", // Default if not provided
@@ -160,7 +160,7 @@ const EditProduct = () => {
   };
 
   const deleteIngredient = (id) => {
-    setIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
+    setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
   };
 
   const handleEditIngredientRow = (updatedRow) => {
@@ -583,16 +583,15 @@ const EditProduct = () => {
             </FormControl>
           </Grid2>
           <Grid2 size={1}></Grid2>
-          <Grid2
-            size={7}
-            className="border-gray-300 shadow-xl border-2 rounded-md"
-          >
-            <PaginationTable
-              rows={variants}
-              columns={["id", "volume", "price", "stock"]}
-              onDelete={deleteVariant}
-              onEditRow={handleEditVariantRow}
-            />
+          <Grid2 size={7}>
+            <Box className="border-gray-300 shadow-xl border-2 rounded-md ml-10 mt-4">
+              <PaginationTable
+                rows={variants}
+                columns={["_id", "volume", "price", "stock"]}
+                onDelete={deleteVariant}
+                onEditRow={handleEditVariantRow}
+              />
+            </Box>
           </Grid2>
         </Grid2>
 
@@ -639,16 +638,16 @@ const EditProduct = () => {
               />
             </FormControl>
           </Grid2>
-          <Grid2
-            size={8}
-            className="border-gray-300 shadow-xl border-2 rounded-md"
-          >
-            <PaginationTable
-              rows={ingredients}
-              columns={["_id", "name", "percentage", "usageInstructions"]}
-              onDelete={deleteIngredient}
-              onEditRow={handleEditIngredientRow}
-            />
+          {/* <Grid2 size={1}></Grid2> */}
+          <Grid2 size={8}>
+            <Box className="border-gray-300 shadow-xl border-2 rounded-md ml-10 mt-4">
+              <PaginationTable
+                rows={ingredients}
+                columns={["_id", "name", "percentage", "usageInstructions"]}
+                onDelete={deleteIngredient}
+                onEditRow={handleEditIngredientRow}
+              />
+            </Box>
           </Grid2>
         </Grid2>
 

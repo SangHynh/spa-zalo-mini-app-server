@@ -103,7 +103,7 @@ const CreateProduct = () => {
   };
 
   const deleteVariant = (id) => {
-    setVariants(variants.filter(variant => variant._id !== id));
+    setVariants(variants.filter((variant) => variant._id !== id));
   };
 
   const handleEditVariantRow = (updatedRow) => {
@@ -143,7 +143,7 @@ const CreateProduct = () => {
   };
 
   const deleteIngredient = (id) => {
-    setIngredients(ingredients.filter(ingredient => ingredient._id !== id));
+    setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
   };
 
   const handleEditIngredientRow = (updatedRow) => {
@@ -512,16 +512,15 @@ const CreateProduct = () => {
             </FormControl>
           </Grid2>
           <Grid2 size={1}></Grid2>
-          <Grid2
-            size={7}
-            className="border-gray-300 shadow-xl dark:border-2 rounded-md"
-          >
-            <PaginationTable
-              rows={variants}
-              columns={["id", "volume", "price", "stock"]}
-              onDelete={deleteVariant}
-              onEditRow={handleEditVariantRow}
-            />
+          <Grid2 size={7}>
+            <Box className="border-gray-300 shadow-xl border-2 rounded-md ml-10 mt-4">
+              <PaginationTable
+                rows={variants}
+                columns={["_id", "volume", "price", "stock"]}
+                onDelete={deleteVariant}
+                onEditRow={handleEditVariantRow}
+              />
+            </Box>
           </Grid2>
         </Grid2>
 
@@ -568,11 +567,12 @@ const CreateProduct = () => {
               />
             </FormControl>
           </Grid2>
+          {/* <Grid2 size={1}></Grid2> */}
           <Grid2 size={8}>
-            <Box className="border-gray-300 shadow-xl dark:border-2 rounded-md ml-10 mt-4">
+            <Box className="border-gray-300 shadow-xl border-2 rounded-md ml-10 mt-4">
               <PaginationTable
                 rows={ingredients}
-                columns={["id", "name", "percentage", "usageInstructions"]}
+                columns={["_id", "name", "percentage", "usageInstructions"]}
                 onDelete={deleteIngredient}
                 onEditRow={handleEditIngredientRow}
               />
