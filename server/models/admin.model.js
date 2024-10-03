@@ -3,9 +3,21 @@ const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
 
 const PERMISSIONS = {
-  READ: "read",
-  WRITE: "write",
-  DELETE: "delete",
+  READ_PRODUCTS: "read_products",
+  WRITE_PRODUCTS: "write_products",
+  DELETE_PRODUCTS: "delete_products",
+  READ_SERVICES: "read_services",
+  WRITE_SERVICES: "write_services",
+  DELETE_SERVICES: "delete_services",
+  READ_USERS: "read_users",
+  WRITE_USERS: "write_users",
+  DELETE_USERS: "delete_users",
+  READ_CATEGORIES: "read_categories",
+  WRITE_CATEGORIES: "write_categories",
+  DELETE_CATEGORIES: "delete_categories",
+  READ_BOOKINGS: "read_bookings",
+  WRITE_BOOKINGS: "write_bookings",
+  DELETE_BOOKINGS: "delete_bookings",
   ADMIN: "admin",
 };
 
@@ -33,13 +45,20 @@ const AdminSchema = new Schema({
   permissions: {
     type: [String],
     enum: Object.values(PERMISSIONS),
-    default: [PERMISSIONS.ADMIN],
+    default: [
+      PERMISSIONS.ADMIN,
+    ],
   },
   zaloId: {
     type: String,
     default: null,
     unique: true,
     sparse: true,
+  },
+  avatar: {
+    type: String,
+    default: "",
+    unique: false,
   },
 });
 
