@@ -95,7 +95,7 @@ function Row(props) {
               </IconButton>
             </TableCell>
             <TableCell
-              align="right"
+              align="center"
               component="th"
               scope="row"
               className="relative cursor-pointer"
@@ -103,11 +103,11 @@ function Row(props) {
             >
               {row._id}
             </TableCell>
-            <TableCell align="right" className="relative">
+            <TableCell align="left" className="relative">
               {row.name}
             </TableCell>
             <TableCell
-              align="right"
+              align="left"
               sx={{
                 maxWidth: "400px",
                 overflowX: "auto",

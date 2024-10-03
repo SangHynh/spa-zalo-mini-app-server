@@ -24,7 +24,7 @@ const PreviewRecommend = ({
   const { t } = useTranslation();
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Số hàng trên mỗi trang
+  const [rowsPerPage, setRowsPerPage] = useState(6); // Số hàng trên mỗi trang
 
   // Hàm thay đổi trang
   const handleChangePage = (event, newPage) => {
@@ -111,7 +111,7 @@ const PreviewRecommend = ({
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10]}
+            rowsPerPageOptions={[6, 12]}
             component="div"
             count={previewRows.length}
             rowsPerPage={rowsPerPage}

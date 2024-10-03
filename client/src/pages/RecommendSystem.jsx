@@ -156,7 +156,13 @@ const RecommendSystem = () => {
   }, [rows]);
 
   const handleSelectionChange = (newSelection) => {
+    if (newSelection.length > 12) {
+      toast.error("Đã vượt quá số lượng gợi ý");
+      return; // Ngăn không cho cập nhật selection nếu vượt quá 12
+    }
+
     setSelectedIds(newSelection); // Cập nhật các ID được chọn
+
     const selectedRows = rows.filter((product) =>
       newSelection.includes(product.id)
     );
@@ -179,7 +185,9 @@ const RecommendSystem = () => {
       .filter((row) => row.isRecommended)
       .map((row) => row.id);
 
-    const currentlySelectedProductIds = selectedIds.map(id => ({ productId: id }));
+    const currentlySelectedProductIds = selectedIds.map((id) => ({
+      productId: id,
+    }));
 
     const initiallySelectedButNowUnselected =
       initiallyRecommendedProductIds.filter(
@@ -197,7 +205,7 @@ const RecommendSystem = () => {
       toast.info(`${t("no-change")}`);
     } else {
       try {
-        console.log(id, currentlySelectedProductIds);
+        // console.log(id, currentlySelectedProductIds);
 
         const response = await apiConfigProductRS(id, {
           mainProductId: id,
@@ -206,7 +214,7 @@ const RecommendSystem = () => {
 
         if (response.status === 200) {
           Swal.fire({
-            title: `${"success"}!`,
+            title: `${t("success")}!`,
             text: `${t("update-success")}`,
             icon: "success",
             confirmButtonText: "Ok",
@@ -230,12 +238,6 @@ const RecommendSystem = () => {
 
   const handleCancel = () => {
     navigate(`/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`);
-  };
-
-  const [checked, setChecked] = React.useState(false);
-
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
   };
 
   return (
@@ -275,17 +277,11 @@ const RecommendSystem = () => {
           />
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked}
-              onChange={handleChange}
-              name="myCheckbox"
-              color="secondary"
-            />
-          }
-          label={t("show-suggested-products")}
-        />
+        <Box>
+          <span>{t("number-of-suggested-products")} : </span>
+          <span>{selectedIds.length}</span>
+          <span>/12</span>
+        </Box>
       </div>
       <Paper sx={{ width: "100%" }}>
         {loading ? (
@@ -297,14 +293,11 @@ const RecommendSystem = () => {
             rows={rows}
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[5, 10]}
+            pageSizeOptions={[6, 12]}
             checkboxSelection
             onRowSelectionModelChange={handleSelectionChange}
             rowSelectionModel={selectedIds} // Sử dụng state để lưu ID của các sản phẩm được chọn
             disableSelectionOnClick
-            getRowClassName={(params) =>
-              params.row.isRecommended ? "recommended-row" : ""
-            }
           />
         )}
       </Paper>
