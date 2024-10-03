@@ -27,7 +27,7 @@ class CartController {
         try {
             const productId = req.params.id;
 
-            const { quantity } = req.body;
+            const { variantId, quantity } = req.body;
 
             const accountId = req.payload.aud
             // const { userId } = req.params.id;
@@ -47,6 +47,7 @@ class CartController {
             else {
                 user.carts.push({
                     productId: productId,
+                    variantId: variantId,
                     productName: product.name,
                     price: product.price,
                     quantity: quantity,
@@ -69,13 +70,13 @@ class CartController {
     async reduceCartItem(req, res) {
         try {
             const productId = req.params.id;
-            const { quantity } = req.body;
+            const { variantId, quantity } = req.body;
             const accountId = req.payload.aud
 
             const user = await User.findOne({ accountId: accountId });
             if (!user) return res.status(404).json("User not found");
 
-            const cartItem = user.carts.find(item => item.productId.toString() === productId);
+            const cartItem = user.carts.find(item => item.productId.toString() === productId && item.variantId.toString() === variantId);
             if (!cartItem) {
                 return res.status(404).json({ message: 'Product not found in cart' });
             }
@@ -102,13 +103,15 @@ class CartController {
         try {
             const productId = req.params.id;
 
+            const { variantId } = req.body;
+
             const accountId = req.payload.aud
             // const { userId } = req.params.id;
             const user = await User.findOne({ accountId: accountId });
 
             if (!user) return res.status(404).json("User not found")
 
-            user.carts = user.carts.filter(item => item.productId.toString() !== productId);
+            user.carts = user.carts.filter(item => item.productId.toString() !== productId && item.variantId.toString() !== variantId);
 
             await user.save();
 

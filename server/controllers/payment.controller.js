@@ -28,6 +28,7 @@ class PaymentController {
                 // Chuyển đổi các items trong cart thành products cho bảng Order
                 data.products = items.map(item => ({
                     productId: item.product.id,
+                    variantId: item.product.variantId,
                     name: item.product.name,
                     price: item.product.price,
                     quantity: item.quantity,

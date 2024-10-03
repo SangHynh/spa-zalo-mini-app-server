@@ -135,7 +135,7 @@ class BookingController {
             // TODO:
             const accountId = req.payload.aud;
             const bookingId = req.params.id;
-            const { serviceId, date, ...updateData } = req.body;
+            const { serviceId, date, products, ...updateData } = req.body;
 
             const user = await User.findOne({ accountId: accountId });
             if (!user) {
@@ -158,6 +158,10 @@ class BookingController {
 
             if (date) {
                 booking.date = moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+            }
+
+            if (products) {
+                booking.products = JSON.parse(products);
             }
 
             Object.assign(booking, updateData);

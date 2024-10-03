@@ -103,5 +103,6 @@
   "signin": "Sign In",
   "password": "Password",
   "error": "Error",
-  "success": "Success"
+  "success": "Success",
+  "overview": "Overview"
 }

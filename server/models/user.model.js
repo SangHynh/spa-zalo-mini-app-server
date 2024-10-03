@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     referralCode: { type: String },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
+    address: { type: String, default: "" },
     productSuggestions: [
       {
         productId: { type: String },  // ID của sản phẩm
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema(
     ],
     carts: [{
       productId: { type: mongoose.Schema.Types.ObjectId },
+      variantId: { type: mongoose.Schema.Types.ObjectId },
       productName: { type: String, required: true },
       price: { type: Number, required: true },
       quantity: { type: Number, required: true, min: 1 },

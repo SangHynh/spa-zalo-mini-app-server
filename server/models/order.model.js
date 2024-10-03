@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema({
     referralId: { type: mongoose.Schema.Types.ObjectId, required: false },
     products: [{
         productId: { type: mongoose.Schema.Types.ObjectId },
+        variantId: { type: mongoose.Schema.Types.ObjectId },
         productName: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },

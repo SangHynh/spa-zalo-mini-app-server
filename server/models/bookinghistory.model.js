@@ -13,6 +13,7 @@ const bookingHistorySchema = new mongoose.Schema({
     status: { type: String, enum: ['completed', 'pending', 'cancelled'], required: true, default: 'pending' },
     products: [{
         productId: { type: mongoose.Schema.Types.ObjectId },
+        variantId: { type: mongoose.Schema.Types.ObjectId },
         productName: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },

@@ -38,6 +38,7 @@ Trong đó:
 "products": [
     {
         "productId":
+        "variantId":
         "productName":
         "price":
         "quantity":
@@ -50,6 +51,7 @@ hoặc
     {
         "product": {
             "id": ,
+            "variantId": ,
             "name": ,
             "price": 
         },
