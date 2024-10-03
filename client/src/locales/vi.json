@@ -113,5 +113,7 @@
   "create-subcategory": "Tạo Danh mục con",
   "no-sub-categories-added": "Không có danh mục con được thêm",
   "nor-image": "Hình ảnh",
-  "image-config": "Cấu hình ảnh"
+  "image-config": "Cấu hình ảnh",
+  "success-config": "Cấu hình thành công!",
+  "fail-config": "Cấu hình không thành công!"
 }

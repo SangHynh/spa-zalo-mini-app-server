@@ -113,5 +113,7 @@
   "create-subcategory": "Create Sub-category",
   "no-sub-categories-added": "No subCategories added",
   "nor-image": "Image",
-  "image-config": "Images Config"
+  "image-config": "Images Config",
+  "success-config": "Successfully config!",
+  "fail-config": "Config failed!"
 }
