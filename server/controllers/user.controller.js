@@ -112,20 +112,15 @@ const getUserInfo = async (req, res) => {
     console.error("Error fetching user:", error.message);
     res.status(500).json({ message: error.message });
   }
-};
+}; */
 
 // Cập nhật thông tin người dùng theo ID Zalo
 const updateUserInfo = async (req, res) => {
   const { zaloId } = req.params; 
   const { name, phone } = req.body;   
   try {
-    // Tìm kiếm người dùng theo zaloId từ mô hình Account
-    const account = await Account.findOne({ zaloId });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
-    // Tìm kiếm người dùng theo accountId từ mô hình User
-    const user = await User.findOne({ accountId: account._id });
+    // Tìm kiếm người dùng theo zaloId từ mô hình User
+    const user = await User.findOne({ zaloId: zaloId });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -134,7 +129,7 @@ const updateUserInfo = async (req, res) => {
     await user.save();
     const userInfo = {
       _id: user._id,
-      accountId: user.accountId,
+      zaloId: user.zaloId,
       name: user.name,
       phone: user.phone
     };
@@ -142,7 +137,7 @@ const updateUserInfo = async (req, res) => {
   } catch (error) {
     console.error("Error updating user:", error.message);
   }
-}; */
+};
 const suggestProductsForUser = async (req, res) => {
   try {
     // Lấy thông tin của khách hàng hiện tại từ req.params.id
@@ -214,7 +209,7 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
-  /* getUserInfo,
-  updateUserInfo, */
+  // getUserInfo,
+  updateUserInfo,
   suggestProductsForUser
 };

@@ -61,6 +61,7 @@ const register = async (req, res, next) => {
         avatar,
         membershipTier: "Member",
         referralCode: await generateReferralCode(zaloId),
+        points: 0,
       });
       await user.save();
       const userProfile = {
@@ -69,6 +70,7 @@ const register = async (req, res, next) => {
         avatar: user.avatar,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
+        points: user.points,
       };
       const accessToken = await signAccessToken(user.id);
       const refreshToken = await signRefreshToken(user.id);
@@ -120,6 +122,7 @@ const login = async (req, res, next) => {
         avatar: user.avatar,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
+        points: user.points,
       };
       if (!user) throw createError.NotFound("User not found");
       // Tạo access token và refresh token sau khi đăng nhập thành công
