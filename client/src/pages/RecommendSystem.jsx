@@ -174,58 +174,59 @@ const RecommendSystem = () => {
     setOpen(false);
   };
 
-  // const handleUpdate = async () => {
-  //   // Lọc ra các sản phẩm không phải gợi ý
-  //   const newlySelectedProducts = selectedProducts.filter(
-  //     (product) => !product.isRecommended
-  //   );
+  const handleUpdate = async () => {
+    const initiallyRecommendedProductIds = rows
+      .filter((row) => row.isRecommended)
+      .map((row) => row.id);
 
-  //   // Kiểm tra sản phẩm đã bị bỏ chọn
-  //   const removedRecommendedProducts = selectedProducts.filter(
-  //     (product) => product.isRecommended && !selectedIds.includes(product.id)
-  //   );
+    const currentlySelectedProductIds = selectedIds;
 
-  //   // Kiểm tra xem có sự thay đổi không
-  //   const hasChanges =
-  //     newlySelectedProducts.length > 0 || removedRecommendedProducts.length > 0;
+    const initiallySelectedButNowUnselected =
+      initiallyRecommendedProductIds.filter(
+        (id) => !currentlySelectedProductIds.includes(id)
+      );
 
-  //   if (!hasChanges) {
-  //     toast.info(`${t("no-change")}`); // Không có gì thay đổi
-  //     return; // Dừng hàm nếu không có thay đổi
-  //   }
+    const newlySelectedProducts = currentlySelectedProductIds.filter(
+      (id) => !initiallyRecommendedProductIds.includes(id)
+    );
 
-  //   // Tiến hành xử lý cập nhật
-  //   const suggestions = newlySelectedProducts.map((product) => ({
-  //     productId: product.id,
-  //   }));
+    if (
+      initiallySelectedButNowUnselected.length === 0 &&
+      newlySelectedProducts.length === 0
+    ) {
+      toast.info(`${t("no-change")}`);
+    } else {
+      try {
+        console.log(id, currentlySelectedProductIds);
 
-  //   const data = {
-  //     mainProductId: id,
-  //     suggestions,
-  //   };
+        const response = await apiConfigProductRS(id, {
+          mainProductId: id,
+          suggestions: currentlySelectedProductIds, // Dữ liệu là các ID sản phẩm được chọn
+        });
 
-  //   console.log("Data gửi lên API:", data);
-
-  //   try {
-  //     const response = await apiConfigProductRS(id, data);
-  //     if (response.status === 200) {
-  //       Swal.fire({
-  //         title: `${t("update-success")}`,
-  //         icon: "success",
-  //         confirmButtonText: "OK",
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           window.location.reload(); // Reload
-  //         }
-  //       });
-  //     } else {
-  //       toast.error(`${t("update-failed")}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi gửi dữ liệu:", error);
-  //     toast.error(`${t("update-failed")}`);
-  //   }
-  // };
+        if (response.status === 200) {
+          Swal.fire({
+            title: `${"success"}!`,
+            text: `${t("update-success")}`,
+            icon: "success",
+            confirmButtonText: "Ok",
+          }).then(() => {
+            window.location.reload();
+          });
+        } else {
+          console.error("Failed to update recommendations");
+          Swal.fire({
+            title: `${t("error")}!`,
+            text: `${t("update-failed")}`,
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+      } catch (error) {
+        console.error("Error calling API:", error);
+      }
+    }
+  };
 
   const handleCancel = () => {
     navigate(`/${path.ADMIN_LAYOUT}/${path.PRODUCT_MANAGEMENT}`);
@@ -318,7 +319,7 @@ const RecommendSystem = () => {
           type="submit"
           variant="contained"
           color="success"
-          // onClick={handleUpdate}
+          onClick={handleUpdate}
         >
           {t("update")}
         </Button>

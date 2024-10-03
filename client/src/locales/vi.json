@@ -98,5 +98,10 @@
   "no-ingredients-added": "Không có thành phần được thêm",
   "edit-product": "Chỉnh sửa sản phẩm",
   "edit-service": "Chỉnh sửa dịch vụ",
-  "in-stock": "còn hàng"
+  "in-stock": "còn hàng",
+  "login-success": "Đăng nhập thành công",
+  "signin": "Đăng nhập",
+  "password": "Mật khẩu",
+  "error": "Lỗi",
+  "success": "Thành công"
 }
