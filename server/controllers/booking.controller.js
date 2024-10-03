@@ -4,11 +4,28 @@ const User = require("../models/user.model");
 const moment = require('moment');
 
 class BookingController {
+
     // GET BOOKING HISTORIES
     async getBookingHistories(req, res) {
         try {
-            const response = await BookingHistory.find();
-            return res.status(200).json(response)
+            const bookingHistories = await BookingHistory.find();
+
+            if (!bookingHistories || bookingHistories.length === 0) {
+                return res.status(200).json([]);
+            }
+
+            const bookingsWithCustomers = [];
+
+            for (let booking of bookingHistories) {
+                const customer = await User.findById(booking.customerId).select('name phone');
+
+                bookingsWithCustomers.push({
+                    ...booking.toObject(),
+                    customer: customer ? customer : null
+                });
+            }
+
+            return res.status(200).json(bookingsWithCustomers);
         } catch (error) {
             return res.status(500).json({
                 error: error.message,
@@ -46,7 +63,16 @@ class BookingController {
         try {
             const response = await BookingHistory.findById(req.params.id);
 
-            return res.status(200).json(response)
+            if (!response) {
+                return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            const customer = await User.findById(response.customerId).select('name phone');
+
+            return res.status(200).json({
+                ...response.toObject(),
+                customer: customer ? customer : null
+            });
         } catch (error) {
             return res.status(500).json({
                 error: error.message,
@@ -77,7 +103,10 @@ class BookingController {
                 req.body.date = moment(req.body.date, 'DD/MM/YYYY').format('YYYY-MM-DD');
             }
 
-            req.body.products = JSON.parse(req.body.products);
+            if (req.body.products) {
+                
+                req.body.products = JSON.parse(req.body.products);
+            }
 
             const booking = new BookingHistory({
                 ...req.body,
