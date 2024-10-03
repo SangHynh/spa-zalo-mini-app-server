@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
     finalAmount: { type: Number, required: true },
     paymentMethod: { type: String, required: true },
     paymentStatus: { type: String, required: true },
-    transactionId: { type: String, required: false },
+    transactionId: { type: String, required: false }, // ZALO ORDERID
     remarks: { type: String, required: false },
     referralId: { type: mongoose.Schema.Types.ObjectId, required: false },
     products: [{
