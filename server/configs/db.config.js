@@ -4,6 +4,7 @@ const Product = require("../models/product.model");
 const Recommendation = require("../models/recommendation.model");
 const generateRandomPhoneNumber = require("../utils/genData.util");
 const createTestData = require("../utils/generateTestData");
+const AppConfig = require("../models/appconfig.model");
 
 async function connect() {
   try {
@@ -13,6 +14,9 @@ async function connect() {
       maxPoolSize: 50,
     });
     console.log("Connected to MongoDB successfully");
+    // App Config
+    initializeAppConfig();
+
     //await testAdd();
 
     // GENERATE TEST DATA
@@ -27,7 +31,7 @@ async function testAdd() {
   try {
     const productNames = ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F"];
     const productIds = ["12345", "67890", "54321", "11223", "33445", "55667"];
-    
+
     for (let i = 1; i <= 6; i++) { // Tạo 6 người dùng
       const user = new User({
         name: `John Doe ${i}`, // Tên thay đổi theo từng người dùng
@@ -83,5 +87,20 @@ async function testAdd() {
 //   .catch(err => {
 //     console.error('Error processing product recommendations:', err);
 //   });
+
+async function initializeAppConfig() {
+  try {
+    let config = await AppConfig.findOne();
+    if (!config) {
+      config = await AppConfig.create({
+        version: '1.0.0',
+        images: [],
+      });
+      console.log('AppConfig initialized:', config);
+    }
+  } catch (error) {
+    console.error('Error initializing AppConfig:', error);
+  }
+}
 
 module.exports = { connect };
