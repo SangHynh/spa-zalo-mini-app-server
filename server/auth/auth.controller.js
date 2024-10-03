@@ -29,7 +29,7 @@ const register = async (req, res, next) => {
         throw createError.Conflict(`Admin is already registered`);
       }
       // Tạo tài khoản admin mới
-      const newAdmin = new Admin({ email, password });
+      const newAdmin = new Admin({ email, password, zaloId: null });
       const savedAdmin = await newAdmin.save();
       // Tạo access token và refresh token
       const accessToken = await signAccessToken(savedAdmin.id);

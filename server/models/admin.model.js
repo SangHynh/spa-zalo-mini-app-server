@@ -36,8 +36,7 @@ const AdminSchema = new Schema({
     default: [PERMISSIONS.ADMIN],
   },
   zaloId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
     default: null,
     unique: true,
     sparse: true,
