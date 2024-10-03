@@ -8,7 +8,7 @@ Tài liệu này cung cấp hướng dẫn chi tiết về việc cài đặt Re
 
 Tải Redis từ GitHub thông qua liên kết dưới đây:
 
-- [Google] (https://github.com/tporadowski/redis/releases)
+- [Redis for Window](https://github.com/tporadowski/redis/releases)
 
 Chọn tệp `.msi` của phiên bản Redis mới nhất để tải về.
 
@@ -48,7 +48,7 @@ Redis Insight là công cụ giúp quản lý và giám sát Redis thông qua gi
 ### Bước 1: Tải Redis Insight
 Tải Redis Insight từ trang chủ chính thức của Redis:
 
-- [Google] (https://redis.io/insight/)
+- [Redis Insight](https://redis.io/insight/)
 
 ### Bước 2: Cài Đặt Redis Insight
 
@@ -69,7 +69,7 @@ Sau khi kết nối thành công, bạn có thể sử dụng giao diện để 
 
 Tạo tài khoản Redis Cloud
 
-- [Google] (https://redis.io/try-free/)
+- [Redis Cloud](https://redis.io/try-free/)
 
 
 Sau đó tạo CSDL Redis, lấy thông tin điền vào file `.env`
