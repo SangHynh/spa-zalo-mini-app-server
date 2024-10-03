@@ -2,6 +2,7 @@ const CryptoJS = require('crypto-js');
 const TestOrder = require('../models/testorder.model');
 const Order = require('../models/order.model');
 const moment = require('moment');
+const User = require('../models/user.model');
 
 class PaymentController {
     async createTestOrder(req, res) {
@@ -35,17 +36,28 @@ class PaymentController {
                 }));
             } else {
                 // Nếu không phải cart, xử lý trường products thông thường
-                data.products = JSON.parse(data.products);
+                data.products = data.products;
             }
 
             if (data.orderDate) {
                 data.orderDate = moment(data.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
             }
+
+            const accountId = req.payload.aud
+
+            const user = await User.findOne({ accountId: accountId });
+
+            if (!user) return res.status(404).json({ message: "User not found" })
+
+            const order = new Order({
+                ...data,
+                customerId: user._id
+            })
     
             // Tạo order
-            const order = await Order.create(data);
+            const newOrder = await Order.create(order);
 
-            return res.status(201).json(order);
+            return res.status(201).json(newOrder);
         } catch (error) {
             return res.status(500).json(error.message);
         }

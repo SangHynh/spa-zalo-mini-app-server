@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const paymentController = require('../../controllers/payment.controller')
+const paymentController = require('../../controllers/payment.controller');
+const { verifyAccessToken } = require('../../configs/jwt.config');
 
 // GET
 router.get('/:id', paymentController.getOrder)
@@ -18,7 +19,6 @@ router.post('/zaloNotify', paymentController.zaloNotify);
 /* có 2 loại body:
 {
     "bookingId": , // null nếu không phải booking
-    "customerId": ,
     "orderDate": ,
     "totalAmount": , // tổng tiền
     "discountApplied": ,
@@ -60,7 +60,7 @@ hoặc
 ] // Vì Zalo yêu cầu
 
 */
-router.post('/createOrder', paymentController.createOrder);
+router.post('/createOrder', verifyAccessToken, paymentController.createOrder);
 
 // PUT
 // API này dùng để thêm OrderId của zalo vào Order trên server này (lưu vào transactionId)

@@ -1,4 +1,5 @@
 const BookingHistory = require("../models/bookinghistory.model");
+const Order = require("../models/order.model");
 const Service = require("../models/service.model");
 const User = require("../models/user.model");
 const moment = require('moment');
@@ -218,6 +219,25 @@ class BookingController {
             const savedBooking = await booking.save()
 
             if (!savedBooking) return res.status(400).json({ message: 'Cannot update booking status' })
+
+            if (req.body.status == "completed") {
+                const newOrder = new Order({
+                    bookingId: savedBooking._id,
+                    customerId: booking.customerId,
+                    orderDate: new Date(),
+                    totalAmount: booking.price,
+                    discountApplied: booking.discountApplied,
+                    discountAmount: booking.discountApplied ? booking.price * 0.1 : 0, 
+                    finalAmount: booking.price - (booking.discountApplied ? booking.price * 0.1 : 0),
+                    paymentMethod: "COD_SANDBOX",
+                    paymentStatus: "completed",
+                    products: booking.products,
+                });
+
+                const savedOrder = await newOrder.save();
+
+                if (!savedOrder) return res.status(400).json({ message: 'Cannot create new order' });
+            }
 
             return res.status(200).json(savedBooking)
         } catch (error) {
