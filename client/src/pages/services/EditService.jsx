@@ -77,12 +77,14 @@ const EditService = () => {
     setImages((prevImages) => {
       const imageToRemove = prevImages[indexToRemove];
       if (imageToRemove) {
-        setDeleteImages((prevDeleteImages) => [
-          ...prevDeleteImages,
-          existingImages[indexToRemove],
-        ]); // Use existing image URL for deletion
+        setDeleteImages((prevDeleteImages) => {
+          if (existingImages.includes(imageToRemove)) {
+            return [...prevDeleteImages, imageToRemove];
+          }
+          return prevDeleteImages;
+        });
       }
-      return prevImages.filter((_, index) => index !== indexToRemove); // Remove from displayed images
+      return prevImages.filter((_, index) => index !== indexToRemove);
     });
   };
 

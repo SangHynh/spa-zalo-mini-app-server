@@ -318,10 +318,15 @@ exports.updateProduct = async (req, res) => {
     }, {});
 
     req.body.variants.forEach(variant => {
+      // Chỉ định _id ObjectId cho các variant mới nếu không có
+      if (!variant._id || typeof variant._id !== 'string') {
+        variant._id = new mongoose.Types.ObjectId(); // Tạo ID ObjectId duy nhất
+      }
+
       if (existingVariants[variant._id]) {
         existingVariants[variant._id] = { ...existingVariants[variant._id], ...variant };
       } else {
-        existingVariants[new mongoose.Types.ObjectId()] = variant;
+        existingVariants[variant._id] = variant; // Cập nhật variant mới
       }
     });
 
@@ -332,10 +337,15 @@ exports.updateProduct = async (req, res) => {
     }, {});
 
     req.body.ingredients.forEach(ingredient => {
+      // Chỉ định _id ObjectId cho các ingredient mới nếu không có
+      if (!ingredient._id || typeof ingredient._id !== 'string') {
+        ingredient._id = new mongoose.Types.ObjectId(); // Tạo ID ObjectId duy nhất
+      }
+
       if (existingIngredients[ingredient._id]) {
         existingIngredients[ingredient._id] = { ...existingIngredients[ingredient._id], ...ingredient };
       } else {
-        existingIngredients[new mongoose.Types.ObjectId()] = ingredient;
+        existingIngredients[ingredient._id] = ingredient; // Cập nhật ingredient mới
       }
     });
 

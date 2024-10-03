@@ -46,12 +46,15 @@ const Images = () => {
     setImages((prevImages) => {
       const imageToRemove = prevImages[indexToRemove];
       if (imageToRemove) {
-        setDeleteImages((prevDeleteImages) => [
-          ...prevDeleteImages,
-          existingImages[indexToRemove],
-        ]); // Use existing image URL for deletion
+        setDeleteImages((prevDeleteImages) => {
+          // Chỉ thêm vào deleteImages nếu hình ảnh đang xóa là một hình ảnh đã tồn tại
+          if (existingImages.includes(imageToRemove)) {
+            return [...prevDeleteImages, imageToRemove]; // Thêm hình ảnh vào danh sách xóa
+          }
+          return prevDeleteImages;
+        });
       }
-      return prevImages.filter((_, index) => index !== indexToRemove); // Remove from displayed images
+      return prevImages.filter((_, index) => index !== indexToRemove); // Xóa hình ảnh khỏi danh sách hiển thị
     });
   };
 
