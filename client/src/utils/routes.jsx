@@ -14,7 +14,7 @@ import {
   CustomerManagement,
   StaffManagement,
   ServiceManagement,
-  RecommendSystem,
+  Images,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
@@ -24,6 +24,7 @@ import CreateCategory from "../pages/categories/CreateCategory";
 import CreateService from "../pages/services/CreateService";
 import EditService from "../pages/services/EditService";
 import EditCategory from "../pages/categories/EditCategory";
+import ProdRecommendSystem from "../pages/products/ProdRecommendSystem";
 
 const routes = [
   {
@@ -75,16 +76,20 @@ const routes = [
             element: <AffiliateMarketing />,
           },
           {
-            path: path.RECOMMEND_SYSTEM + "/:id",
-            element: <RecommendSystem />,
-          },
-          {
             path: path.COMMISSION,
             element: <Commission />,
           },
           {
             path: path.RANK_POINT,
             element: <RanknPoint />,
+          },
+          {
+            path: path.IMAGES,
+            element: <Images />,
+          },
+          {
+            path: path.PROD_RECOMMEND_SYSTEM + "/:id",
+            element: <ProdRecommendSystem />,
           },
           {
             path: path.CREATE_PRODUCT,

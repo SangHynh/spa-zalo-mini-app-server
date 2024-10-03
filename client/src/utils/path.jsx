@@ -3,6 +3,8 @@ const path = {
 
   ADMIN_LAYOUT: "admin",
   DASHBOARD: "dashboard",
+
+  // Management
   PRODUCT_MANAGEMENT: "product-management",
   SERVICE_MANAGEMENT: "service-management",
   CUSTOMER_MANAGEMENT: "customer-management",
@@ -10,18 +12,22 @@ const path = {
   ORDER_MANAGEMENT: "oder-management",
   BOOKING_MANAGEMENT: "booking-management",
   CATEGORY_MANAGEMENT: "category-management",
+
+  // General-config
   AFFILIATE_MARKETING: "affiliate-marketing",
-  RECOMMEND_SYSTEM: "recommend-system",
   COMMISSION: "commission",
   RANK_POINT: "rank-point",
+  IMAGES: "images",
 
+  // Sub
+  PROD_RECOMMEND_SYSTEM: "prod-recommend-system",
   CREATE_PRODUCT: "create-product",
   CREATE_SERVICE: "create-service",
-  EDIT_SERVICE: "edit-service",
   CREATE_CUSTOMER: "create-customer",
   CREATE_STAFF: "create-staff",
-  EDIT_PRODUCT: "edit-product",
   CREATE_CATEGORY: "create-category",
+  EDIT_SERVICE: "edit-service",
+  EDIT_PRODUCT: "edit-product",
   EDIT_CATEGORY: "edit-category",
 };
 

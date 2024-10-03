@@ -97,6 +97,12 @@ export const getSidebar = (t) => [
         path: `/${path.ADMIN_LAYOUT}/${path.RANK_POINT}`,
         name: t("rank-point"),
       },
+      {
+        id: 84,
+        icon: <GoDash />,
+        path: `/${path.ADMIN_LAYOUT}/${path.IMAGES}`,
+        name: t("nor-image"),
+      },
     ],
   },
 ];

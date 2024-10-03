@@ -1,13 +1,11 @@
+import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import path from "../utils/path";
 import { useTranslation } from "react-i18next";
+import path from "../../utils/path";
+import StaffTable from "../users/StaffTable";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import BookingTable from "./bookings/BookingTable";
 
-const BookingManagement = () => {
+const StaffManagement = () => {
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +16,7 @@ const BookingManagement = () => {
 
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
-      <Typography variant="h5">{t("booking-mgmt")}</Typography>
+      <Typography variant="h5">{t("staff-mgmt")}</Typography>
       <div className="flex justify-between items-center">
         <div className="relative w-64">
           <input
@@ -30,10 +28,19 @@ const BookingManagement = () => {
           />
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
+        <Button
+          variant="contained"
+          color="secondary"
+          href={path.CREATE_CUSTOMER}
+          className="w-fit flex items-center gap-2"
+        >
+          <FaPlus />
+          {t("create")}
+        </Button>
       </div>
-      <BookingTable searchTerm={searchTerm} />
+      <StaffTable searchTerm={searchTerm} />
     </Box>
   );
 };
 
-export default BookingManagement;
+export default StaffManagement;

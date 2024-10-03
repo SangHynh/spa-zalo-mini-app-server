@@ -27,7 +27,7 @@
   "user": "User",
   "general-config": "General Config",
   "affiliate-marketing": "Affiliate Marketing",
-  "recommend-system": "Recommend System",
+  "prod-recommend-system": "Recommend System",
   "commission": "Commission",
   "rank-point": "Rank and Point",
   "customer": "Customer",
@@ -111,5 +111,7 @@
   "overview": "Overview",
   "number-of-suggested-products": "Number of suggested products",
   "create-subcategory": "Create Sub-category",
-  "no-sub-categories-added": "No subCategories added"
+  "no-sub-categories-added": "No subCategories added",
+  "nor-image": "Image",
+  "image-config": "Images Config"
 }

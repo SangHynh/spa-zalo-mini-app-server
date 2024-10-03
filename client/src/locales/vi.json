@@ -20,14 +20,14 @@
   "benefits": "Lợi ích",
   "description": "Mô tả",
   "rows-per-page": "Số hàng mỗi trang:",
-  "dashboard": "Tổng quan",
+  "dashboard": "Bảng điều khiển",
   "order": "Đặt hàng",
   "booking": "Đặt lịch",
   "product": "Sản phẩm",
   "user": "Người dùng",
   "general-config": "Cấu hình chung",
   "affiliate-marketing": "Tiếp thị liên kết",
-  "recommend-system": "Hệ thống gợi ý",
+  "prod-recommend-system": "Hệ thống gợi ý",
   "commission": "Hoa hồng",
   "rank-point": "Hạng và điểm",
   "customer": "Khách hàng",
@@ -111,5 +111,7 @@
   "overview": "Tổng quan",
   "number-of-suggested-products": "Số sản phẩm đã gợi ý",
   "create-subcategory": "Tạo Danh mục con",
-  "no-sub-categories-added": "Không có danh mục con được thêm"
+  "no-sub-categories-added": "Không có danh mục con được thêm",
+  "nor-image": "Hình ảnh",
+  "image-config": "Cấu hình ảnh"
 }

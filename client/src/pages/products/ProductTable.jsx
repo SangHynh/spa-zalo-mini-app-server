@@ -234,7 +234,7 @@ function Row(props) {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title={t("config")}>
-                  <IconButton href={`${path.RECOMMEND_SYSTEM}/${row._id}`}>
+                  <IconButton href={`${path.PROD_RECOMMEND_SYSTEM}/${row._id}`}>
                     <WidgetsIcon className="text-green-500" />
                   </IconButton>
                 </Tooltip>

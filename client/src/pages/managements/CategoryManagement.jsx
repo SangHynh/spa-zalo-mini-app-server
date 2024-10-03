@@ -2,8 +2,8 @@ import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import path from "../utils/path";
-import CategoryTable from "./categories/CategoryTable";
+import path from "../../utils/path";
+import CategoryTable from "../categories/CategoryTable";
 
 const CategoryManagement = () => {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiGetProduct, apiGetProducts } from "../apis/products";
+import { apiGetProduct, apiGetProducts } from "../../apis/products";
 import {
   Box,
   Button,
@@ -13,17 +13,17 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaSearch } from "react-icons/fa";
-import PreviewRecommend from "./recommends/PreviewRecommend";
+import PreviewRecommend from "../recommends/PreviewRecommend";
 import { toast } from "react-toastify";
-import Loading from "../components/loading/Loading";
+import Loading from "../../components/loading/Loading";
 import {
-  apiConfigProductRS,
+  apiConfigProductRecommendations,
   apiGetProductRecommendations,
-} from "../apis/recommend-system";
-import path from "../utils/path";
+} from "../../apis/recommend-system";
+import path from "../../utils/path";
 import Swal from "sweetalert2";
 
-const RecommendSystem = () => {
+const ProdRecommendSystem = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [productName, setProductName] = useState("");
@@ -207,7 +207,7 @@ const RecommendSystem = () => {
       try {
         // console.log(id, currentlySelectedProductIds);
 
-        const response = await apiConfigProductRS(id, {
+        const response = await apiConfigProductRecommendations(id, {
           mainProductId: id,
           suggestions: currentlySelectedProductIds, // Dữ liệu là các ID sản phẩm được chọn
         });
@@ -243,7 +243,7 @@ const RecommendSystem = () => {
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
       <Typography variant="h5" gutterBottom>
-        {t("recommend-system")}
+        {t("prod-recommend-system")}
       </Typography>
       <TextField
         id="productId"
@@ -327,4 +327,4 @@ const RecommendSystem = () => {
   );
 };
 
-export default RecommendSystem;
+export default ProdRecommendSystem;
