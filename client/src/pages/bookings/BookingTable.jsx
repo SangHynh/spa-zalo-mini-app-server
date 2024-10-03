@@ -228,7 +228,8 @@ function Row(props) {
                             }}
                             className="relative"
                         >
-                            {row.discountApplied}
+                            {row.discountApplied ? 'Yes' : 'No'}
+
                         </TableCell>
                         <TableCell
                             align="left"

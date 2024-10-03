@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { FaCaretDown, FaCaretRight } from "react-icons/fa";
 import { useTheme } from "@emotion/react";
 import Swal from "sweetalert2";
+import PrivateRoute from "../context/PrivateRoute";
 
 const TOP_HEADER_HEIGHT = 64;
 const drawerWidth = 240;
@@ -48,23 +49,9 @@ const AdminLayout = () => {
   const sidebar = getSidebar(t);
 
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   if ([]) {
-  //     Swal.fire({
-  //       icon: "info",
-  //       title: "Oops!",
-  //       text: "Bạn chưa đăng nhập!",
-  //       showConfirmButton: true,
-  //       confirmButtonText: "Đăng nhập",
-  //     }).then((response) => {
-  //       if (response.isConfirmed) navigate("/");
-  //       if (response.isDismissed) navigate("/");
-  //     });
-  //   }
-  // }, []);
 
   return (
-    <>
+    <PrivateRoute>
       <Topheader height={TOP_HEADER_HEIGHT} />
       <IconButton
         color="inherit"
@@ -195,7 +182,7 @@ const AdminLayout = () => {
           <Outlet />
         </div>
       </main>
-    </>
+    </PrivateRoute>
   );
 };
 

@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { DarkModeProvider } from "./context/DarkModeContext"; // Import Provider
 import { LoadingProvider } from "./context/LoadingProvider";
 import BackdropLoader from "./components/loading/BackdropLoader";
+import PrivateRoute from "./context/PrivateRoute";
 
 function App() {
   return (

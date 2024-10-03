@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
+import { logout } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 const options = [
   { value: "vi", label: "Tiếng Việt", flag: "/vietnam.png" },
@@ -17,6 +19,8 @@ const Topheader = ({ height }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { t, i18n } = useTranslation();
   const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Khởi tạo selectedOption dựa trên ngôn ngữ hiện tại của i18n
@@ -54,6 +58,12 @@ const Topheader = ({ height }) => {
       {label}
     </div>
   );
+
+  const handleLogout = () => {
+    logout();
+
+    navigate("/")
+  }
 
   return (
     <div
@@ -100,7 +110,7 @@ const Topheader = ({ height }) => {
         }}
       >
         <MenuItem onClick={handleClose}>{t("setting")}</MenuItem>
-        <MenuItem onClick={handleClose}>{t("logout")}</MenuItem>
+        <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
       </Menu>
     </div>
   );

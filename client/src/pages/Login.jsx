@@ -18,6 +18,7 @@ import { setCookie } from "../utils/cookies";
 import { useNavigate } from "react-router-dom";
 import path from "../utils/path";
 import { useTranslation } from "react-i18next";
+import { signIn } from "../utils/auth";
 
 const Paper = styled("div")(({ theme }) => ({
   marginTop: theme.spacing(8),
@@ -45,7 +46,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        Incom Saigon
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -71,10 +72,9 @@ export default function SignIn() {
       if (response.status === 200) {
         const data = await response.data;
 
-        console.log(data.accessToken, data.refreshToken);
+        // console.log(data.accessToken, data.refreshToken);
 
-        setCookie("accessToken", data.accessToken, 1 / 24);
-        setCookie("refreshToken", data.refreshToken, 7);
+        signIn(data.accessToken, data.refreshToken);
 
         Swal.fire({
           icon: "success",
