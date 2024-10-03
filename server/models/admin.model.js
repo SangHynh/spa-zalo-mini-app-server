@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
 
+const PERMISSIONS = {
+  READ: "read",
+  WRITE: "write",
+  DELETE: "delete",
+  ADMIN: "admin",
+};
+
 const AdminSchema = new Schema({
   email: {
     type: String,
@@ -12,6 +19,28 @@ const AdminSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  name: {
+    type: String,
+    default: "",
+    unique: false,
+  },
+  branch: {
+    type: String,
+    default: "",
+    unique: false,
+  },
+  permissions: {
+    type: [String],
+    enum: Object.values(PERMISSIONS),
+    default: [PERMISSIONS.ADMIN],
+  },
+  zaloId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+    unique: true,
+    sparse: true,
   },
 });
 

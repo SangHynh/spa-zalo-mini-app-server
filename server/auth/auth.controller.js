@@ -35,7 +35,7 @@ const register = async (req, res, next) => {
       const accessToken = await signAccessToken(savedAdmin.id);
       const refreshToken = await signRefreshToken(savedAdmin.id);
       // Trả về kết quả đăng ký thành công
-      return res.send({ accessToken, refreshToken });
+      return res.send({admin:savedAdmin, accessToken, refreshToken });
     } else if (role === "user" ) {
       const { zaloAccessToken } = req.body;
       if (!zaloAccessToken) {
@@ -62,6 +62,7 @@ const register = async (req, res, next) => {
         membershipTier: "Member",
         referralCode: await generateReferralCode(zaloId),
         points: 0,
+        gender: "male",
       });
       await user.save();
       const userProfile = {
@@ -102,7 +103,7 @@ const login = async (req, res, next) => {
       // Tạo access token và refresh token sau khi đăng nhập thành công
       const accessToken = await signAccessToken(admin.id);
       const refreshToken = await signRefreshToken(admin.id);
-      return res.send({ accessToken, refreshToken });
+      return res.send({admin, accessToken, refreshToken });
     } else if (role === "user" && zaloAccessToken) {
       // Kiểm tra đăng nhập qua Zalo Access Token
       const data = await zaloService(zaloAccessToken)
@@ -123,6 +124,7 @@ const login = async (req, res, next) => {
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
         points: user.points,
+        gender: user.gender
       };
       if (!user) throw createError.NotFound("User not found");
       // Tạo access token và refresh token sau khi đăng nhập thành công

@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, unique: false },
     avatar: { type: String, default: "", unique: false },
     phone: { type: String, default: null, unique: true, sparse: true },
+    gender: { type: String, enum: ["male", "female"], default: "male" },
     membershipTier: {
       type: String,
       enum: ["Member", "Silver", "Gold", "Diamond"],

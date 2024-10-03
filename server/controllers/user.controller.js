@@ -131,7 +131,8 @@ const updateUserInfo = async (req, res) => {
       _id: user._id,
       zaloId: user.zaloId,
       name: user.name,
-      phone: user.phone
+      phone: user.phone,
+      gender: user.gender
     };
     res.status(200).json({ message: "User info updated successfully", userInfo });
   } catch (error) {
