@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import { setCookie } from "../utils/cookies";
 import { useNavigate } from "react-router-dom";
 import path from "../utils/path";
+import { useTranslation } from "react-i18next";
 
 const Paper = styled("div")(({ theme }) => ({
   marginTop: theme.spacing(8),
@@ -53,6 +54,8 @@ function Copyright() {
 }
 
 export default function SignIn() {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -61,7 +64,7 @@ export default function SignIn() {
     e.preventDefault();
     try {
       // console.log(email, password)
-      const response = await apiLogin({ email, password, role: 'admin' });
+      const response = await apiLogin({ email, password, role: "admin" });
 
       // console.log(response)
 
@@ -75,27 +78,22 @@ export default function SignIn() {
 
         Swal.fire({
           icon: "success",
-          title: "Login successfully!",
+          title: `${t("login-success")}!`,
           showConfirmButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "Ok",
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
             navigate(`/${path.ADMIN_LAYOUT}/${path.DASHBOARD}`);
-          } else {
-            window.location.reload();
           }
         });
-      }
-      else {
-        console.log(response.data.error.message)
+      } else {
+        console.log(response.data.error.message);
         Swal.fire({
           icon: "error",
           title: response.data.error.message,
           showCancelButton: true,
           cancelButtonText: "Cancel",
-        })
+        });
       }
     } catch (err) {
       console.log(err.message);
@@ -104,7 +102,7 @@ export default function SignIn() {
         title: err.message,
         showCancelButton: true,
         cancelButtonText: "Cancel",
-      })
+      });
     }
   };
 
@@ -116,7 +114,7 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </AvatarStyled>
         <Typography component="h1" variant="h5">
-          Sign in
+          {t("signin")}
         </Typography>
         <Form noValidate onSubmit={handleSubmit}>
           <TextField
@@ -125,7 +123,7 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -138,24 +136,24 @@ export default function SignIn() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={t("password")}
             type="password"
             id="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <SubmitButton
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
           >
-            Sign In
+            {t("signin")}
           </SubmitButton>
           {/* <Grid container>
             <Grid item xs>
