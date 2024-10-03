@@ -9,6 +9,27 @@ router.get('/single/:id', verifyAccessToken, bookingController.getBookingById); 
 router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUserId);
 
 // POST
+/* Body:
+
+{
+  "serviceId": "66f57a740b5d33c57aeb19b1",
+  "date": "30-10-2024",
+  "price": 400000,
+  "discountApplied": true,
+  "brand": "INCOM",
+  "rating": 4,
+  "feedback": "Very good service"
+  "products": [
+    {
+      "productId":
+      "productName":
+      "price":
+      "quantity":
+    }
+  ]
+}
+
+*/
 router.post('/', verifyAccessToken, bookingController.createBooking);
 
 // PUT

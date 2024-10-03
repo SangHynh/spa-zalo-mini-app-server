@@ -77,6 +77,8 @@ class BookingController {
                 req.body.date = moment(req.body.date, 'DD/MM/YYYY').format('YYYY-MM-DD');
             }
 
+            req.body.products = JSON.parse(req.body.products);
+
             const booking = new BookingHistory({
                 ...req.body,
                 customerId: user._id,
