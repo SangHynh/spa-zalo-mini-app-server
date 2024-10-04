@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     bookingId: { type: mongoose.Schema.Types.ObjectId, required: false },
-    customerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    customerId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     orderDate: { type: Date, required: true },
     totalAmount: { type: Number, required: true },
     discountApplied: { type: Boolean, required: true },

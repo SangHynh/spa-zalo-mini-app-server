@@ -115,5 +115,6 @@
   "nor-image": "Image",
   "image-config": "Images Config",
   "success-config": "Successfully config!",
-  "fail-config": "Config failed!"
+  "fail-config": "Config failed!",
+  "order-mgmt": "Order Management"
 }

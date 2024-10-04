@@ -5,13 +5,15 @@ const moment = require('moment');
 const User = require('../models/user.model');
 
 class PaymentController {
-    async createTestOrder(req, res) {
+    // GET ORDERS
+    async getOrders(req, res) {
         try {
-            const data = req.body;
-
-            const order = await TestOrder.create(data)
-
-            return res.status(201).json(order);
+            const orders = await Order.find().populate({
+                path: 'customerId',
+                select: 'name phone'
+            });
+            
+            return res.status(200).json(orders);
         } catch (error) {
             return res.status(500).json(error.message);
         }

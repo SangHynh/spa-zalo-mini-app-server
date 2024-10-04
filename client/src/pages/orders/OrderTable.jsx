@@ -17,7 +17,6 @@ import { Chip, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { apiGetBookings, apiUpdateBookingStatus } from "../../apis/bookings";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import path from "../../utils/path";
@@ -29,6 +28,7 @@ import PendingIcon from '@mui/icons-material/Pending';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { blue, green, red } from "@mui/material/colors";
+import { apiGetOrders } from "../../apis/payments";
 
 function Row(props) {
     const { showLoading, hideLoading } = useLoading();
@@ -40,7 +40,8 @@ function Row(props) {
 
     // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
     const isVisible =
-        row.serviceName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        row.customerId.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        row.customerId.phone.toLowerCase().includes(lowerCaseSearchTerm) ||
         row._id.toLowerCase().includes(lowerCaseSearchTerm);
     // row.category.toLowerCase().includes(lowerCaseSearchTerm);
 
@@ -60,33 +61,33 @@ function Row(props) {
     };
     const theme = useTheme();
 
-    const handleUpdateStatus = (id, status) => {
-        Swal.fire({
-            icon: "warning",
-            title:
-                "Xác nhận cập nhật trạng thái lịch hẹn!",
-            showCancelButton: true,
-            confirmButtonText: "Yes",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                showLoading();
-                const data = {
-                    status: status
-                }
-                console.log(data)
-                const res = await apiUpdateBookingStatus(id, data);
-                if (res.status === 200) {
-                    Swal.fire("Cập nhật thành công!", "", "success").then(() => {
-                        // Tải lại trang sau khi thông báo thành công
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire("Cập nhật thất bại!", "", "error");
-                }
-                hideLoading();
-            }
-        });
-    };
+    // const handleUpdateStatus = (id, status) => {
+    //     Swal.fire({
+    //         icon: "warning",
+    //         title:
+    //             "Xác nhận cập nhật trạng thái lịch hẹn!",
+    //         showCancelButton: true,
+    //         confirmButtonText: "Yes",
+    //     }).then(async (result) => {
+    //         if (result.isConfirmed) {
+    //             showLoading();
+    //             const data = {
+    //                 status: status
+    //             }
+    //             console.log(data)
+    //             const res = await apiUpdateOrderStatus(id, data);
+    //             if (res.status === 200) {
+    //                 Swal.fire("Cập nhật thành công!", "", "success").then(() => {
+    //                     // Tải lại trang sau khi thông báo thành công
+    //                     window.location.reload();
+    //                 });
+    //             } else {
+    //                 Swal.fire("Cập nhật thất bại!", "", "error");
+    //             }
+    //             hideLoading();
+    //         }
+    //     });
+    // };
 
     return (
         <>
@@ -134,24 +135,9 @@ function Row(props) {
                                 textOverflow: "ellipsis",
                             }}
                             className="relative cursor-pointer"
-                            onClick={() => handleCopy(row.serviceId)}
+                            onClick={() => handleCopy(row.customerId._id)}
                         >
-                            {row.serviceId}
-                        </TableCell>
-                        <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{
-                                maxWidth: "100px",
-                                whiteSpace: "nowrap",
-                                // overflowX: "auto",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                            }}
-                            className="relative cursor-pointer"
-                            onClick={() => handleCopy(row.customerId)}
-                        >
-                            {row.customerId}
+                            {row.customerId._id}
                         </TableCell>
                         <TableCell
                             align="left"
@@ -162,29 +148,18 @@ function Row(props) {
                             }}
                             className="relative"
                         >
-                            {row.serviceName}
+                            {row.customerId.name}
                         </TableCell>
                         <TableCell
                             align="left"
                             sx={{
-                                minWidth: "200px",
+                                minWidth: "300px",
                                 overflowX: "auto",
                                 whiteSpace: "nowrap",
                             }}
                             className="relative"
                         >
-                            {row.customer.name}
-                        </TableCell>
-                        <TableCell
-                            align="left"
-                            sx={{
-                                minWidth: "200px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.customer.phone}
+                            {row.customerId.phone}
                         </TableCell>
                         <TableCell
                             align="right"
@@ -195,7 +170,7 @@ function Row(props) {
                             }}
                             className="relative"
                         >
-                            {new Date(row.date).toLocaleString("vi-VN", {
+                            {new Date(row.orderDate).toLocaleString("vi-VN", {
                                 timeZone: "Asia/Ho_Chi_Minh",
                                 year: "numeric",
                                 month: "2-digit",
@@ -217,7 +192,7 @@ function Row(props) {
                             {new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                            }).format(row.price)}
+                            }).format(row.totalAmount)}
                         </TableCell>
                         <TableCell
                             align="center"
@@ -232,37 +207,43 @@ function Row(props) {
 
                         </TableCell>
                         <TableCell
-                            align="left"
+                            align="right"
                             sx={{
-                                minWidth: "200px",
+                                minWidth: "150px",
                                 overflowX: "auto",
                                 whiteSpace: "nowrap",
                             }}
                             className="relative"
                         >
-                            {row.brand}
+                            {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                            }).format(row.discountAmount)}
                         </TableCell>
                         <TableCell
-                            align="center"
+                            align="right"
                             sx={{
-                                minWidth: "200px",
+                                minWidth: "150px",
                                 overflowX: "auto",
                                 whiteSpace: "nowrap",
                             }}
                             className="relative"
                         >
-                            {row.rating}
+                            {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                            }).format(row.finalAmount)}
                         </TableCell>
                         <TableCell
                             align="left"
                             sx={{
-                                minWidth: "200px",
+                                minWidth: "300px",
                                 overflowX: "auto",
                                 whiteSpace: "nowrap",
                             }}
                             className="relative"
                         >
-                            {row.feedback}
+                            {row.paymentMethod}
                         </TableCell>
                         <TableCell
                             align="center"
@@ -274,15 +255,71 @@ function Row(props) {
                             className="relative"
                         >
                             <Chip
-                                label={row.status}
+                                label={row.paymentStatus}
                                 color={
-                                    row.status === 'pending' ? 'primary'
-                                        : row.status === 'cancelled' ? 'error'
-                                            : row.status === 'completed' ? 'success'
+                                    row.paymentStatus === 'pending' ? 'primary'
+                                        : row.paymentStatus === 'cancelled' ? 'error'
+                                            : row.paymentStatus === 'completed' ? 'success'
                                                 : 'default'
                                 }
                             />
 
+                        </TableCell>
+                        <TableCell
+                            component="th"
+                            scope="row"
+                            sx={{
+                                maxWidth: "100px",
+                                whiteSpace: "nowrap",
+                                // overflowX: "auto",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                            className="relative cursor-pointer"
+                            onClick={() => handleCopy(row.transactionId)}
+                        >
+                            {row.transactionId}
+                        </TableCell>
+                        <TableCell
+                            align="left"
+                            sx={{
+                                minWidth: "300px",
+                                overflowX: "auto",
+                                whiteSpace: "nowrap",
+                            }}
+                            className="relative"
+                        >
+                            {row.remarks}
+                        </TableCell>
+                        <TableCell
+                            component="th"
+                            scope="row"
+                            sx={{
+                                maxWidth: "100px",
+                                whiteSpace: "nowrap",
+                                // overflowX: "auto",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                            className="relative cursor-pointer"
+                            onClick={() => handleCopy(row.referralId)}
+                        >
+                            {row.referralId}
+                        </TableCell>
+                        <TableCell
+                            component="th"
+                            scope="row"
+                            sx={{
+                                maxWidth: "100px",
+                                whiteSpace: "nowrap",
+                                // overflowX: "auto",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                            className="relative cursor-pointer"
+                            onClick={() => handleCopy(row.voucherId)}
+                        >
+                            {row.voucherId}
                         </TableCell>
 
                         <TableCell
@@ -294,26 +331,26 @@ function Row(props) {
                                 <Tooltip title={t("complete")}>
                                     <IconButton
                                         color="primary"
-                                        onClick={() => handleUpdateStatus(row._id, "completed")}
-                                        disabled={row.status === 'completed'}
+                                        // onClick={() => handleUpdateStatus(row._id, "completed")}
+                                        disabled={row.paymentStatus === 'completed'}
                                     >
-                                        <CheckCircleIcon sx={{ color: row.status === 'completed' ? 'gray.400' : green[500] }} />
+                                        <CheckCircleIcon sx={{ color: row.paymentStatus === 'completed' ? 'gray.400' : green[500] }} />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title={t("pending")}>
                                     <IconButton
-                                        onClick={() => handleUpdateStatus(row._id, "pending")}
-                                        disabled={row.status === 'pending'}
+                                        // onClick={() => handleUpdateStatus(row._id, "pending")}
+                                        disabled={row.paymentStatus === 'pending'}
                                     >
-                                        <PendingIcon sx={{ color: row.status === 'pending' ? 'gray.400' : blue[500] }} />
+                                        <PendingIcon sx={{ color: row.paymentStatus === 'pending' ? 'gray.400' : blue[500] }} />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title={t("cancel")}>
                                     <IconButton
-                                        onClick={() => handleUpdateStatus(row._id, "cancelled")}
-                                        disabled={row.status === 'cancelled'}
+                                        // onClick={() => handleUpdateStatus(row._id, "cancelled")}
+                                        disabled={row.paymentStatus === 'cancelled'}
                                     >
-                                        <CancelIcon sx={{ color: row.status === 'cancelled' ? 'gray.400' : red[500] }} />
+                                        <CancelIcon sx={{ color: row.paymentStatus === 'cancelled' ? 'gray.400' : red[500] }} />
                                     </IconButton>
                                 </Tooltip>
                             </div>
@@ -355,6 +392,14 @@ function Row(props) {
                                                             component="th"
                                                             scope="row"
                                                             align="center"
+                                                            onClick={() => handleCopy(product.variantId)}
+                                                        >
+                                                            {product.variantId}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            scope="row"
+                                                            align="center"
                                                         >
                                                             {product.productName}
                                                         </TableCell>
@@ -378,7 +423,7 @@ function Row(props) {
     );
 }
 
-const BookingTable = ({ searchTerm }) => {
+const OrderTable = ({ searchTerm }) => {
     const { t } = useTranslation();
 
     const [page, setPage] = useState(0);
@@ -393,16 +438,16 @@ const BookingTable = ({ searchTerm }) => {
         setPage(0);
     };
 
-    const [bookings, setBookings] = useState([]);
+    const [orders, setOrders] = useState([]);
 
     // GET PRODUCTS
     useEffect(() => {
-        const fetchBookings = async () => {
-            const response = await apiGetBookings();
-            if (response.status === 200) setBookings(response.data);
+        const fetchOrders = async () => {
+            const response = await apiGetOrders();
+            if (response.status === 200) setOrders(response.data);
         };
 
-        fetchBookings();
+        fetchOrders();
     }, []);
 
     return (
@@ -427,84 +472,98 @@ const BookingTable = ({ searchTerm }) => {
                                 sx={{ fontWeight: "bold", minWidth: "120px" }}
                                 className="relative dark:text-black"
                             >
-                                {t("service-id")}
+                                {t("customer-id")}
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", minWidth: "120px" }}
                                 className="relative dark:text-black"
                             >
-                                {t("customer-id")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "200px" }}
-                                className="relative dark:text-black"
-                            >
-                                {t("service-name")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "250px" }}
-                                className="relative dark:text-black"
-                            >
                                 {t("customer-name")}
                             </TableCell>
                             <TableCell
                                 align="center"
-                                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                                sx={{ fontWeight: "bold", minWidth: "120px" }}
                                 className="relative dark:text-black"
                             >
                                 {t("phone")}
                             </TableCell>
                             <TableCell
                                 align="center"
-                                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                                sx={{ fontWeight: "bold", minWidth: "120px" }}
                                 className="relative dark:text-black"
                             >
-                                {t("date")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="relative dark:text-black"
-                            >
-                                {t("price")}
+                                {t("order-date")}
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", minWidth: "200px" }}
                                 className="relative dark:text-black"
                             >
+                                {t("price")}
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", minWidth: "250px" }}
+                                className="relative dark:text-black"
+                            >
                                 {t("discount-applied")}
                             </TableCell>
                             <TableCell
                                 align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                                className="relative dark:text-black"
                             >
-                                {t("brand")}
+                                {t("discount-amount")}
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                                className="relative dark:text-black"
+                            >
+                                {t("final-amount")}
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                                className="relative dark:text-black"
+                            >
+                                {t("payment-method")}
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                                className="relative dark:text-black"
+                            >
+                                {t("payment-status")}
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", minWidth: "100px" }}
                                 className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
                             >
-                                {t("rating")}
+                                {t("transaction-id")}
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", minWidth: "100px" }}
                                 className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
                             >
-                                {t("feedback")}
+                                {t("remarks")}
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold", minWidth: "100px" }}
                                 className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
                             >
-                                {t("status")}
+                                {t("referral-id")}
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                            >
+                                {t("voucher-id")}
                             </TableCell>
                             <TableCell
                                 align="center"
@@ -516,7 +575,7 @@ const BookingTable = ({ searchTerm }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {bookings
+                        {orders
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
                                 <Row
@@ -532,7 +591,7 @@ const BookingTable = ({ searchTerm }) => {
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={bookings.length}
+                count={orders.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -543,4 +602,4 @@ const BookingTable = ({ searchTerm }) => {
     );
 };
 
-export default BookingTable;
+export default OrderTable;

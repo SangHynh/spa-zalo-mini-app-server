@@ -115,5 +115,6 @@
   "nor-image": "Hình ảnh",
   "image-config": "Cấu hình ảnh",
   "success-config": "Cấu hình thành công!",
-  "fail-config": "Cấu hình không thành công!"
+  "fail-config": "Cấu hình không thành công!",
+  "order-mgmt": "Quản lý giao dịch"
 }

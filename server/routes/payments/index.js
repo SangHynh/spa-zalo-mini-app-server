@@ -5,6 +5,7 @@ const { verifyAccessToken } = require('../../configs/jwt.config');
 
 // GET
 router.get('/:id', paymentController.getOrder)
+router.get('/', verifyAccessToken, paymentController.getOrders)
 
 // POST
 // mac gồm 3 loại: 
