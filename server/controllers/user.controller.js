@@ -117,7 +117,7 @@ const getUserInfo = async (req, res) => {
 // Cập nhật thông tin người dùng theo ID Zalo
 const updateUserInfo = async (req, res) => {
   const { zaloId } = req.params; 
-  const { name, phone } = req.body;   
+  const { name, phone, gender } = req.body;   
   try {
     // Tìm kiếm người dùng theo zaloId từ mô hình User
     const user = await User.findOne({ zaloId: zaloId });
@@ -126,6 +126,7 @@ const updateUserInfo = async (req, res) => {
     }
     if (name) user.name = name;
     if (phone) user.phone = phone;
+    if (gender) user.gender = gender;
     await user.save();
     const userInfo = {
       _id: user._id,
