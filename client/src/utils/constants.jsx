@@ -63,7 +63,7 @@ export const getSidebar = (t) => [
     id: 6,
     name: t("booking"),
     path: `/${path.ADMIN_LAYOUT}/${path.BOOKING_MANAGEMENT}`,
-    icon: <img src="/booking.png" alt="" className="w-8 h-8" />,
+    icon: <img src="/booking.png" alt="" className="w-7 h-7" />,
     type: "SINGLE",
   },
   {
@@ -141,36 +141,3 @@ export const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-
-// export const productColumns = [
-//   { id: "name", label: "Name" },
-//   { id: "description", label: "Description" },
-//   {
-//     id: "amount",
-//     label: "Population",
-//     align: "right",
-//     format: (value) => value.toLocaleString("en-US"),
-//   },
-//   { id: "category", label: "Category" },
-//   { id: "benefit", label: "Benefit" },
-
-//   {
-//     id: "size",
-//     label: "Size\u00a0(km\u00b2)",
-//     align: "right",
-//     format: (value) => value.toLocaleString("en-US"),
-//   },
-//   {
-//     id: "density",
-//     label: "Density",
-//     minWidth: 170,
-//     align: "right",
-//     format: (value) => value.toFixed(2),
-//   },
-// ];
-
-// export const productRows = [
-//   { name: "India", code: "IN", population: 1324171354, size: 3287263 },
-//   { name: "China", code: "CN", population: 1403500365, size: 9596961 },
-//   { name: "Italy", code: "IT", population: 60483973, size: 301340 },
-// ];
