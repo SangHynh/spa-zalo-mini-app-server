@@ -12,6 +12,7 @@ const path = {
   ORDER_MANAGEMENT: "oder-management",
   BOOKING_MANAGEMENT: "booking-management",
   CATEGORY_MANAGEMENT: "category-management",
+  VOUCHER_MANAGEMENT: "voucher-management",
 
   // General-config
   AFFILIATE_MARKETING: "affiliate-marketing",

@@ -6,8 +6,10 @@ const { verifyAccessToken } = require('../../configs/jwt.config')
 const MAX_FILES = 10;
 
 // GET
-router.get('/', serviceController.getServices);
 router.get('/:id', serviceController.getServiceById);
+
+// GET: /api/products?page=...&limit=...&keyword=...&subCategoryId=...
+router.get('/', serviceController.getServices);
 
 // POST 
 router.post('/', (req, res, next) => {

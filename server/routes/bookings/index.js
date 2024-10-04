@@ -12,21 +12,23 @@ router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUs
 /* Body:
 
 {
-  "serviceId": "66f57a740b5d33c57aeb19b1",
-  "date": "30-10-2024",
-  "price": 400000,
-  "discountApplied": true,
-  "brand": "INCOM",
-  "rating": 4,
-  "feedback": "Very good service"
-  "products": [
-    {
-      "productId":
-      "productName":
-      "price":
-      "quantity":
-    }
-  ]
+    "date": "05/10/2024",
+    "services": [
+        "66ffc8e9eb8a35fcbaffa9aa",
+        "66ffc8e9eb8a35fcbaffa9ab"
+    ],
+    "products": [
+        {
+            "productId": "66ffc8e8eb8a35fcbaffa8af",
+            "variantId": "66ffc8e8eb8a35fcbaffa8b1",
+            "quantity": 2
+        },
+        {
+            "productId": "66ffc8e8eb8a35fcbaffa8b9",
+            "variantId": "66ffc8e8eb8a35fcbaffa8ba",
+            "quantity": 1
+        }
+    ]
 }
 
 */
@@ -34,10 +36,9 @@ router.post('/', verifyAccessToken, bookingController.createBooking);
 
 // PUT
 router.put('/:id', verifyAccessToken, bookingController.updateBooking);
-router.put('/cancel/:id', verifyAccessToken, bookingController.cancelBooking);
 router.put('/status/:id/', verifyAccessToken, bookingController.updateBookingStatus); // FOR ADMIN
 
 // DELETE
-router.delete('/:id', verifyAccessToken, bookingController.removeBooking);
+router.delete('/:id', verifyAccessToken, bookingController.cancelBooking);
 
 module.exports = router;

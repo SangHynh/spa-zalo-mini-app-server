@@ -1,12 +1,51 @@
 const { deleteImage } = require("../middlewares/upload.middlewares")
 const Service = require("../models/service.model")
+const mongoose = require('mongoose');
 
 class ServiceController {
     // GET SERVICES
     async getServices(req, res) {
         try {
-            const services = await Service.find()
-            return res.status(200).json(services)
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+
+            const skip = (page - 1) * limit;
+
+            const { keyword, subCategoryId } = req.query;
+
+            // Tạo điều kiện tìm kiếm
+            const query = {};
+
+            if (keyword) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
+
+                query.$or = [
+                    { name: { $regex: keyword, $options: 'i' } },
+                ];
+
+                if (isObjectId) {
+                    query.$or.push({ _id: new mongoose.Types.ObjectId(keyword) });
+                }
+            }
+
+            if (subCategoryId) {
+                query.subCategoryId = subCategoryId;
+            }
+
+            const services = await Service.find(query)
+                .skip(skip)
+                .limit(limit);
+
+            const totalService = await Service.countDocuments(query)
+
+            // return res.status(200).json(services)
+
+            return res.status(200).json({
+                totalService,
+                currentPage: page,
+                totalPages: Math.ceil(totalService / limit),
+                services
+            });
         } catch (error) {
             return res.status(500).json({
                 error: error.message,

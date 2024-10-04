@@ -28,7 +28,8 @@ import { useLoading } from "../../context/LoadingProvider";
 import PendingIcon from '@mui/icons-material/Pending';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { blue, green, red } from "@mui/material/colors";
+import RecommendIcon from '@mui/icons-material/Recommend';
+import { blue, green, red, yellow } from "@mui/material/colors";
 
 function Row(props) {
     const { showLoading, hideLoading } = useLoading();
@@ -40,7 +41,7 @@ function Row(props) {
 
     // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
     const isVisible =
-        row.serviceName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        // row.customerId.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         row._id.toLowerCase().includes(lowerCaseSearchTerm);
     // row.category.toLowerCase().includes(lowerCaseSearchTerm);
 
@@ -134,35 +135,9 @@ function Row(props) {
                                 textOverflow: "ellipsis",
                             }}
                             className="relative cursor-pointer"
-                            onClick={() => handleCopy(row.serviceId)}
-                        >
-                            {row.serviceId}
-                        </TableCell>
-                        <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{
-                                maxWidth: "100px",
-                                whiteSpace: "nowrap",
-                                // overflowX: "auto",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                            }}
-                            className="relative cursor-pointer"
                             onClick={() => handleCopy(row.customerId)}
                         >
                             {row.customerId}
-                        </TableCell>
-                        <TableCell
-                            align="left"
-                            sx={{
-                                minWidth: "300px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.serviceName}
                         </TableCell>
                         <TableCell
                             align="left"
@@ -206,65 +181,6 @@ function Row(props) {
                             })}
                         </TableCell>
                         <TableCell
-                            align="right"
-                            sx={{
-                                minWidth: "150px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                            }).format(row.price)}
-                        </TableCell>
-                        <TableCell
-                            align="center"
-                            sx={{
-                                minWidth: "200px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.discountApplied ? 'Yes' : 'No'}
-
-                        </TableCell>
-                        <TableCell
-                            align="left"
-                            sx={{
-                                minWidth: "200px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.brand}
-                        </TableCell>
-                        <TableCell
-                            align="center"
-                            sx={{
-                                minWidth: "200px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.rating}
-                        </TableCell>
-                        <TableCell
-                            align="left"
-                            sx={{
-                                minWidth: "200px",
-                                overflowX: "auto",
-                                whiteSpace: "nowrap",
-                            }}
-                            className="relative"
-                        >
-                            {row.feedback}
-                        </TableCell>
-                        <TableCell
                             align="center"
                             sx={{
                                 minWidth: "200px",
@@ -279,7 +195,8 @@ function Row(props) {
                                     row.status === 'pending' ? 'primary'
                                         : row.status === 'cancelled' ? 'error'
                                             : row.status === 'completed' ? 'success'
-                                                : 'default'
+                                                : row.status === 'approved' ? 'warning'
+                                                    : 'default'
                                 }
                             />
 
@@ -298,6 +215,14 @@ function Row(props) {
                                         disabled={row.status === 'completed'}
                                     >
                                         <CheckCircleIcon sx={{ color: row.status === 'completed' ? 'gray.400' : green[500] }} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={t("approve")}>
+                                    <IconButton
+                                        onClick={() => handleUpdateStatus(row._id, "approved")}
+                                        disabled={row.status === 'approved'}
+                                    >
+                                        <RecommendIcon sx={{ color: row.status === 'approved' ? 'gray.400' : yellow[500] }} />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title={t("pending")}>
@@ -324,7 +249,56 @@ function Row(props) {
                             <Collapse in={open} timeout="auto" unmountOnExit>
                                 <Box sx={{ margin: 1 }}>
                                     <Typography variant="h6" gutterBottom component="div">
-                                        {t("products")}
+                                        {t("service")}
+                                    </Typography>
+                                    <Table
+                                        size="small"
+                                        aria-label="purchases"
+                                        sx={{ tableLayout: "fixed", width: "100%" }}
+                                    >
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell align="center">{t("id")}</TableCell>
+                                                <TableCell align="center">{t("name")}</TableCell>
+                                                <TableCell align="center">{t("price")}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {row.services &&
+                                                row.services.map((service) => (
+                                                    <TableRow key={service.serviceId}>
+                                                        <TableCell
+                                                            component="th"
+                                                            scope="row"
+                                                            align="center"
+                                                            onClick={() => handleCopy(service.serviceId)}
+                                                        >
+                                                            {service.serviceId}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            scope="row"
+                                                            align="center"
+                                                        >
+                                                            {service.serviceName}
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            {service.price}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                        </TableBody>
+                                    </Table>
+                                </Box>
+                            </Collapse>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+                            <Collapse in={open} timeout="auto" unmountOnExit>
+                                <Box sx={{ margin: 1 }}>
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        {t("product")}
                                     </Typography>
                                     <Table
                                         size="small"
@@ -427,21 +401,7 @@ const BookingTable = ({ searchTerm }) => {
                                 sx={{ fontWeight: "bold", minWidth: "120px" }}
                                 className="relative dark:text-black"
                             >
-                                {t("service-id")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "120px" }}
-                                className="relative dark:text-black"
-                            >
                                 {t("customer-id")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "200px" }}
-                                className="relative dark:text-black"
-                            >
-                                {t("service-name")}
                             </TableCell>
                             <TableCell
                                 align="center"
@@ -463,41 +423,6 @@ const BookingTable = ({ searchTerm }) => {
                                 className="relative dark:text-black"
                             >
                                 {t("date")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="relative dark:text-black"
-                            >
-                                {t("price")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "200px" }}
-                                className="relative dark:text-black"
-                            >
-                                {t("discount-applied")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
-                            >
-                                {t("brand")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
-                            >
-                                {t("rating")}
-                            </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
-                            >
-                                {t("feedback")}
                             </TableCell>
                             <TableCell
                                 align="center"

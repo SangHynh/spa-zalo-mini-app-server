@@ -116,5 +116,10 @@
   "image-config": "Images Config",
   "success-config": "Successfully config!",
   "fail-config": "Config failed!",
-  "order-mgmt": "Order Management"
+  "order-mgmt": "Order Management",
+  "voucher-mgmt": "Voucher Management",
+  "approve": "Approve",
+  "voucher": "Voucher",
+  "refresh": "Refresh",
+  "available-products": "Available Product"
 }

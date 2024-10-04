@@ -5,7 +5,6 @@ class CategoryController {
     // GET CATEGORIES
     async getCategories(req, res) {
         try {
-            console.log(req.payload)
             const categories = await Category.find()
             return res.status(200).json(categories)
         } catch (error) {

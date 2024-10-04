@@ -148,18 +148,22 @@ const createTestData = async () => {
                 randomSubCategory = randomCategory.subCategory[Math.floor(Math.random() * randomCategory.subCategory.length)];
             }
 
+            const totalPrice = Math.floor(Math.random() * 100) * 1000;
+            const ranStock1 = Math.floor(Math.random() * 100) + 1
+            const ranStock2 = Math.floor(Math.random() * 100) + 1
+
             const product = new Product({
                 name: productNames[i % productNames.length],
                 description: `Sản phẩm ${i + 1} giúp chăm sóc da hiệu quả`,
-                price: Math.floor(Math.random() * 100) * 1000,
-                stock: Math.floor(Math.random() * 100) + 1,
+                price: totalPrice,
+                stock: ranStock1 + ranStock2,
                 categoryId: randomCategory._id,
                 subCategoryId: randomSubCategory ? randomSubCategory._id : null,
                 category: randomCategory.name,
                 subCategory: randomSubCategory ? randomSubCategory.name : null,
                 variants: [
-                    { volume: "50ml", price: Math.floor(Math.random() * 100) * 1000, stock: 100 },
-                    { volume: "100ml", price: Math.floor(Math.random() * 100) * 1000, stock: 50 },
+                    { volume: "50ml", price: totalPrice, stock: ranStock1 },
+                    { volume: "100ml", price: (totalPrice * 2), stock: ranStock2 },
                 ],
                 ingredients: [
                     { name: "Aloe Vera", percentage: 10 },

@@ -99,6 +99,13 @@ function Row(props) {
               component="th"
               scope="row"
               className="relative cursor-pointer"
+              sx={{
+                maxWidth: "75px",
+                whiteSpace: "nowrap",
+                // overflowX: "auto",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
               onClick={() => handleCopy(row._id)}
             >
               {row._id}

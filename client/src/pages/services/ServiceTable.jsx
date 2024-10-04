@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Button, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
@@ -28,13 +28,13 @@ function Row(props) {
 
   const { row, searchTerm } = props;
 
-  // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
-  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+  // // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
+  // const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
-  // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
-  const isVisible =
-    row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-    row._id.toLowerCase().includes(lowerCaseSearchTerm);
+  // // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
+  // const isVisible =
+  //   row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+  //   row._id.toLowerCase().includes(lowerCaseSearchTerm);
 
   const [open, setOpen] = React.useState(false);
 
@@ -76,150 +76,150 @@ function Row(props) {
 
   return (
     <>
-      {isVisible && (
-        <React.Fragment>
-          <TableRow
+      {/* {isVisible && ( */}
+      <React.Fragment>
+        <TableRow
+          sx={{
+            "& > *": { borderBottom: "unset" },
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "#2F2F2F" : "#FFFFFF",
+          }}
+        >
+          <TableCell className="relative">
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+          <TableCell
+            align="right"
+            component="th"
+            scope="row"
             sx={{
-              "& > *": { borderBottom: "unset" },
-              backgroundColor: (theme) =>
-                theme.palette.mode === "dark" ? "#2F2F2F" : "#FFFFFF",
+              maxWidth: "100px",
+              whiteSpace: "nowrap",
+              // overflowX: "auto",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
+            className="relative cursor-pointer"
+            onClick={() => handleCopy(row._id)}
           >
-            <TableCell className="relative">
-              <IconButton
-                aria-label="expand row"
-                size="small"
-                onClick={() => setOpen(!open)}
-              >
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </TableCell>
-            <TableCell
-              align="right"
-              component="th"
-              scope="row"
-              sx={{
-                maxWidth: "100px",
-                whiteSpace: "nowrap",
-                // overflowX: "auto",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-              className="relative cursor-pointer"
-              onClick={() => handleCopy(row._id)}
-            >
-              {row._id}
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{
-                minWidth: "300px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.name}
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{
-                minWidth: "200px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.category}
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{
-                minWidth: "200px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.subCategory}
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{
-                maxWidth: "400px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.description}
-            </TableCell>
-            <TableCell
-              align="right"
-              sx={{
-                minWidth: "150px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(row.price)}
-            </TableCell>
-            <TableCell
-              align="center"
-              className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Tooltip title={t("edit")}>
-                  <IconButton
-                    color="primary"
-                    href={`${path.EDIT_SERVICE}/${row._id}`}
+            {row._id}
+          </TableCell>
+          <TableCell
+            align="left"
+            sx={{
+              minWidth: "300px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.name}
+          </TableCell>
+          <TableCell
+            align="left"
+            sx={{
+              minWidth: "200px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.category}
+          </TableCell>
+          <TableCell
+            align="left"
+            sx={{
+              minWidth: "200px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.subCategory}
+          </TableCell>
+          <TableCell
+            align="left"
+            sx={{
+              maxWidth: "400px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.description}
+          </TableCell>
+          <TableCell
+            align="right"
+            sx={{
+              minWidth: "150px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(row.price)}
+          </TableCell>
+          <TableCell
+            align="center"
+            className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Tooltip title={t("edit")}>
+                <IconButton
+                  color="primary"
+                  href={`${path.EDIT_SERVICE}/${row._id}`}
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t("delete")}>
+                <IconButton onClick={() => handleDelete(row._id)}>
+                  <DeleteIcon className="text-red-500" />
+                </IconButton>
+              </Tooltip>
+            </div>
+          </TableCell>
+        </TableRow>
+        <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div">
+                  {t("images")}
+                </Typography>
+                {/* Image List */}
+                {row.images.length > 0 && (
+                  <ImageList
+                    sx={{ height: 250, mt: 2 }}
+                    cols={5}
+                    rowHeight={150}
                   >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t("delete")}>
-                  <IconButton onClick={() => handleDelete(row._id)}>
-                    <DeleteIcon className="text-red-500" />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            </TableCell>
-          </TableRow>
-          <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-              <Collapse in={open} timeout="auto" unmountOnExit>
-                <Box sx={{ margin: 1 }}>
-                  <Typography variant="h6" gutterBottom component="div">
-                    {t("images")}
-                  </Typography>
-                  {/* Image List */}
-                  {row.images.length > 0 && (
-                    <ImageList
-                      sx={{ height: 250, mt: 2 }}
-                      cols={5}
-                      rowHeight={150}
-                    >
-                      {row.images.map((imgSrc, index) => (
-                        <ImageListItem key={index}>
-                          <img
-                            src={imgSrc}
-                            alt={`Uploaded ${index}`}
-                            loading="lazy"
-                          />
-                        </ImageListItem>
-                      ))}
-                    </ImageList>
-                  )}
-                </Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        </React.Fragment>
-      )}
+                    {row.images.map((imgSrc, index) => (
+                      <ImageListItem key={index}>
+                        <img
+                          src={imgSrc}
+                          alt={`Uploaded ${index}`}
+                          loading="lazy"
+                        />
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                )}
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+      {/* )} */}
     </>
   );
 }
@@ -227,29 +227,37 @@ function Row(props) {
 const ServiceTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
+  const [totalPages, setTotalPages] = useState(0);
   const [services, setServices] = useState([]);
+  const [totalServices, setTotalServices] = useState(0)
 
   // GET SERVICES
   useEffect(() => {
     const fetchServices = async () => {
-      const response = await apiGetServices();
-      if (response.status === 200) setServices(response.data);
+      const response = await apiGetServices(currentPage, rowsPerPage, searchTerm);
+      if (response.status === 200) {
+        setServices(response.data.services);
+        setTotalServices(response.data.totalServices);
+        setTotalPages(response.data.totalPages);
+      }
     };
 
     fetchServices();
-  }, []);
+  }, [currentPage, rowsPerPage, searchTerm]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1); // Chuyển sang trang tiếp theo
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1); // Quay lại trang trước
+    }
+  };
 
   return (
     <>
@@ -313,24 +321,45 @@ const ServiceTable = ({ searchTerm }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {services
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
+            {Array.isArray(services) && services.length > 0 ? (
+              services.map((row) => (
                 <Row key={row._id} row={row} searchTerm={searchTerm} />
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} align="center">No services found</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={services.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={t("rows-per-page")}
-      />
+      {/* Nút điều chỉnh trang */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        marginTop="10px"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          {t("prev")}
+        </Button>
+        <Typography>
+          {currentPage} / {totalPages}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          {t("next")}
+        </Button>
+      </Box>
     </>
   );
 };

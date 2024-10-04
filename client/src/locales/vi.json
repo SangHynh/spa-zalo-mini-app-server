@@ -116,5 +116,10 @@
   "image-config": "Cấu hình ảnh",
   "success-config": "Cấu hình thành công!",
   "fail-config": "Cấu hình không thành công!",
-  "order-mgmt": "Quản lý giao dịch"
+  "order-mgmt": "Quản lý giao dịch",
+  "voucher-mgmt": "Quản lý mã thưởng",
+  "approve": "Chấp nhận",
+  "voucher": "Mã giảm",
+  "refresh": "Làm mới",
+  "available-products": "Các sản phẩm có sẵn"
 }

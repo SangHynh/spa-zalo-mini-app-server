@@ -6,8 +6,11 @@ const { verifyAccessToken } = require('../../configs/jwt.config')
 const MAX_FILES = 10;
 
 // GET
-router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
+
+// GET: /api/products?page=...&limit=...&keyword=...&subCategoryId=...
+router.get('/', productController.getAllProducts);
+
 // POST 
 router.post('/', (req, res, next) => {
     req.folder = process.env.PRODUCT_FOLDER; // Folder name in cloud

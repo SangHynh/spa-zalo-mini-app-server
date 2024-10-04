@@ -9,6 +9,7 @@ export { default as OrderManagement } from "./managements/OrderManagement";
 export { default as BookingManagement } from "./managements/BookingManagement";
 export { default as CategoryManagement } from "./managements/CategoryManagement";
 export { default as AffiliateMarketing } from "./general-config/AffiliateMarketing";
+export { default as VoucherManagement } from "./managements/VoucherManagement";
 export { default as Commission } from "./general-config/Commission";
 export { default as RanknPoint } from "./general-config/RanknPoint";
 export { default as Images } from "./general-config/Images";

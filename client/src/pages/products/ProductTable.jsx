@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Button, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import WidgetsIcon from "@mui/icons-material/Widgets";
@@ -31,14 +31,14 @@ function Row(props) {
 
   const { row, searchTerm } = props;
 
-  // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
-  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+  // // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
+  // const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
-  // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
-  const isVisible =
-    row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-    row._id.toLowerCase().includes(lowerCaseSearchTerm);
-  // row.category.toLowerCase().includes(lowerCaseSearchTerm);
+  // // Kiểm tra nếu bất kỳ ký tự nào trong searchTerm có trong các trường
+  // const isVisible =
+  //   row.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+  //   row._id.toLowerCase().includes(lowerCaseSearchTerm);
+  // // row.category.toLowerCase().includes(lowerCaseSearchTerm);
 
   const [open, setOpen] = React.useState(false);
 
@@ -82,7 +82,7 @@ function Row(props) {
 
   return (
     <>
-      {isVisible && (
+      {/* {isVisible && ( */}
         <React.Fragment>
           <TableRow
             sx={{
@@ -361,7 +361,7 @@ function Row(props) {
             </TableCell>
           </TableRow>
         </React.Fragment>
-      )}
+      {/* )} */}
     </>
   );
 }
@@ -369,29 +369,37 @@ function Row(props) {
 const ProductTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
+  const [totalPages, setTotalPages] = useState(0);
   const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0)
 
   // GET PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await apiGetProducts();
-      if (response.status === 200) setProducts(response.data);
+      const response = await apiGetProducts(currentPage, rowsPerPage, searchTerm);
+      if (response.status === 200) {
+        setProducts(response.data.products || []);
+        setTotalProducts(response.data.totalProducts);
+        setTotalPages(response.data.totalPages);
+      }
     };
 
     fetchProducts();
-  }, []);
+  }, [currentPage, rowsPerPage, searchTerm]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1); // Chuyển sang trang tiếp theo
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1); // Quay lại trang trước
+    }
+  };
 
   return (
     <>
@@ -476,20 +484,53 @@ const ProductTable = ({ searchTerm }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
+            {Array.isArray(products) && products.length > 0 ? (
+              products.map((row) => (
                 <Row
                   key={row._id}
                   row={row}
                   searchTerm={searchTerm}
                   className="bg-[343541]"
                 />
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} align="center">No products found</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+
+      {/* Nút điều chỉnh trang */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        marginTop="10px"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          {t("prev")}
+        </Button>
+        <Typography>
+          {currentPage} / {totalPages}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          {t("next")}
+        </Button>
+      </Box>
+
+      {/* <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={products.length}
@@ -498,7 +539,7 @@ const ProductTable = ({ searchTerm }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage={t("rows-per-page")}
-      />
+      /> */}
     </>
   );
 };

@@ -33,11 +33,47 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// GET ALL
+// GET ALL PRODUCTS WITH PAGINATION
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    return res.status(200).json(products);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const { keyword, subCategoryId } = req.query;
+
+    // Tạo điều kiện tìm kiếm
+    const query = {};
+    
+    if (keyword) {
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword); 
+
+      query.$or = [
+        { name: { $regex: keyword, $options: 'i' } },
+      ];
+
+      if (isObjectId) {
+        query.$or.push({ _id: new mongoose.Types.ObjectId(keyword) });
+      }
+    }
+
+    if (subCategoryId) {
+      query.subCategoryId = subCategoryId;
+    }
+
+    const products = await Product.find(query)
+      .skip(skip)
+      .limit(limit);
+
+    const totalProducts = await Product.countDocuments(query);
+
+    return res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products
+    });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

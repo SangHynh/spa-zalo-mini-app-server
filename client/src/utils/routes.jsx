@@ -15,6 +15,7 @@ import {
   StaffManagement,
   ServiceManagement,
   Images,
+  VoucherManagement,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
@@ -74,6 +75,10 @@ const routes = [
           {
             path: path.AFFILIATE_MARKETING,
             element: <AffiliateMarketing />,
+          },
+          {
+            path: path.VOUCHER_MANAGEMENT,
+            element: <VoucherManagement />,
           },
           {
             path: path.COMMISSION,

@@ -8,8 +8,8 @@ const orderSchema = new mongoose.Schema({
     discountApplied: { type: Boolean, required: true },
     discountAmount: { type: Number, required: true },
     finalAmount: { type: Number, required: true },
-    paymentMethod: { type: String, required: true },
-    paymentStatus: { type: String, required: true },
+    paymentMethod: { type: String, required: false },
+    paymentStatus: { type: String, required: false },
     transactionId: { type: String, required: false }, // ZALO ORDERID
     remarks: { type: String, required: false },
     referralId: { type: mongoose.Schema.Types.ObjectId, required: false },
@@ -19,6 +19,11 @@ const orderSchema = new mongoose.Schema({
         productName: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },
+    }],
+    services: [{
+        serviceId: { type: mongoose.Schema.Types.ObjectId },
+        serviceName: { type: String, required: true },
+        price: { type: Number, required: true },
     }],
     voucherId: { type: mongoose.Schema.Types.ObjectId, required: false },
 },{

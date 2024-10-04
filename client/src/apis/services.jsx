@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // GET SERVICES
-export const apiGetServices = () =>
+export const apiGetServices = (page, limit, keyword) =>
   axios({
-    url: "/api/services/",
+    url: `/api/services/?page=${page}&limit=${limit}&keyword=${keyword}`,
     method: "GET",
   });
 

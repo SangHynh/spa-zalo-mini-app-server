@@ -74,6 +74,13 @@ export const getSidebar = (t) => [
     type: "SINGLE",
   },
   {
+    id: 9,
+    name: t("voucher"),
+    path: `/${path.ADMIN_LAYOUT}/${path.VOUCHER_MANAGEMENT}`,
+    icon: <img src="/voucher.png" alt="" className="w-7 h-7 ml-1" />,
+    type: "SINGLE",
+  },
+  {
     id: 8,
     name: t("general-config"),
     icon: <img src="/setting.png" alt="" className="w-7 h-7" />,
