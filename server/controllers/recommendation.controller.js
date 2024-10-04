@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const User = require('../models/user.model');
 const Recommendation = require('../models/recommendation.model');
-
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id; // Lấy user ID từ body
   const productName = req.params.productName; // Lấy product name từ params
@@ -56,10 +55,11 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
     // Lưu cập nhật vào cơ sở dữ liệu
     const updatedUser = await user.save();
 
-    // Chỉ trả về thông tin cần thiết
+    // Trả về thông tin cần thiết cùng với danh sách sản phẩm tìm kiếm
     res.status(200).json({
       message: "Updated successfully",
-      suggestions: updatedUser.suggestions
+      suggestions: updatedUser.suggestions,
+      products: products // Thêm danh sách sản phẩm tìm được vào phản hồi
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
