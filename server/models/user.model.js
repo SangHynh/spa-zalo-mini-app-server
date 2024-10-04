@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     },
     name: { type: String, required: true, unique: false },
     avatar: { type: String, default: "", unique: false },
-    phone: { type: String, default: null, unique: true, sparse: true },
+    phone: { type: String, default: null, unique: false},
     gender: { type: String, enum: ["male", "female"], default: "male" },
     membershipTier: {
       type: String,
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     },
     points: { type: Number, default: 0 },
     history: { type: [String], default: [] },
-    referralCode: { type: String },
+    referralCode: { type: String, unique: true },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
     productSuggestions: [

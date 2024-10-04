@@ -4,12 +4,13 @@ Authorization: Bearer token_here
 
 # -------- READ docs/README.md to get ZALO_TOKEN ---------
 
-### REGISTER ROUTE USER
+### REGISTER ROUTE USER (PHONETOKEN IS OPTION)
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
     "zaloAccessToken": "ZALO_TOKEN_HERE",
+    "phoneToken": null,
     "role": "user"
 }
 

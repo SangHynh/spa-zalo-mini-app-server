@@ -7,20 +7,23 @@ const {
   verifyRefreshToken,
 } = require("../configs/jwt.config");
 const redis = require("../configs/redis.config");
-const zaloService = require("../services/zalo.service");
-const generateReferralCode = require("../utils/genReffCode");
+const {
+  zaloTokenService,
+  zaloPhoneService,
+} = require("../services/zalo.service");
+const generateReferralCode = require("../utils/genRefCode");
 const { getUserInfo } = require("../controllers/user.controller");
 
 const register = async (req, res, next) => {
   try {
-    const { role} = req.body;
+    const { role } = req.body;
     // Kiểm tra role không khớp
     if (!role || !["admin", "user"].includes(role)) {
       throw createError.BadRequest("Invalid role");
     }
     // Kiểm tra xem email hoặc zaloId có bị trùng lặp không
     if (role === "admin") {
-      const { email, password} = req.body;
+      const { email, password } = req.body;
       if (!email || !password) {
         throw createError.BadRequest("Email and password are required");
       }
@@ -35,18 +38,25 @@ const register = async (req, res, next) => {
       const accessToken = await signAccessToken(savedAdmin.id);
       const refreshToken = await signRefreshToken(savedAdmin.id);
       // Trả về kết quả đăng ký thành công
-      return res.send({admin:savedAdmin, accessToken, refreshToken });
-    } else if (role === "user" ) {
-      const { zaloAccessToken } = req.body;
+      return res.send({ admin: savedAdmin, accessToken, refreshToken });
+    } else if (role === "user") {
+      const { zaloAccessToken, phoneToken } = req.body;
       if (!zaloAccessToken) {
         throw createError.BadRequest("Zalo Access Token is required");
       }
-      const data = await zaloService(zaloAccessToken)
-        .then((data) => data)
+      //lấy thông tin người dùng
+      const data = await zaloTokenService(zaloAccessToken)
+        .then((data) => data.data)
         .catch((error) => {
           throw createError.BadRequest("Invalid Zalo Access Token");
         });
-        console.log(data);
+      console.log(data);
+
+      const phoneData = await zaloPhoneService(phoneToken, zaloAccessToken);
+      console.log(phoneData);
+      const phone = phoneData?.data?.data?.number ?? null;
+      console.log(phone);
+
       const zaloId = data.id;
       const name = data?.name;
       const avatar = data?.picture?.data?.url;
@@ -63,12 +73,15 @@ const register = async (req, res, next) => {
         referralCode: await generateReferralCode(zaloId),
         points: 0,
         gender: "male",
+        phone,
       });
       await user.save();
       const userProfile = {
         zaloId: user.zaloId,
         name: user.name,
         avatar: user.avatar,
+        gender: user.gender,
+        phone: user.phone,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
         points: user.points,
@@ -103,16 +116,18 @@ const login = async (req, res, next) => {
       // Tạo access token và refresh token sau khi đăng nhập thành công
       const accessToken = await signAccessToken(admin.id);
       const refreshToken = await signRefreshToken(admin.id);
-      return res.send({admin, accessToken, refreshToken });
+      return res.send({ admin, accessToken, refreshToken });
     } else if (role === "user" && zaloAccessToken) {
       // Kiểm tra đăng nhập qua Zalo Access Token
-      const data = await zaloService(zaloAccessToken)
-        .then((data) => data)
+      const data = await zaloTokenService(zaloAccessToken)
+        .then((data) => data.data)
         .catch((error) => {
           throw createError.BadRequest("Invalid Zalo Access Token");
         });
-        
+
       const zaloId = data.id;
+      console.log("zaloId:::::");
+      console.log(zaloId);
       const user = await User.findOne({ zaloId });
 
       if (!user) throw createError.NotFound("User not found");
@@ -121,10 +136,11 @@ const login = async (req, res, next) => {
         zaloId: user.zaloId,
         name: user.name,
         avatar: user.avatar,
+        gender: user.gender,
+        phone: user.phone,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
         points: user.points,
-        gender: user.gender
       };
       if (!user) throw createError.NotFound("User not found");
       // Tạo access token và refresh token sau khi đăng nhập thành công

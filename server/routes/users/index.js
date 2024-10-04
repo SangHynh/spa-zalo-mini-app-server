@@ -13,10 +13,11 @@ router.delete('/:id',verifyAccessToken, userController.deleteUser);
 
 // router.get('/user-info/:zaloId', userController.getUserInfo);
 router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserInfo);
+router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
-router.put('/suggested-score/:id',verifyAccessToken, productController.findProductToUpdateSuggestScoreOfUser);
-router.put('/rating-product/:id',verifyAccessToken, productController.ratingToUpdateSuggestScoreOfUser);
-router.put('/suggest-products-for-user/:id',verifyAccessToken, userController.suggestProductsForUser);
-router.put('/update-suggest-products-for-multiple-products/:id',verifyAccessToken, productController.updateSuggestedScoresForMultipleProducts);
-router.put('/find-product-to-update-suggest-score-of-user/:productName',verifyAccessToken, productController.findProductToUpdateSuggestScoreOfUser);
+router.put('/suggested-score/:id', productController.findProductToUpdateSuggestScoreOfUser);
+router.put('/rating-product/:id', productController.ratingToUpdateSuggestScoreOfUser);
+router.put('/suggest-products-for-user/:id', userController.suggestProductsForUser);
+router.put('/update-suggest-products-for-multiple-products/:id', productController.updateSuggestedScoresForMultipleProducts);
+router.put('/find-product-to-update-suggest-score-of-user/:productName', productController.findProductToUpdateSuggestScoreOfUser);
 module.exports = router;

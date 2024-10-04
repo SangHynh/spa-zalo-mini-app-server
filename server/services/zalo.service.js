@@ -1,11 +1,10 @@
 const axios = require("axios");
 const crypto = require("crypto");
-const { create } = require("../models/admin.model");
 require("dotenv").config();
 const createError = require("http-errors");
 
-/* Hàm này để xác thực token Zalo có hợp lệ không */
-const zaloService = async (accessToken) => {
+/* Hàm này để xác thực Zalo access token có hợp lệ không */
+const zaloTokenService = async (accessToken) => {
 
   // Hàm tính toán appsecret_proof
   const calculateHMacSHA256 = (data, secretKey) => {
@@ -32,7 +31,11 @@ const zaloService = async (accessToken) => {
 
   try {
     const response = await axios(options);
-    return response.data;
+    return {
+      status: response.status,
+      data: response.data,
+      accessToken: accessToken
+    };
   } catch (error) {
     console.error("Zalo Service Error:", error.response ? error.response.data : error.message);
     throw createError.BadRequest("Invalid Zalo Access Token");
@@ -40,4 +43,30 @@ const zaloService = async (accessToken) => {
   
 };
 
-module.exports = zaloService;
+// Hàm lấy thông tin số điện thoại qua phone token
+const zaloPhoneService = async (phoneToken, zaloAccessToken) => {
+  const secretKey = process.env.ZALO_APP_SECRET_KEY;
+
+  const options = {
+    url: "https://graph.zalo.me/v2.0/me/info",
+    method: "GET",
+    headers: {
+      access_token: zaloAccessToken, 
+      code: phoneToken,
+      secret_key: secretKey,
+    },
+  };
+
+  try {
+    const response = await axios(options);
+    return {
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error) {
+    console.error("Zalo Phone Service Error:", error.response ? error.response.data : error.message);
+    throw createError.BadRequest("Invalid Zalo Phone Token");
+  }
+};
+
+module.exports = {zaloTokenService, zaloPhoneService};
