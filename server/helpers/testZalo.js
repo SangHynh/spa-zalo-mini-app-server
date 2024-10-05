@@ -57,14 +57,12 @@ const testZalo = async () => {
       data: phoneTokenResponse.data,
     };
 
-    // Trả về kết quả chung
     console.log("Combined Response:", JSON.stringify(userInfo, null, 2));
-    return userInfo; // Bạn có thể trả về hoặc xử lý dữ liệu này theo nhu cầu
+    return userInfo; 
 
   } catch (error) {
     console.error("Error:", error.response ? error.response.data : error.message);
   }
 };
 
-// Gọi hàm kiểm tra Zalo Token
 testZalo();
