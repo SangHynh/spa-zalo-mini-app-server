@@ -12,7 +12,7 @@ router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUs
 /* Body:
 
 {
-    "date": "05/10/2024",
+    "date": "05/10/2024 05:00",
     "services": [
         "66ffc8e9eb8a35fcbaffa9aa",
         "66ffc8e9eb8a35fcbaffa9ab"

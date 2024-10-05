@@ -127,7 +127,7 @@ class BookingController {
             }
 
             if (req.body.date) {
-                req.body.date = moment(req.body.date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                req.body.date = moment(req.body.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
             }
 
             // Handle services
