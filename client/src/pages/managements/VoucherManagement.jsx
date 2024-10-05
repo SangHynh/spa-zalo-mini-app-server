@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import path from "../../utils/path";
 import { useTranslation } from "react-i18next";
 import { FaPlus, FaSearch } from "react-icons/fa";
+import VoucherTable from "../vouchers/VoucherTable";
 
 const VoucherManagement = () => {
     const { t } = useTranslation();
@@ -32,14 +33,14 @@ const VoucherManagement = () => {
                 <Button
                     variant="contained"
                     color="secondary"
-                    // href={path.CREATE_PRODUCT}
+                    href={path.CREATE_VOUCHER}
                     className="w-fit flex items-center gap-2"
                 >
                     <FaPlus />
                     {t("create")}
                 </Button>
             </div>
-            {/* <VoucherTable searchTerm={searchTerm} /> */}
+            <VoucherTable searchTerm={searchTerm} />
         </Box>
     );
 };

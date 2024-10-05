@@ -8,12 +8,39 @@ class PaymentController {
     // GET ORDERS
     async getOrders(req, res) {
         try {
-            const orders = await Order.find().populate({
-                path: 'customerId',
-                select: 'name phone'
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+
+            const skip = (page - 1) * limit;
+
+            const { keyword } = req.query;
+
+            if (keyword) {
+                query.$or = [
+                    { 'customerId.name': { $regex: keyword, $options: 'i' } },  // Tìm kiếm theo tên khách hàng
+                    { 'customerId.phone': { $regex: keyword, $options: 'i' } }, // Tìm kiếm theo số điện thoại
+                ];
+            }
+
+            // Tạo điều kiện tìm kiếm
+            const query = {};
+
+            const orders = await Order.find(query)
+                .populate({
+                    path: 'customerId',
+                    select: 'name phone',
+                })
+                .skip(skip)
+                .limit(limit)
+
+            const totalOrders = await Order.countDocuments(query);
+
+            return res.status(200).json({
+                orders,
+                currentPage: page,
+                totalPages: Math.ceil(totalOrders / limit),
+                totalOrders,
             });
-            
-            return res.status(200).json(orders);
         } catch (error) {
             return res.status(500).json(error.message);
         }
@@ -55,7 +82,7 @@ class PaymentController {
                 ...data,
                 customerId: user._id
             })
-    
+
             // Tạo order
             const newOrder = await Order.create(order);
 

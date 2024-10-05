@@ -26,6 +26,8 @@ import CreateService from "../pages/services/CreateService";
 import EditService from "../pages/services/EditService";
 import EditCategory from "../pages/categories/EditCategory";
 import ProdRecommendSystem from "../pages/products/ProdRecommendSystem";
+import CreateVoucher from "../pages/vouchers/CreateVoucher";
+import EditVoucher from "../pages/vouchers/EditVoucher";
 
 const routes = [
   {
@@ -127,6 +129,14 @@ const routes = [
           {
             path: path.EDIT_CATEGORY + "/:id",
             element: <EditCategory />,
+          },
+          {
+            path: path.CREATE_VOUCHER,
+            element: <CreateVoucher />,
+          },
+          {
+            path: path.EDIT_VOUCHER + "/:id",
+            element: <EditVoucher />,
           },
         ],
       },

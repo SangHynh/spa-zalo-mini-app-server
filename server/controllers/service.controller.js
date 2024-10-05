@@ -41,7 +41,7 @@ class ServiceController {
             // return res.status(200).json(services)
 
             return res.status(200).json({
-                totalService,
+                totalServices: totalService,
                 currentPage: page,
                 totalPages: Math.ceil(totalService / limit),
                 services

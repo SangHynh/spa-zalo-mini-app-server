@@ -259,6 +259,17 @@ const ServiceTable = ({ searchTerm }) => {
     }
   };
 
+  // Handle page change
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage + 1);
+  };
+
+  // Handle rows per page change
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setCurrentPage(1); // Reset to the first page
+  };
+
   return (
     <>
       <TableContainer
@@ -333,33 +344,16 @@ const ServiceTable = ({ searchTerm }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* Nút điều chỉnh trang */}
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        marginTop="10px"
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-        >
-          {t("prev")}
-        </Button>
-        <Typography>
-          {currentPage} / {totalPages}
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-        >
-          {t("next")}
-        </Button>
-      </Box>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={totalServices}
+        rowsPerPage={rowsPerPage}
+        page={currentPage - 1}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage={t("rows-per-page")}
+      />
     </>
   );
 };

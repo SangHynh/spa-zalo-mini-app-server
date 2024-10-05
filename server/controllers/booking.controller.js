@@ -3,6 +3,7 @@ const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const Service = require("../models/service.model");
 const User = require("../models/user.model");
+const mongoose = require('mongoose');
 const moment = require('moment');
 
 class BookingController {
@@ -10,24 +11,55 @@ class BookingController {
     // GET BOOKING HISTORIES
     async getBookingHistories(req, res) {
         try {
-            const bookingHistories = await BookingHistory.find();
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+
+            const skip = (page - 1) * limit;
+
+            const { status, customerId } = req.query;
+
+            // Tạo điều kiện tìm kiếm
+            const query = {};
+
+            if (status) {
+                query.status = { $regex: status, $options: 'i' }; // Case-insensitive search
+            }
+
+            if (customerId) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(customerId);
+                if (isObjectId) {
+                    query.customerId = mongoose.Types.ObjectId(customerId); // Exact match on ObjectId
+                } else {
+                    return res.status(400).json({ message: 'Invalid customerId format' });
+                }
+            }
+
+            const totalBookingHistories = await BookingHistory.countDocuments(query);
+
+            const bookingHistories = await BookingHistory.find(query)
+                .skip(skip)
+                .limit(limit)
 
             if (!bookingHistories || bookingHistories.length === 0) {
-                return res.status(200).json([]);
+                return res.status(200).json({ total: 0, bookings: [] });
             }
 
-            const bookingsWithCustomers = [];
+            const bookingsWithCustomers = await Promise.all(
+                bookingHistories.map(async (booking) => {
+                    const customer = await User.findById(booking.customerId).select('name phone');
+                    return {
+                        ...booking.toObject(),
+                        customer: customer ? customer : null,
+                    };
+                })
+            );
 
-            for (let booking of bookingHistories) {
-                const customer = await User.findById(booking.customerId).select('name phone');
-
-                bookingsWithCustomers.push({
-                    ...booking.toObject(),
-                    customer: customer ? customer : null
-                });
-            }
-
-            return res.status(200).json(bookingsWithCustomers);
+            return res.status(200).json({
+                totalBookings: totalBookingHistories,
+                currentPage: page,
+                totalPages: Math.ceil(totalBookingHistories / limit),
+                bookings: bookingsWithCustomers,
+            });
         } catch (error) {
             return res.status(500).json({
                 error: error.message,

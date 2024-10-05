@@ -121,5 +121,15 @@
   "approve": "Approve",
   "voucher": "Voucher",
   "refresh": "Refresh",
-  "available-products": "Available Product"
+  "available-products": "Available Product",
+  "code": "Code",
+  "discount-type": "Discount Type",
+  "discount-value": "Discount Value",
+  "valid-from": "Valid From",
+  "valid-to": "Valid To",
+  "usage-limit": "Usage Limit",
+  "preview-voucher": "Preview Voucher",
+  "new-voucher": "New Voucer",
+  "edit-voucher": "Edit Voucher",
+  "price-applied": "Price Applied"
 }

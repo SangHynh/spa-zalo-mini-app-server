@@ -27,9 +27,11 @@ const path = {
   CREATE_CUSTOMER: "create-customer",
   CREATE_STAFF: "create-staff",
   CREATE_CATEGORY: "create-category",
+  CREATE_VOUCHER: "create-voucher",
   EDIT_SERVICE: "edit-service",
   EDIT_PRODUCT: "edit-product",
   EDIT_CATEGORY: "edit-category",
+  EDIT_VOUCHER: "edit-voucher",
 };
 
 export default path;

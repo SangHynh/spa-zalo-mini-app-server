@@ -5,15 +5,48 @@ class VoucherController {
     // GET VOUCHERS
     async getVouchers(req, res) {
         try {
-            const vouchers = await Voucher.find()
-            return res.status(200).json(vouchers)
+            const page = parseInt(req.query.page) || 1;  // Current page
+            const limit = parseInt(req.query.limit) || 10;  // Items per page
+            const skip = (page - 1) * limit;  // Skip results for pagination
+    
+            const { keyword, validFrom, validTo } = req.query;
+    
+            const query = {};
+    
+            if (keyword) {
+                query.$or = [
+                    { code: { $regex: keyword, $options: 'i' } },        // Search in 'code'
+                    { description: { $regex: keyword, $options: 'i' } }  // Search in 'description'
+                ];
+            }
+    
+            if (validFrom) {
+                query.validFrom = { $gte: new Date(validFrom) };
+            }
+            if (validTo) {
+                query.validTo = { $lte: new Date(validTo) };
+            }
+    
+            const vouchers = await Voucher.find(query)
+                .skip(skip)
+                .limit(limit);
+    
+            const totalVouchers = await Voucher.countDocuments(query);
+    
+            return res.status(200).json({
+                vouchers,
+                currentPage: page,
+                totalPages: Math.ceil(totalVouchers / limit),
+                totalVouchers
+            });
         } catch (error) {
             return res.status(500).json({
-                error: error,
-                message: 'An error occurred' 
-            })
+                error: error.message || error,
+                message: 'An error occurred'
+            });
         }
     }
+    
 
     // GET VOUCHER
     async getVoucherById(req, res) {
@@ -22,7 +55,7 @@ class VoucherController {
             if (!voucher) {
                 return res.status(404).json({ message: 'Voucher not found' });
             }
-            return res.status(200).json({ voucher });
+            return res.status(200).json(voucher);
         } catch (error) {
             return res.status(500).json({
                 error: error.message,
@@ -30,7 +63,7 @@ class VoucherController {
             });
         }
     }
-    
+
     // POST CATEGORY
     async createVoucher(req, res) {
         try {

@@ -121,5 +121,15 @@
   "approve": "Chấp nhận",
   "voucher": "Mã giảm",
   "refresh": "Làm mới",
-  "available-products": "Các sản phẩm có sẵn"
+  "available-products": "Các sản phẩm có sẵn",
+  "code": "Mã giảm giá",
+  "discount-type": "Loại giảm giá",
+  "discount-value": "Giá trị giảm giá",
+  "valid-from": "Hiệu lực từ",
+  "valid-to": "Hiệu lực tới",
+  "usage-limit": "Số lượng giới hạn",
+  "preview-voucher": "Xem trước phiếu giảm giá",
+  "new-voucher": "Phiếu giảm giá mới",
+  "edit-voucher": "Cập nhật phiếu giảm giá",
+  "price-applied": "Giá đơn hàng"
 }
