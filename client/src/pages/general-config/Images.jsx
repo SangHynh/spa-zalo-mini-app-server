@@ -6,6 +6,7 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -13,12 +14,20 @@ import { useTranslation } from "react-i18next";
 import { VisuallyHiddenInput } from "../../utils/constants";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { green, red } from "@mui/material/colors";
+import { blue, green, red } from "@mui/material/colors";
 import { apiGetSlider, apiUpdateSlider } from "../../apis/config";
 import { useLoading } from "../../context/LoadingProvider";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import path from "../../utils/path";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import PendingIcon from "@mui/icons-material/Pending";
+
+const initialData = [
+  { id: 1, src: "hình 1" },
+  { id: 2, src: "hình 2" },
+  { id: 3, src: "hình 3" },
+];
 
 const Images = () => {
   const { t } = useTranslation();
@@ -114,7 +123,9 @@ const Images = () => {
         continue; // Bỏ qua hình ảnh này nếu không phải định dạng hỗ trợ
       }
 
-      const imageName = `${Math.random().toString(36).substring(2, 8)}-${index + 1}.${extension}`; // Tạo tên hình ảnh
+      const imageName = `${Math.random().toString(36).substring(2, 8)}-${
+        index + 1
+      }.${extension}`; // Tạo tên hình ảnh
       formData.append("images", blob, imageName); // Thêm hình ảnh vào FormData
     }
 
@@ -154,7 +165,7 @@ const Images = () => {
         title: t("fail-config"),
         showCancelButton: true,
         cancelButtonText: "Cancel",
-      })
+      });
 
       console.error("Error config:", error);
     } finally {
@@ -166,11 +177,35 @@ const Images = () => {
     navigate(`/${path.ADMIN_LAYOUT}/${path.DASHBOARD}`);
   };
 
+  // Table
+  const [data, setData] = useState(initialData);
+
+  const moveUp = (index) => {
+    if (index === 0) return;
+    const newData = [...data];
+    [newData[index], newData[index - 1]] = [newData[index - 1], newData[index]];
+    setData(newData);
+  };
+
+  const moveDown = (index) => {
+    if (index === data.length - 1) return;
+    const newData = [...data];
+    [newData[index], newData[index + 1]] = [newData[index + 1], newData[index]];
+    setData(newData);
+  };
+
+  const handleChange = (id, newName, newSrc) => {
+    setData(
+      data.map((item) =>
+        item.id === id ? { ...item, name: newName, src: newSrc } : item
+      )
+    );
+  };
+
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
       <Typography variant="h5">{t("image-config")}</Typography>
       <form onSubmit={handleSubmit}>
-
         <Button
           component="label"
           variant="contained"
@@ -201,7 +236,7 @@ const Images = () => {
                     right: 8,
                     backgroundColor: "transparent",
                     borderRadius: "50%",
-                    color: red[500]
+                    color: red[500],
                   }}
                   size="small"
                   onClick={() => handleRemoveImage(index)}
@@ -240,6 +275,69 @@ const Images = () => {
           </Grid2>
         </Grid2>
       </form>
+
+      {/* Table */}
+      <div className="w-[80%]">
+        <h1 className="text-xl font-bold mb-4">Image List</h1>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border px-4 py-2">STT</th>
+                <th className="border px-4 py-2">Tên hình ảnh</th>
+                <th className="border px-4 py-2">Sắp xếp</th>
+                <th className="border px-4 py-2">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {images.map((imgSrc, index) => (
+                <tr key={imgSrc.id} className="relative">
+                  <td className="text-center border">{index + 1}</td>
+                  <td className="text-center border">
+                    <div>abc</div>
+                  </td>
+                  <td className="border">
+                    <div className="flex h-full w-full gap-4 items-center justify-center">
+                      <button
+                        onClick={() => moveUp(index)}
+                        disabled={index === 0}
+                        className={`mb-1 ${
+                          index === 0 ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <FaArrowUp />
+                      </button>
+                      <button
+                        onClick={() => moveDown(index)}
+                        disabled={index === images.length - 1}
+                        className={`${
+                          index === images.length - 1
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                      >
+                        <FaArrowDown />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="border">
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Tooltip title={t("detail")}>
+                        <IconButton>
+                          <PendingIcon sx={{ color: blue[500] }} />
+                        </IconButton>
+                      </Tooltip>
+                      <IconButton onClick={() => handleRemoveImage(index)}>
+                        <CancelIcon sx={{ color: red[500] }} />
+                      </IconButton>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </Box>
   );
 };

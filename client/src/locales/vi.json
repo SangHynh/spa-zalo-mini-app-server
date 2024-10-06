@@ -131,5 +131,8 @@
   "preview-voucher": "Xem trước phiếu giảm giá",
   "new-voucher": "Phiếu giảm giá mới",
   "edit-voucher": "Cập nhật phiếu giảm giá",
-  "price-applied": "Giá đơn hàng"
+  "price-applied": "Giá đơn hàng",
+  "give-voucher": "Tặng voucher",
+  "select-account": "Chọn tài khoản",
+  "detail": "Chi tiết"
 }
