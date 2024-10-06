@@ -15,13 +15,13 @@ const ingredientSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  images: { type: [String], default: [] }, // Bổ sung
+  images: { type: [String], default: [] },
   price: { type: Number, required: true },
   subCategoryId: { type: mongoose.Schema.Types.ObjectId },
   subCategory: { type: String, required: true },
   categoryId: { type: mongoose.Schema.Types.ObjectId },
   category: { type: String, required: true },
-  stock: { type: Number, required: true },
+  stock: { type: Number, required:  true },
   variants: [variantSchema],
   ingredients: [ingredientSchema],
   benefits: [String],

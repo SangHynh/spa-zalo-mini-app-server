@@ -16,7 +16,7 @@ class BookingController {
 
             const skip = (page - 1) * limit;
 
-            const { status, customerId } = req.query;
+            const { status, customerId, sortBy, sortOrder } = req.query;
 
             // Tạo điều kiện tìm kiếm
             const query = {};
@@ -36,9 +36,20 @@ class BookingController {
 
             const totalBookingHistories = await BookingHistory.countDocuments(query);
 
+            let sortCriteria = {};
+            if (sortBy) {
+                const validSortFields = ['date']; // Chỉ sắp xếp theo `date`
+                if (validSortFields.includes(sortBy)) {
+                    sortCriteria[sortBy] = sortOrder === 'desc' ? -1 : 1;
+                }
+            } else {
+                sortCriteria = { date: -1 }; // Mặc định sắp xếp theo ngày
+            }
+
             const bookingHistories = await BookingHistory.find(query)
                 .skip(skip)
                 .limit(limit)
+                .sort(sortCriteria)
 
             if (!bookingHistories || bookingHistories.length === 0) {
                 return res.status(200).json({ total: 0, bookings: [] });
@@ -77,9 +88,16 @@ class BookingController {
 
             if (!user) return res.status(404).json({ message: "User not found" })
 
+            const { status } = req.query;
             // console.log(user)
 
-            const response = await BookingHistory.find({ customerId: user._id });
+            const query = {};
+
+            if (status) {
+                query.status = { $regex: status, $options: 'i' }; // Case-insensitive search
+            }
+
+            const response = await BookngHistory.find({ customerId: user._id, ...query });
 
             // console.log(response)
 

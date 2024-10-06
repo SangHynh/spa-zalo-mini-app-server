@@ -41,10 +41,14 @@ exports.getAllProducts = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const { keyword, subCategoryId } = req.query;
+    const { keyword, subCategoryId, sortBy, sortOrder } = req.query;
 
     // Tạo điều kiện tìm kiếm
     const query = {};
+
+    if (subCategoryId) {
+      query.subCategoryId = subCategoryId;
+    }
     
     if (keyword) {
       const isObjectId = mongoose.Types.ObjectId.isValid(keyword); 
@@ -58,13 +62,25 @@ exports.getAllProducts = async (req, res) => {
       }
     }
 
-    if (subCategoryId) {
-      query.subCategoryId = subCategoryId;
+    // Cấu hình sắp xếp
+    let sortCriteria = {};
+    if (sortBy) {
+      const sortFields = sortBy.split(',');
+      const sortOrders = sortOrder ? sortOrder.split(',') : [];
+      sortFields.forEach((field, index) => {
+        const order = sortOrders[index] === 'desc' ? -1 : 1;
+        if (['stock', 'price', 'expiryDate'].includes(field)) {
+          sortCriteria[field] = order;
+        }
+      });
+    } else {
+      sortCriteria = { createdAt: -1 };
     }
 
     const products = await Product.find(query)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort(sortCriteria)
 
     const totalProducts = await Product.countDocuments(query);
 

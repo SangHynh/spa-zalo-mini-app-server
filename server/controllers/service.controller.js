@@ -11,7 +11,7 @@ class ServiceController {
 
             const skip = (page - 1) * limit;
 
-            const { keyword, subCategoryId } = req.query;
+            const { keyword, subCategoryId, sortBy, sortOrder } = req.query;
 
             // Tạo điều kiện tìm kiếm
             const query = {};
@@ -32,9 +32,25 @@ class ServiceController {
                 query.subCategoryId = subCategoryId;
             }
 
+            // Cấu hình sắp xếp
+            let sortCriteria = {};
+            if (sortBy) {
+                const sortFields = sortBy.split(',');
+                const sortOrders = sortOrder ? sortOrder.split(',') : [];
+                sortFields.forEach((field, index) => {
+                    const order = sortOrders[index] === 'desc' ? -1 : 1;
+                    if (['price'].includes(field)) {
+                        sortCriteria[field] = order;
+                    }
+                });
+            } else {
+                sortCriteria = { createdAt: -1 };
+            }
+
             const services = await Service.find(query)
                 .skip(skip)
-                .limit(limit);
+                .limit(limit)
+                .sort(sortCriteria)
 
             const totalService = await Service.countDocuments(query)
 

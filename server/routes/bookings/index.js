@@ -3,9 +3,11 @@ const router = express.Router();
 const bookingController = require('../../controllers/booking.controller')
 const { verifyAccessToken } = require('../../configs/jwt.config')
 
-// GET
+// GET: /api/bookings?page=...&limit=...&customerId=...&status=...&sortBy=date&sortOrder=...
 router.get('/', verifyAccessToken, bookingController.getBookingHistories); // FOR ADMIN
 router.get('/single/:id', verifyAccessToken, bookingController.getBookingById); // FOR ADMIN
+
+// GET: /api/bookings?status=...
 router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUserId);
 
 // POST

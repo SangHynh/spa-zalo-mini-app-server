@@ -41,6 +41,36 @@ const Dashboard = () => {
     },
   ];
 
+  const revenueData = [
+    20000000, // Doanh thu tháng 1
+    15000000, // Doanh thu tháng 2
+    30000000, // Doanh thu tháng 3
+    40000000, // Doanh thu tháng 4
+    25000000, // Doanh thu tháng 5
+    35000000, // Doanh thu tháng 6
+    45000000, // Doanh thu tháng 7
+    50000000, // Doanh thu tháng 8
+    48000000, // Doanh thu tháng 9
+    null, // Doanh thu tháng 10
+    null, // Doanh thu tháng 11
+    null, // Doanh thu tháng 12
+  ];
+
+  const months = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+  ];
+
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
       {/* <Typography variant="h5" gutterBottom>
@@ -61,12 +91,8 @@ const Dashboard = () => {
           </Typography>
 
           <LineChart
-            xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-            series={[
-              {
-                data: [2, 5.5, 2, 8.5, 1.5, 5],
-              },
-            ]}
+            xAxis={[{ data: months, scaleType: 'point' }]}
+            series={[{ data: revenueData }]}
             height={400}
           />
 
