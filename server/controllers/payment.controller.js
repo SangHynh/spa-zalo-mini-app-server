@@ -269,50 +269,79 @@ class PaymentController {
         }
     }
 
-    // async callback(req, res) {
-    //     try {
-    //         const { data, mac, overallMac } = req.body || {};
+    async callback(req, res) {
+        try {
+            const { data, mac, overallMac } = req.body || {};
 
-    //         if (!data || !mac) {
-    //             return res.json({
-    //                 returnCode: 0,
-    //                 returnMessage: 'Missing data or mac',
-    //             });
-    //         }
+            if (!data || !mac) {
+                return res.json({
+                    returnCode: 0,
+                    returnMessage: 'Missing data or mac',
+                });
+            }
 
-    //         const { appId, amount, description, orderId, message, resultCode, transId } = data || {};
-    //         if (!amount || !orderId || !appId || !description || !message || !resultCode || !transId) {
-    //             return res.json({
-    //                 returnCode: 0,
-    //                 returnMessage: 'Missing method or orderId or appId',
-    //             });
-    //         }
-    //         dataForMac = `appId=${appId}&amount=${amount}&description=${description}&orderId=${orderId}&message=${message}&resultCode=${resultCode}&transId=${transId}`;
-    //         const reqMac = CryptoJS.HmacSHA256(
-    //             dataForMac,
-    //             process.env.ZALO_CHECKOUT_SECRET_KEY
-    //         ).toString();
+            const { appId, amount, description, orderId, message, resultCode, transId, method, extradata } = data || {};
+            if (!amount || !orderId || !appId || !description || !message || !resultCode || !transId) {
+                return res.json({
+                    returnCode: 0,
+                    returnMessage: 'Missing method or orderId or appId',
+                });
+            }
 
-    //         if (reqMac == mac) {
-    //             console.log(str)
-    //             return res.json({
-    //                 returnCode: 1,
-    //                 returnMessage: 'Success',
-    //             });
-    //         } else {
-    //             return res.json({
-    //                 returnCode: 0,
-    //                 returnMessage: 'Fail',
-    //             });
-    //         }
-    //     } catch (e) {
-    //         console.log(e);
-    //         return res.json({
-    //             returnCode: 0,
-    //             returnMessage: 'Fail',
-    //         });
-    //     }
-    // }
+            if (method && extradata) {
+                const dataOverallMac = Object.keys(data)
+                    .sort() // sắp xếp key của Object data theo thứ tự từ điển tăng dần
+                    .map((key) => `${key}=${data[key]}`) // trả về mảng dữ liệu dạng [{key=value}, ...]
+                    .join("&"); // chuyển về dạng string kèm theo "&", ví dụ: amount={amount}&appId={appId}&description={description}&extradata={extradata}&merchantTransId={merchantTransId}&message={message}&method={method}&orderId={orderId}&resultCode={resultCode}&transId={transId}&transTime={transTime}
+
+                // Tạo overall mac từ dữ liệu
+                const reqOveralMac = CryptoJS.HmacSHA256(
+                    dataOverallMac,
+                    process.env.ZALO_CHECKOUT_SECRET_KEY
+                ).toString();
+
+                // Kiểm tra tính hợp lệ của toàn bộ dữ liệu
+                if (reqOveralMac == overallMac) {
+                    return res.json({
+                        returnCode: 1,
+                        returnMessage: 'Success',
+                    });
+                } else {
+                    return res.json({
+                        returnCode: 0,
+                        returnMessage: 'Fail',
+                    });
+                }
+            } else {
+                const dataForMac = `appId=${appId}&amount=${amount}&description=${description}&orderId=${orderId}&message=${message}&resultCode=${resultCode}&transId=${transId}`;
+                
+                const reqMac = CryptoJS.HmacSHA256(
+                    dataForMac,
+                    process.env.ZALO_CHECKOUT_SECRET_KEY
+                ).toString();
+    
+                if (reqMac == mac) {
+                    console.log(str)
+                    return res.json({
+                        returnCode: 1,
+                        returnMessage: 'Success',
+                    });
+                } else {
+                    return res.json({
+                        returnCode: 0,
+                        returnMessage: 'Fail',
+                    });
+                }
+            }
+
+        } catch (e) {
+            console.log(e);
+            return res.json({
+                returnCode: 0,
+                returnMessage: 'Fail',
+            });
+        }
+    }
 }
 
 module.exports = new PaymentController();

@@ -1,8 +1,18 @@
 import { getCookie, setCookie } from "./cookies";
 
 export function signIn(accessToken, refreshToken) {
-    setCookie("accessToken", accessToken, 1 / 24);
-    setCookie("refreshToken", refreshToken, 7);
+    // Decode the accessToken and refreshToken to extract `iat` and `exp`
+    const decodedAccessToken = JSON.parse(atob(accessToken.split('.')[1]));
+    const decodedRefreshToken = JSON.parse(atob(refreshToken.split('.')[1]));
+
+    // Calculate expiration time in days for access token
+    const accessTokenExpirationDays = (decodedAccessToken.exp - decodedAccessToken.iat) / (60 * 60 * 24);
+
+    // Calculate expiration time in days for refresh token
+    const refreshTokenExpirationDays = (decodedRefreshToken.exp - decodedRefreshToken.iat) / (60 * 60 * 24);
+
+    setCookie("accessToken", accessToken, accessTokenExpirationDays);
+    setCookie("refreshToken", refreshToken, refreshTokenExpirationDays);
 }
 
 export function isLoggedIn() {

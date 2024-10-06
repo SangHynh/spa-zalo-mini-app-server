@@ -16,6 +16,9 @@ router.post('/order/update/createMac', paymentController.createMacForUpdateOrder
 // notify API cho COD hoặc BANK method
 router.post('/zaloNotify', paymentController.zaloNotify);
 
+// callback url
+router.post('/callback', paymentController.callback);
+
 // POST
 /* có 2 loại body:
 {
