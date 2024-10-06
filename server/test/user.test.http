@@ -8,6 +8,13 @@ Content-Type: application/json
 Authorization: Bearer token_here
 
 {
-    "name": "Nguyen Van B",
+    "name": "Nguyen Van A",
     "phone": "0123456789"
 }
+
+### UPDATE USER PHONENUMBER
+PUT http://localhost:8080/api/users/update-user-phone/12345648999
+Content-Type: application/json
+Authorization: Bearer token_here
+phoneToken: phone_token_here
+zaloAccessToken: zalo_access_token_here

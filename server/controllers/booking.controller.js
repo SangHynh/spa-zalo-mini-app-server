@@ -71,9 +71,9 @@ class BookingController {
     // GET BOOKING HISTORIES BY USERID
     async getBookingHistoriesByUserId(req, res) {
         try {
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
 
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
 
             if (!user) return res.status(404).json({ message: "User not found" })
 
@@ -118,10 +118,10 @@ class BookingController {
     // CREATE BOOKING
     async createBooking(req, res) {
         try {
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
             // const { userId } = req.params.id
 
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }

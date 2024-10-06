@@ -1,0 +1,40 @@
+
+GET http://localhost:8080/
+Authorization: Bearer token_here
+
+# -------- READ docs/README.md to get ZALO_TOKEN ---------
+
+### REGISTER ROUTE USER (PHONETOKEN IS OPTION)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "zaloAccessToken": "ZALO_TOKEN_HERE",
+    "phoneToken": null,
+    "role": "user"
+}
+
+### LOGIN ROUTE USER
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "zaloAccessToken": "ZALO_TOKEN_HERE",
+    "role": "user"
+}
+
+### REFRESH TOKEN
+POST http://localhost:8080/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}
+
+### LOGOUT ROUTE
+DELETE http://localhost:8080/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": ""
+}

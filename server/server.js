@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const createError = require("http-errors");
-const dotenv = require("dotenv");
+require("dotenv").config();
 const helmet = require('helmet');
 
 const { connect } = require("./configs/db.config");
@@ -11,8 +11,6 @@ const authRoute = require("./auth/auth.route");
 const { verifyAccessToken } = require("./configs/jwt.config");
 require("./configs/redis.config");
 require("./configs/jwt.config");
-
-dotenv.config();
 
 const app = express();
 
@@ -42,8 +40,8 @@ app.use(cors({
   credentials: true 
 }));
 
-
 app.use(loggingMiddleware);
+
 app.use("/auth", authRoute);
 
 // Initialize routes
@@ -53,14 +51,8 @@ initRoutes(app);
 connect();
 
 // Test route
-app.get("/", verifyAccessToken, async (req, res, next) => {
+app.get("/", async (req, res, next) => {
   res.send("Hello kitty");
-  const delay = 10000; // 10 giây
-
-  setTimeout(() => {
-    // Gửi phản hồi sau 10 giây
-    res.send("Hello kitty");
-  }, delay);
 });
 
 // Middleware xử lý các yêu cầu không khớp với bất kỳ route nào

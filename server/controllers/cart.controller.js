@@ -5,11 +5,9 @@ class CartController {
     // GET CART BY USER ID
     async getCartByUserId(req, res) {
         try {
-            const accountId = req.payload.aud
-
-            console.log(req.payload.aud)
+            const userId = req.payload.audience
             // const { userId } = req.params.id;
-            const response = await User.findOne({ accountId: accountId });
+            const response = await User.findById(userId);
 
             if (!response) return res.status(404).json("User not found")
 
@@ -29,9 +27,9 @@ class CartController {
 
             const { variantId, quantity } = req.body;
 
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
             // const { userId } = req.params.id;
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
 
             if (!user) return res.status(404).json("User not found")
 
@@ -71,9 +69,9 @@ class CartController {
         try {
             const productId = req.params.id;
             const { variantId, quantity } = req.body;
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
 
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
             if (!user) return res.status(404).json("User not found");
 
             const cartItem = user.carts.find(item => item.productId.toString() === productId && item.variantId.toString() === variantId);
@@ -105,9 +103,9 @@ class CartController {
 
             const { variantId } = req.body;
 
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
             // const { userId } = req.params.id;
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
 
             if (!user) return res.status(404).json("User not found")
 

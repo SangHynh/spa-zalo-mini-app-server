@@ -9,6 +9,7 @@ router.get('/:id', voucherController.getVoucherById);
 
 // POST
 router.post('/', verifyAccessToken, voucherController.createVoucher);
+router.post('/giveAway', verifyAccessToken, voucherController.giveAwayVouchers)
 
 // PUT
 router.put('/:id', verifyAccessToken, voucherController.updateVoucher);

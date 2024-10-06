@@ -2,15 +2,15 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    accountId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+    zaloId: {
+      type: String,
       required: true,
       unique: true,
     },
-    name: { type: String, required: true },
-    urlImage: { type: String, default: "" },
-    phone: { type: String, default: "" },
+    name: { type: String, required: true, unique: false },
+    avatar: { type: String, default: "", unique: false },
+    phone: { type: String, default: null, unique: false},
+    gender: { type: String, enum: ["male", "female"], default: "male" },
     membershipTier: {
       type: String,
       enum: ["Member", "Silver", "Gold", "Diamond"],
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     },
     points: { type: Number, default: 0 },
     history: { type: [String], default: [] },
-    referralCode: { type: String },
+    referralCode: { type: String, unique: true },
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
     address: { type: String, default: "" },
@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
       price: { type: Number, required: true },
       quantity: { type: Number, required: true, min: 1 },
       images: { type: [String], default: [] },
+    }],
+    vouchers: [{
+      code: { type: String, required: true },
+      voucherId: { type: mongoose.Schema.Types.ObjectId },
     }]
   }, {
   timestamps: true

@@ -72,9 +72,9 @@ class PaymentController {
                 data.orderDate = moment(data.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
             }
 
-            const accountId = req.payload.aud
+            const userId = req.payload.audience
 
-            const user = await User.findOne({ accountId: accountId });
+            const user = await User.findById(userId);
 
             if (!user) return res.status(404).json({ message: "User not found" })
 

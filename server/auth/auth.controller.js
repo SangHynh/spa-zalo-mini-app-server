@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const Account = require("../models/account.model");
+const Admin = require("../models/admin.model");
 const User = require("../models/user.model");
 const {
   signAccessToken,
@@ -7,84 +7,149 @@ const {
   verifyRefreshToken,
 } = require("../configs/jwt.config");
 const redis = require("../configs/redis.config");
+const {
+  zaloTokenService,
+  zaloPhoneService,
+} = require("../services/zalo.service");
+const generateReferralCode = require("../utils/genRefCode");
+const { getUserInfo } = require("../controllers/user.controller");
 
 const register = async (req, res, next) => {
   try {
-    const { email, zaloId, password, role, name, urlImage } = req.body;
+    const { role } = req.body;
     // Kiểm tra role không khớp
     if (!role || !["admin", "user"].includes(role)) {
       throw createError.BadRequest("Invalid role");
     }
     // Kiểm tra xem email hoặc zaloId có bị trùng lặp không
-    if (role === "admin" && email) {
-      const doesExist = await Account.findOne({ email });
-      if (doesExist) {
-        throw createError.Conflict(`Account is already registered`);
-      }
-    } else if (role === "user" && zaloId) {
-      const doesExist = await Account.findOne({ zaloId });
-      if (doesExist) {
-        throw createError.Conflict(`Account is already registered`);
-      }
-    } else {
-      //Lỗi sai vai trò với email hoặc zaloId
-      throw createError.BadRequest("Invalid role");
-    }
-    // Tạo tài khoản mới tùy theo role
-    let accountData = { role };
     if (role === "admin") {
-      accountData.email = email;
-      accountData.password = password; // Mật khẩu sẽ được hash ở schema trước khi lưu
+      const { email, password } = req.body;
+      if (!email || !password) {
+        throw createError.BadRequest("Email and password are required");
+      }
+      const doesExist = await Admin.findOne({ email });
+      if (doesExist) {
+        throw createError.Conflict(`Admin is already registered`);
+      }
+      // Tạo tài khoản admin mới
+      const newAdmin = new Admin({ email, password, zaloId: null });
+      const savedAdmin = await newAdmin.save();
+      // Tạo access token và refresh token
+      const accessToken = await signAccessToken(savedAdmin.id);
+      const refreshToken = await signRefreshToken(savedAdmin.id);
+      // Trả về kết quả đăng ký thành công
+      return res.send({ admin: savedAdmin, accessToken, refreshToken });
     } else if (role === "user") {
-      accountData.zaloId = zaloId;
-    }
-    // Lưu tài khoản
-    const account = new Account(accountData);
-    const savedAccount = await account.save();
-    // Tạo hồ sơ người dùng cho user
-    if (role === "user") {
-      const userProfile = new User({
-        accountId: savedAccount._id,
+      const { zaloAccessToken, phoneToken } = req.body;
+      if (!zaloAccessToken) {
+        throw createError.BadRequest("Zalo Access Token is required");
+      }
+      //lấy thông tin người dùng
+      const data = await zaloTokenService(zaloAccessToken)
+        .then((data) => data.data)
+        .catch((error) => {
+          throw createError.BadRequest("Invalid Zalo Access Token");
+        });
+      console.log(data);
+
+      const phoneData = await zaloPhoneService(phoneToken, zaloAccessToken);
+      console.log(phoneData);
+      const phone = phoneData?.data?.data?.number ?? null;
+      console.log(phone);
+
+      const zaloId = data.id;
+      const name = data?.name;
+      const avatar = data?.picture?.data?.url;
+      const doesExist = await User.findOne({ zaloId });
+      if (doesExist) {
+        throw createError.Conflict(`User is already registered`);
+      }
+      // Tạo hồ sơ người dùng cho user
+      const user = new User({
+        zaloId,
         name,
-        urlImage,
-        membershipTier: "Member", // Giá trị mặc định,
-        referralCode: "ABC123",
+        avatar,
+        membershipTier: "Member",
+        referralCode: await generateReferralCode(zaloId),
+        points: 0,
+        gender: "male",
+        phone,
       });
-      await userProfile.save();
+      await user.save();
+      const userProfile = {
+        zaloId: user.zaloId,
+        name: user.name,
+        avatar: user.avatar,
+        gender: user.gender,
+        phone: user.phone,
+        membershipTier: user.membershipTier,
+        referralCode: user.referralCode,
+        points: user.points,
+      };
+      const accessToken = await signAccessToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
+      return res.send({ userProfile, accessToken, refreshToken });
+    } else {
+      throw createError.BadRequest("Invalid role or missing required fields");
     }
-    // Tạo token sau khi tài khoản được lưu thành công
-    const accessToken = await signAccessToken(savedAccount.id);
-    const refreshToken = await signRefreshToken(savedAccount.id);
-    res.send({ accessToken, refreshToken });
   } catch (error) {
+    console.log("Error:", error);
     next(error);
   }
 };
 
 const login = async (req, res, next) => {
   try {
-    const { email, zaloId, password } = req.body;
-
-    let account;
-    if (email) {
-      account = await Account.findOne({ email });
-    } else if (zaloId) {
-      account = await Account.findOne({ zaloId });
+    const { email, password, zaloAccessToken, role } = req.body;
+    // Kiểm tra role hợp lệ trước khi thực hiện các thao tác khác
+    if (!role || !["admin", "user"].includes(role)) {
+      throw createError.BadRequest("Invalid role");
     }
-
-    //chưa đăng ký tài khoản
-    if (!account) throw createError.NotFound("Invalid username or password");
-
-    // Nếu tài khoản là admin, kiểm tra mật khẩu
-    if (account.role === "admin") {
-      const isMatch = await account.isValidPassword(password);
+    // Kiểm tra đăng nhập cho admin qua email
+    if (role === "admin" && email) {
+      const admin = await Admin.findOne({ email });
+      if (!admin) throw createError.NotFound("Admin not found");
+      // Kiểm tra mật khẩu
+      const isMatch = await admin.isValidPassword(password);
       if (!isMatch)
         throw createError.Unauthorized("Invalid username or password");
-    }
+      // Tạo access token và refresh token sau khi đăng nhập thành công
+      const accessToken = await signAccessToken(admin.id);
+      const refreshToken = await signRefreshToken(admin.id);
+      return res.send({ admin, accessToken, refreshToken });
+    } else if (role === "user" && zaloAccessToken) {
+      // Kiểm tra đăng nhập qua Zalo Access Token
+      const data = await zaloTokenService(zaloAccessToken)
+        .then((data) => data.data)
+        .catch((error) => {
+          throw createError.BadRequest("Invalid Zalo Access Token");
+        });
 
-    const accessToken = await signAccessToken(account.id);
-    const refreshToken = await signRefreshToken(account.id);
-    res.send({ accessToken, refreshToken });
+      const zaloId = data.id;
+      console.log("zaloId:::::");
+      console.log(zaloId);
+      const user = await User.findOne({ zaloId });
+
+      if (!user) throw createError.NotFound("User not found");
+
+      const userProfile = {
+        zaloId: user.zaloId,
+        name: user.name,
+        avatar: user.avatar,
+        gender: user.gender,
+        phone: user.phone,
+        membershipTier: user.membershipTier,
+        referralCode: user.referralCode,
+        points: user.points,
+      };
+      if (!user) throw createError.NotFound("User not found");
+      // Tạo access token và refresh token sau khi đăng nhập thành công
+      const accessToken = await signAccessToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
+      return res.send({ userProfile, accessToken, refreshToken });
+    } else {
+      throw createError.BadRequest("Invalid login information");
+    }
   } catch (error) {
     next(error);
   }
@@ -94,7 +159,7 @@ const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) throw createError.BadRequest();
-    const userId = await verifyRefreshToken(refreshToken);    
+    const userId = await verifyRefreshToken(refreshToken);
     const accessToken = await signAccessToken(userId);
     const refToken = await signRefreshToken(userId);
     res.send({ accessToken: accessToken, refreshToken: refToken });

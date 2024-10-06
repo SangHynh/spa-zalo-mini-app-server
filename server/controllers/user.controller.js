@@ -1,10 +1,19 @@
-const User = require('../models/user.model');
-const Account = require('../models/account.model');
+const User = require("../models/user.model");
+const Admin = require("../models/admin.model");
 
 // Controller để tạo người dùng mới
 const createUser = async (req, res) => {
   try {
-    const { name, phone, membershipTier, points, history, referralCode, discountsUsed, serviceHistory } = req.body;
+    const {
+      name,
+      phone,
+      membershipTier,
+      points,
+      history,
+      referralCode,
+      discountsUsed,
+      serviceHistory,
+    } = req.body;
 
     const user = new User({
       name,
@@ -14,7 +23,7 @@ const createUser = async (req, res) => {
       history,
       referralCode,
       discountsUsed,
-      serviceHistory
+      serviceHistory,
     });
 
     const savedUser = await user.save();
@@ -53,11 +62,10 @@ const getUserById = async (req, res) => {
 // Controller để sửa người dùng theo ID
 const updateUser = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -82,63 +90,55 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Lấy thông tin người dùng theo ID Zalo
-const getUserInfo = async (req, res) => {
-  const { zaloId } = await req.params; // Lấy zaloId từ path parameters
-  try {
-    // Tìm kiếm người dùng theo zaloId từ mô hình Account
-    const account = await Account.findOne({ zaloId });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
-    // Tìm kiếm người dùng theo accountId từ mô hình User
-    const user = await User.findOne({ accountId: account._id });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    // Trả về thông tin người dùng cùng với zaloId
-    const userInfo = {
-      _id: user._id,
-      accountId: user.accountId,
-      name: user.name,
-      urlImage: user.urlImage,
-      phone: user.phone,
-      membershipTier: user.membershipTier,
-      points: user.points,
-      zaloId: account.zaloId, 
-    };
-    res.status(200).json(userInfo);
-  } catch (error) {
-    console.error("Error fetching user:", error.message);
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Cập nhật thông tin người dùng theo ID Zalo
 const updateUserInfo = async (req, res) => {
-  const { zaloId } = req.params; 
-  const { name, phone } = req.body;   
+  const { zaloId } = req.params;
+  const { name, gender } = req.body;
   try {
-    // Tìm kiếm người dùng theo zaloId từ mô hình Account
-    const account = await Account.findOne({ zaloId });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
-    // Tìm kiếm người dùng theo accountId từ mô hình User
-    const user = await User.findOne({ accountId: account._id });
+    // Tìm kiếm người dùng theo zaloId từ mô hình User
+    const user = await User.findOne({ zaloId: zaloId });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     if (name) user.name = name;
     if (phone) user.phone = phone;
+    if (gender) user.gender = gender;
     await user.save();
     const userInfo = {
       _id: user._id,
-      accountId: user.accountId,
+      zaloId: user.zaloId,
       name: user.name,
-      phone: user.phone
+      gender: user.gender,
     };
-    res.status(200).json({ message: "User info updated successfully", userInfo });
+    res
+      .status(200)
+      .json({ message: "User info updated successfully", userInfo });
+  } catch (error) {
+    console.error("Error updating user:", error.message);
+  }
+};
+
+// Cập nhật số điện thoại người dùng
+const updateUserPhone = async (req, res) => {
+  const { zaloId } = req.params;
+  const { phoneToken, zaloAccessToken } = req.headers;
+  try {
+    // Tìm kiếm người dùng theo zaloId từ mô hình User
+    const user = await User.findOne({ zaloId: zaloId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const phone = await zaloPhoneService(phoneToken, zaloAccessToken);
+    user.phone = phone + "00000";
+    await user.save();
+    const userInfo = {
+      _id: user._id,
+      zaloId: user.zaloId,
+      phone: user.phone,
+    };
+    res
+      .status(200)
+      .json({ message: "User info updated successfully", userInfo });
   } catch (error) {
     console.error("Error updating user:", error.message);
   }
@@ -148,14 +148,16 @@ const suggestProductsForUser = async (req, res) => {
     // Lấy thông tin của khách hàng hiện tại từ req.params.id
     const customerId = req.params.id;
     const customer = await User.findById(customerId);
-    
+
     // Kiểm tra nếu không tìm thấy khách hàng
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
     // Lấy danh sách productId mà khách hàng hiện tại đã có
-    const customerProductIds = customer.productSuggestions.map(suggestion => suggestion.productId);
+    const customerProductIds = customer.productSuggestions.map(
+      (suggestion) => suggestion.productId
+    );
 
     // Tìm sản phẩm từ các khách hàng khác không phải là khách hàng hiện tại
     const otherUsers = await User.find({ _id: { $ne: customerId } });
@@ -164,40 +166,45 @@ const suggestProductsForUser = async (req, res) => {
     const productScores = {};
 
     // Duyệt qua các sản phẩm của khách hàng khác
-    otherUsers.forEach(user => {
-      user.productSuggestions.forEach(suggestion => {
+    otherUsers.forEach((user) => {
+      user.productSuggestions.forEach((suggestion) => {
         // Nếu sản phẩm không có trong danh sách của khách hàng hiện tại
         if (!customerProductIds.includes(suggestion.productId)) {
           if (!productScores[suggestion.productId]) {
             productScores[suggestion.productId] = {
               productName: suggestion.productName,
               totalScore: 0,
-              count: 0
+              count: 0,
             };
           }
           // Cộng dồn điểm và số lượng
-          productScores[suggestion.productId].totalScore += suggestion.suggestedScore;
+          productScores[suggestion.productId].totalScore +=
+            suggestion.suggestedScore;
           productScores[suggestion.productId].count += 1;
         }
       });
     });
 
     // Tính điểm trung bình cho mỗi sản phẩm
-    const averageScores = Object.entries(productScores).map(([productId, { productName, totalScore, count }]) => {
-      return {
-        productId,
-        productName,
-        averageScore: totalScore / count
-      };
-    });
+    const averageScores = Object.entries(productScores).map(
+      ([productId, { productName, totalScore, count }]) => {
+        return {
+          productId,
+          productName,
+          averageScore: totalScore / count,
+        };
+      }
+    );
 
     // Sắp xếp sản phẩm dựa trên điểm trung bình (cao đến thấp) và lấy top 3
-    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    const topRecommendations = averageScores
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, 3);
 
     // Trả về danh sách sản phẩm gợi ý
     return res.status(200).json({
       message: "Suggested products found successfully",
-      recommendations: topRecommendations
+      recommendations: topRecommendations,
     });
   } catch (error) {
     console.error("Error suggesting products:", error.message);
@@ -205,16 +212,13 @@ const suggestProductsForUser = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
-  getUserInfo,
+  updateUserPhone,
   updateUserInfo,
-  suggestProductsForUser
+  suggestProductsForUser,
 };

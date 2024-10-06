@@ -3,6 +3,8 @@ node_modules/
 
 # dot env
 .env
+sang.env
+main.env
 
 #logs
 logs/

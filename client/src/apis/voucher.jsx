@@ -25,6 +25,15 @@ export const apiCreateVouchers = (formData) =>
   }
 )
 
+// POST VOUCHER
+export const apiGiveAwayVouchersToUsers = (formData) =>
+  axios({
+    url: "/api/vouchers/giveAway",
+    method: "POST",
+    data: formData
+  }
+)
+
 // PUT VOUCHER
 export const apiUpdateVoucher = (id, formData) => axios(
   {

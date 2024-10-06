@@ -5,13 +5,15 @@ const productController = require('../../controllers/product.controller');
 const {validateUpdateUserInfo} = require('../../validations/user.validation');
 const { verifyAccessToken } = require('../../configs/jwt.config')
 
-router.post('/', userController.createUser); 
-router.get('/', userController.getAllUsers);   
-router.get('/:id', userController.getUserById);  
-router.put('/:id', userController.updateUser);   
-router.delete('/:id', userController.deleteUser); 
-router.get('/user-info/:zaloId', userController.getUserInfo);
-router.put('/update-user-info/:zaloId', validateUpdateUserInfo, userController.updateUserInfo);
+router.post('/',verifyAccessToken, userController.createUser); 
+router.get('/',verifyAccessToken, userController.getAllUsers);   
+router.get('/:id',verifyAccessToken, userController.getUserById);  
+router.put('/:id',verifyAccessToken, userController.updateUser);   
+router.delete('/:id',verifyAccessToken, userController.deleteUser); 
+
+// router.get('/user-info/:zaloId', userController.getUserInfo);
+router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserInfo);
+router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
 router.put('/suggested-score/:id', productController.findProductToUpdateSuggestScoreOfUser);
 router.put('/rating-product/:id', productController.ratingToUpdateSuggestScoreOfUser);
