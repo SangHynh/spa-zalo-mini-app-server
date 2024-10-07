@@ -16,7 +16,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaSearch } from "react-icons/fa";
 import PreviewRecommend from "../recommends/PreviewRecommend";
 import { toast } from "react-toastify";
-import Loading from "../../components/loading/Loading";
 import {
   apiConfigProductRecommendations,
   apiGetProductRecommendations,
@@ -65,12 +64,17 @@ const ProdRecommendSystem = () => {
       try {
         const recommendationsResponse = await apiGetProductRecommendations(id);
         if (recommendationsResponse.status === 200) {
-          const recommendedProductIds = recommendationsResponse.data.products.map((product) => product.productId);
-          const transformedRowsB = recommendationsResponse.data.products.map((product) => ({
-            id: product.productId,
-            name: product.productName,
-            isRecommended: true,
-          }));
+          const recommendedProductIds =
+            recommendationsResponse.data.products.map(
+              (product) => product.productId
+            );
+          const transformedRowsB = recommendationsResponse.data.products.map(
+            (product) => ({
+              id: product.productId,
+              name: product.productName,
+              isRecommended: true,
+            })
+          );
           setRowsB(transformedRowsB);
           setSelectedIds(new Set(recommendedProductIds)); // Lưu các sản phẩm gợi ý
         }
@@ -86,7 +90,11 @@ const ProdRecommendSystem = () => {
     const fetchProducts = async () => {
       showLoading();
       try {
-        const productsResponse = await apiGetProducts(currentPageA, rowsPerPageA, searchTerm);
+        const productsResponse = await apiGetProducts(
+          currentPageA,
+          rowsPerPageA,
+          searchTerm
+        );
         if (productsResponse.status === 200) {
           // const productsFromB = new Set(rowsB.map((prod) => prod.id)); // Các sản phẩm đã có ở bảng B
           const transformedRowsA = productsResponse.data.products
@@ -123,8 +131,8 @@ const ProdRecommendSystem = () => {
   };
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value)
-  }
+    setSearchTerm(event.target.value);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -137,7 +145,9 @@ const ProdRecommendSystem = () => {
   const handleUpdate = async () => {
     showLoading();
     try {
-      const currentlySelectedProductIds = Array.from(selectedIds).map((id) => ({ productId: id }));
+      const currentlySelectedProductIds = Array.from(selectedIds).map((id) => ({
+        productId: id,
+      }));
       const response = await apiConfigProductRecommendations(id, {
         mainProductId: id,
         suggestions: currentlySelectedProductIds,
@@ -237,8 +247,11 @@ const ProdRecommendSystem = () => {
                 { field: "id", headerName: "ID", flex: 1 },
                 { field: "name", headerName: t("product-name"), flex: 1 },
                 { field: "category", headerName: t("category"), flex: 1 },
-                { field: "subCategory", headerName: t("sub-category"), flex: 1 },
-                
+                {
+                  field: "subCategory",
+                  headerName: t("sub-category"),
+                  flex: 1,
+                },
               ]}
               initialState={{
                 pagination: { paginationModel: { pageSize: 5 } },
@@ -257,7 +270,7 @@ const ProdRecommendSystem = () => {
               onRowSelectionModelChange={handleSelectionChange}
               disableSelectionOnClick
               isRowSelectable={(params) => {
-                const productsFromB = new Set(rowsB.map((prod) => prod.id))
+                const productsFromB = new Set(rowsB.map((prod) => prod.id));
                 const productId = params.row.id;
                 // Disable selection for products that are in rowsB or match the current product ID
                 return !(productsFromB.has(productId) || productId === id);
@@ -271,7 +284,7 @@ const ProdRecommendSystem = () => {
               pageSizeOptions={[5, 10, 25]}
               autoPageSize
               columns={[
-                { field: "id", headerName: "ID", flex: 1 }, 
+                { field: "id", headerName: "ID", flex: 1 },
                 { field: "name", headerName: t("product-name"), flex: 1 },
                 {
                   field: "action",
@@ -296,11 +309,11 @@ const ProdRecommendSystem = () => {
       </Paper>
 
       {/* Preview */}
-      <PreviewRecommend 
-        open={open} 
-        onClose={handleClose} 
-        previewRows={rowsB} 
-        availableProducts={rowsA.filter(row => selectedIds.has(row.id))}
+      <PreviewRecommend
+        open={open}
+        onClose={handleClose}
+        previewRows={rowsB}
+        availableProducts={rowsA.filter((row) => selectedIds.has(row.id))}
       />
 
       <Box className="mt-2 flex justify-end gap-2">
