@@ -2,6 +2,7 @@ const { deleteImage } = require('../middlewares/upload.middlewares');
 const Product = require('../models/product.model');
 const mongoose = require('mongoose');
 const moment = require('moment');
+const Review = require('../models/review.model');
 const User = require('../models/user.model');
 const Recommendation = require('../models/recommendation.model');
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
@@ -72,7 +73,8 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.params.id; // User ID cố định
   const productId = req.body.productID; // Lấy productId từ body
   const rating = parseInt(req.body.rating, 10); // Lấy rating từ body và chuyển đổi thành số
-
+  const comment = req.body.comment;
+  const images = req.body.images || []; // Mảng hình ảnh từ body, nếu có
   try {
     // Tìm sản phẩm trước
     const product = await Product.findById(productId);
@@ -129,17 +131,59 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
     // Lưu cập nhật vào cơ sở dữ liệu
     const updatedUser = await user.save();
 
+    // Tạo mới một review cho sản phẩm
+    const review = new Review({
+      productId: productId,
+      productName: product.name,  // Assuming product has 'name' field
+      comment: comment,
+      rating: rating,
+      images: images,
+      userId: userId,
+    });
+
+    // Lưu đánh giá vào cơ sở dữ liệu
+    await review.save();
+
     // Chỉ trả về thông tin cần thiết
     res.status(200).json({
       message: "Updated successfully",
-      suggestions: updatedUser.suggestions
+      suggestions: updatedUser.suggestions,
+      review: {
+        productId: review.productId,
+        productName: review.productName,
+        rating: review.rating,
+        comment: review.comment,
+        images: review.images
+      }
     });
   } catch (error) {
-    console.error("Error updating suggested score:", error.message);
+    console.error("Error updating suggested score and saving review:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+// Get reviews by product ID
+exports.getReviewsByProductId = async (req, res) => {
+  const productId = req.params.productId; // Lấy productId từ params
+  console.log('Product ID:', productId);
+  try {
+    // Tìm tất cả review theo productId
+    const reviews = await Review.find({ productId: productId });
 
+    // Nếu không tìm thấy review nào
+    if (reviews.length === 0) {
+      return res.status(404).json({ message: "No reviews found for this product." });
+    }
+
+    // Trả về danh sách review
+    res.status(200).json({
+      message: "Reviews fetched successfully.",
+      reviews: reviews
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error.message);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 //update suggest product for multiple products
 // Update suggested scores for multiple products
