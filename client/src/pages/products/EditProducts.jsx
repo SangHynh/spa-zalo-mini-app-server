@@ -492,7 +492,7 @@ const EditProduct = () => {
               multiple
               id="productBenefits"
               options={benefits}
-              disableCloseOnSelect
+              freeSolo
               getOptionLabel={(option) => option}
               value={productBenefits}
               onChange={(event, newValue) => {

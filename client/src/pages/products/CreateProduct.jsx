@@ -422,7 +422,7 @@ const CreateProduct = () => {
               multiple
               id="productBenefits"
               options={benefits}
-              disableCloseOnSelect
+              freeSolo
               getOptionLabel={(option) => option}
               onChange={(event, newValue) => {
                 setProductBenefits(newValue); // Update the selected benefits
