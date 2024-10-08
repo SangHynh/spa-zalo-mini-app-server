@@ -1,5 +1,6 @@
 const { deleteImage } = require('../middlewares/upload.middlewares');
 const Product = require('../models/product.model');
+const Service = require('../models/service.model');
 const mongoose = require('mongoose');
 const moment = require('moment');
 const Review = require('../models/review.model');
@@ -255,16 +256,17 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
 };
 
 // SUGGEST PRODUCTS FOR USER
+// SUGGEST PRODUCTS FOR USER
 exports.configureProductRecommendations = async (req, res) => {
-  const mainProductId = req.body.mainProductId;
+  const mainItemId = req.body.mainProductId;
   const suggestions = req.body.suggestions;
 
-  console.log('Main Product ID:', mainProductId);
+  console.log('Main Product ID:', mainItemId);
   console.log('Suggestions:', suggestions);
 
   try {
     // Tìm sản phẩm chính
-    const mainProduct = await Product.findById(mainProductId);
+    const mainProduct = await Product.findById(mainItemId);
     if (!mainProduct) {
       return res.status(404).json({ message: "Main product not found" });
     }
@@ -276,35 +278,36 @@ exports.configureProductRecommendations = async (req, res) => {
       // Tìm sản phẩm gợi ý
       const suggestedProduct = await Product.findById(productId);
       if (!suggestedProduct) {
-        return res.status(404).json({ message: "Sub product not found" });
+        return res.status(404).json({ message: "Suggested product not found" });
       }
 
       suggestionEntries.push({
-        productId: productId,
-        productName: suggestedProduct.name
+        itemId: productId,
+        itemName: suggestedProduct.name,
+        itemType: 'Product' // Phân biệt đây là sản phẩm
       });
     }
 
-    // Kiểm tra và lưu vào cơ sở dữ liệu
     if (suggestionEntries.length > 0) {
-      // Kiểm tra xem đã có recommendation với mainProductId chưa
-      let recommendation = await Recommendation.findOne({ mainProductId: mainProductId });
+      // Kiểm tra xem đã có recommendation với mainItemId chưa
+      let recommendation = await Recommendation.findOne({ mainItemId: mainItemId, itemType: 'Product' });
 
       if (recommendation) {
         // Nếu đã có, cập nhật sản phẩm gợi ý
-        recommendation.products = suggestionEntries;
+        recommendation.items = suggestionEntries;
         await recommendation.save();
-        console.log('Recommendations updated successfully');
+        console.log('Product recommendations updated successfully');
       } else {
         // Nếu chưa có, tạo mới recommendation
         recommendation = new Recommendation({
-          mainProductId: mainProductId,
-          mainProductName: mainProduct.name, // Đổi tên thuộc tính cho đúng với schema
-          products: suggestionEntries // Đảm bảo tên thuộc tính khớp với schema
+          mainItemId: mainItemId,
+          mainItemName: mainProduct.name,
+          itemType: 'Product',
+          items: suggestionEntries
         });
 
         await recommendation.save();
-        console.log('Recommendations collection created successfully');
+        console.log('Product recommendations collection created successfully');
       }
 
       console.log(`Added recommendations for main product: ${mainProduct.name}`);
@@ -313,8 +316,8 @@ exports.configureProductRecommendations = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Recommendations processed successfully",
-      mainProduct: {
+      message: "Product recommendations processed successfully",
+      mainItem: {
         id: mainProduct._id,
         name: mainProduct.name,
       },
@@ -326,6 +329,83 @@ exports.configureProductRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+// SUGGEST SERVICES FOR USER
+// SUGGEST SERVICES FOR USER
+exports.configureServiceRecommendations = async (req, res) => {
+  const mainItemId = req.body.mainServiceId;
+  const suggestions = req.body.suggestions;
+
+  console.log('Main Service ID:', mainItemId);
+  console.log('Suggestions:', suggestions);
+
+  try {
+    // Tìm dịch vụ chính
+    const mainService = await Service.findById(mainItemId);
+    if (!mainService) {
+      return res.status(404).json({ message: "Main service not found" });
+    }
+
+    const suggestionEntries = [];
+    for (const suggestion of suggestions) {
+      const { serviceId } = suggestion;
+
+      // Tìm dịch vụ gợi ý
+      const suggestedService = await Service.findById(serviceId);
+      if (!suggestedService) {
+        return res.status(404).json({ message: "Suggested service not found" });
+      }
+
+      suggestionEntries.push({
+        itemId: serviceId,
+        itemName: suggestedService.name,
+        itemType: 'Service' // Phân biệt đây là dịch vụ
+      });
+    }
+
+    if (suggestionEntries.length > 0) {
+      // Kiểm tra xem đã có recommendation với mainItemId chưa
+      let recommendation = await Recommendation.findOne({ mainItemId: mainItemId, itemType: 'Service' });
+
+      if (recommendation) {
+        // Nếu đã có, cập nhật dịch vụ gợi ý
+        recommendation.items = suggestionEntries;
+        await recommendation.save();
+        console.log('Service recommendations updated successfully');
+      } else {
+        // Nếu chưa có, tạo mới recommendation
+        recommendation = new Recommendation({
+          mainItemId: mainItemId,
+          mainItemName: mainService.name,
+          itemType: 'Service',
+          items: suggestionEntries
+        });
+
+        await recommendation.save();
+        console.log('Service recommendations collection created successfully');
+      }
+
+      console.log(`Added recommendations for main service: ${mainService.name}`);
+    } else {
+      console.log('No suggestions available to insert');
+    }
+
+    res.status(200).json({
+      message: "Service recommendations processed successfully",
+      mainItem: {
+        id: mainService._id,
+        name: mainService.name,
+      },
+      suggestions: suggestionEntries,
+      collection: "Recommendation"
+    });
+  } catch (error) {
+    console.error("Error processing service recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 exports.suggestProductsForUser = async (req, res) => {
   try {

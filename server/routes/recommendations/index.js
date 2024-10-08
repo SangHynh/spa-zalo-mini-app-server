@@ -15,4 +15,6 @@ router.put('/update-suggest-products-for-multiple-products/:id', recommendationC
 router.put('/find-product-to-update-suggest-score-of-user/:productName', recommendationController.findProductToUpdateSuggestScoreOfUser);
 //cập nhật danh sách sản phẩm gợi ý cho khách hàng khi khách hàng mua 1 sản phẩm
 router.put('/configure-product-recommendations/:id', recommendationController.configureProductRecommendations);
+//cập nhật danh sách dịch vụ gợi ý cho khách hàng khi khách hàng mua 1 dịch vụ
+router.put('/configure-service-recommendations/:id', recommendationController.configureServiceRecommendations);
 module.exports = router;
