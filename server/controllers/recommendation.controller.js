@@ -468,27 +468,27 @@ exports.suggestProductsForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+//update multiple suggestion scores
 exports.updateMultipleSuggestionScores = async (req, res) => {
-  const { usersToUpdate } = req.body; // Giả sử body chứa một mảng các user cần cập nhật
+  const { userIds, suggestionsToUpdate } = req.body; // Giả sử body chứa một mảng userId và suggestionsToUpdate
 
   try {
-    // Duyệt qua từng user trong usersToUpdate
-    for (const userUpdate of usersToUpdate) {
-      const { userId, suggestionsToUpdate } = userUpdate;
-
-      // Chuyển đổi userId thành ObjectId để kiểm tra
+    // Kiểm tra tính hợp lệ của tất cả userId
+    for (const userId of userIds) {
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({ message: `Invalid userId: ${userId}` });
       }
+    }
 
-      // Tìm user theo ID
-      const user = await User.findById(userId);
+    // Duyệt qua từng userId trong userIds
+    const users = await User.find({ _id: { $in: userIds } }); // Tìm tất cả người dùng theo userIds
 
-      if (!user) {
-        return res.status(404).json({ message: `User not found for ID: ${userId}` });
-      }
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'No users found for the provided IDs.' });
+    }
 
+    // Duyệt qua từng user
+    for (const user of users) {
       // Duyệt qua mảng các suggestions cần cập nhật
       suggestionsToUpdate.forEach(update => {
         const suggestion = user.suggestions.find(sug => sug.categoryId.toString() === update.categoryId);
