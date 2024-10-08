@@ -468,3 +468,46 @@ exports.suggestProductsForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.updateMultipleSuggestionScores = async (req, res) => {
+  const { usersToUpdate } = req.body; // Giả sử body chứa một mảng các user cần cập nhật
+
+  try {
+    // Duyệt qua từng user trong usersToUpdate
+    for (const userUpdate of usersToUpdate) {
+      const { userId, suggestionsToUpdate } = userUpdate;
+
+      // Chuyển đổi userId thành ObjectId để kiểm tra
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: `Invalid userId: ${userId}` });
+      }
+
+      // Tìm user theo ID
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: `User not found for ID: ${userId}` });
+      }
+
+      // Duyệt qua mảng các suggestions cần cập nhật
+      suggestionsToUpdate.forEach(update => {
+        const suggestion = user.suggestions.find(sug => sug.categoryId.toString() === update.categoryId);
+
+        if (suggestion) {
+          // Cập nhật suggestedScore cho từng mục dựa trên categoryId
+          suggestion.suggestedScore = update.suggestedScore;
+        }
+      });
+
+      // Lưu lại thay đổi vào cơ sở dữ liệu
+      await user.save();
+    }
+
+    res.status(200).json({
+      message: 'Multiple suggestions updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating multiple suggestions:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
