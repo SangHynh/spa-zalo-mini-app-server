@@ -54,7 +54,9 @@ const Images = () => {
 
     if (existingImages.includes(imgToRemove)) {
       // Nếu là hình ảnh đã tồn tại
-      setExistingImages(existingImages.filter((img) => img.index !== imgToRemove.index));
+      setExistingImages(
+        existingImages.filter((img) => img.index !== imgToRemove.index)
+      );
       setDeleteImages([...deleteImages, imgToRemove.url]); // Thêm URL vào danh sách xóa
     } else {
       // Nếu là hình ảnh mới
@@ -88,11 +90,14 @@ const Images = () => {
       formData.append("images", img.file); // Actual file to backend
     });
 
-    formData.append("existingImages", JSON.stringify(existingImages.map((img) => img.url)));
+    formData.append(
+      "existingImages",
+      JSON.stringify(existingImages.map((img) => img.url))
+    );
 
     formData.append("deleteImages", JSON.stringify(deleteImages));
 
-    console.log(formData.entries())
+    console.log(formData.entries());
 
     // LOG
     for (let [key, value] of formData.entries()) {
@@ -111,7 +116,7 @@ const Images = () => {
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
-          title: t("success-config"),
+          title: t("config-success"),
           showConfirmButton: true,
           showCancelButton: true,
           confirmButtonText: "Confirm",
@@ -123,7 +128,7 @@ const Images = () => {
     } catch (error) {
       Swal.fire({
         icon: "danger",
-        title: t("fail-config"),
+        title: t("config-fail"),
         showCancelButton: true,
         cancelButtonText: "Cancel",
       });
@@ -155,7 +160,10 @@ const Images = () => {
     const allImages = existingImages.concat(images); // Kết hợp tất cả hình ảnh
     if (index > 0) {
       const newImages = [...allImages];
-      [newImages[index], newImages[index - 1]] = [newImages[index - 1], newImages[index]];
+      [newImages[index], newImages[index - 1]] = [
+        newImages[index - 1],
+        newImages[index],
+      ];
       setExistingImages(newImages.slice(0, existingImages.length)); // Cập nhật ảnh hiện có
       setImages(newImages.slice(existingImages.length)); // Cập nhật ảnh mới
     }
@@ -166,7 +174,10 @@ const Images = () => {
     const allImages = existingImages.concat(images); // Kết hợp tất cả hình ảnh
     if (index < allImages.length - 1) {
       const newImages = [...allImages];
-      [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+      [newImages[index], newImages[index + 1]] = [
+        newImages[index + 1],
+        newImages[index],
+      ];
       setExistingImages(newImages.slice(0, existingImages.length)); // Cập nhật ảnh hiện có
       setImages(newImages.slice(existingImages.length)); // Cập nhật ảnh mới
     }
@@ -251,7 +262,6 @@ const Images = () => {
             </div>
           </Grid2>
           <Grid2 size={6}>
-
             {/* Table for Uploaded Images */}
             <Typography variant="h6">{t("uploaded-images")}</Typography>
             <div className="overflow-x-auto">
@@ -266,7 +276,9 @@ const Images = () => {
                 <tbody>
                   {images.map((imgSrc, index) => (
                     <tr key={imgSrc.index} className="relative">
-                      <td className="text-center border">{existingImages.length + index + 1}</td>
+                      <td className="text-center border">
+                        {existingImages.length + index + 1}
+                      </td>
                       <td className="border">
                         <div className="flex items-center justify-center m-4">
                           <img
@@ -280,7 +292,11 @@ const Images = () => {
                       </td>
                       <td className="border">
                         <div className="flex h-full w-full items-center justify-center">
-                          <IconButton onClick={() => handleRemoveImage(existingImages.length + index)}>
+                          <IconButton
+                            onClick={() =>
+                              handleRemoveImage(existingImages.length + index)
+                            }
+                          >
                             <CancelIcon sx={{ color: red[500] }} />
                           </IconButton>
                         </div>
@@ -292,7 +308,7 @@ const Images = () => {
             </div>
           </Grid2>
         </Grid2>
-  
+
         <Modal
           open={open}
           onClose={handleClose}
@@ -330,7 +346,7 @@ const Images = () => {
             />
           </Box>
         </Modal>
-  
+
         <Grid2
           container
           fullWidth
@@ -345,7 +361,7 @@ const Images = () => {
         </Grid2>
       </form>
     </Box>
-  );  
+  );
 };
 
 export default Images;

@@ -22,22 +22,44 @@ import Paper from "@mui/material/Paper";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { FaPlus } from "react-icons/fa";
-import { apiGetRanks } from "../../apis/rank";
+import {
+  apiCreateRank,
+  apiDeleteRank,
+  apiGetRanks,
+  apiUpdateRank,
+} from "../../apis/rank";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const RanknPoint = () => {
   const { t } = useTranslation();
 
   const [isEdit, setIsEdit] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
+  const [id, setId] = useState("");
+  const [rank, setRank] = useState("");
+  const [point, setPoint] = useState("");
+  const [benefits, setBenefits] = useState("");
+  const [originalRow, setOriginalRow] = useState(null);
 
-  const handleEdit = () => {
+  const handleEditBtn = (row) => {
     setIsEdit(true);
     setIsCreate(false);
+    setId(row._id);
+    setRank(row.tier);
+    setPoint(row.minPoints);
+    setBenefits(row.benefits);
+    setOriginalRow(row); // Save original row
   };
 
-  const handleCreate = () => {
+  const handleCreateBtn = () => {
     setIsCreate(true);
     setIsEdit(false);
+    setId(null);
+    setRank("");
+    setPoint(0);
+    setBenefits([]);
+    setOriginalRow(null);
   };
 
   const handleCancelEdit = () => {
@@ -48,27 +70,145 @@ const RanknPoint = () => {
     setIsCreate(false);
   };
 
+  const handleUpdate = async () => {
+    try {
+      const formData = {
+        tier: rank,
+        minPoints: point,
+        benefits: benefits,
+      };
+
+      const response = await apiUpdateRank(id, formData);
+
+      if (
+        originalRow &&
+        formData.tier === originalRow.tier &&
+        formData.minPoints === originalRow.minPoints &&
+        formData.benefits === originalRow.benefits
+      ) {
+        toast.info(t("no-change"));
+        return;
+      }
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: `${t("success")}!`,
+          text: `${t("update-success")}`,
+          icon: "success",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error updating rank:", error);
+      Swal.fire({
+        title: `${t("error")}!`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    }
+  };
+
+  const handleCreate = async () => {
+    try {
+      const formData = {
+        tier: rank,
+        minPoints: point,
+        benefits: benefits,
+      };
+
+      const response = await apiCreateRank(formData);
+
+      if (response.status === 201) {
+        Swal.fire({
+          title: `${t("success")}!`,
+          text: `${t("create-success")}`,
+          icon: "success",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error create rank:", error);
+      Swal.fire({
+        title: `${t("error")}!`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    }
+  };
+
+  const handleDelete = async (rankId) => {
+    // Hiển thị hộp thoại xác nhận trước khi xóa
+    const confirmDelete = await Swal.fire({
+      title: `${t("confirm")}`, // Tiêu đề xác nhận
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `${t("yes")}`, // Nhãn nút xác nhận
+      cancelButtonText: `${t("no")}`, // Nhãn nút hủy
+    });
+
+    // Kiểm tra nếu người dùng xác nhận xóa
+    if (confirmDelete.isConfirmed) {
+      try {
+        const response = await apiDeleteRank(rankId);
+
+        // Kiểm tra mã trạng thái
+        if (response.status === 200) {
+          Swal.fire({
+            title: `${t("success")}!`,
+            text: `${t("delete-success")}`, // Thay đổi thông báo thành công nếu cần
+            icon: "success",
+            confirmButtonText: "Ok",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload(); // Tải lại trang sau khi xóa thành công
+            }
+          });
+        } else {
+          // Nếu không phải là 204, xử lý phản hồi không thành công
+          Swal.fire({
+            title: `${t("error")}!`,
+            text: `${t("delete-failed")}`, // Thay đổi thông báo nếu cần
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting rank:", error);
+        Swal.fire({
+          title: `${t("error")}!`,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
+    }
+  };
+
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     const fetchRanks = async () => {
       try {
-        const response = await apiGetRanks(); // Gọi API
-        console.log(response.data); // Kiểm tra dữ liệu trả về
+        const response = await apiGetRanks();
 
-        // Kiểm tra xem response.data có phải là một mảng không
         if (Array.isArray(response.data)) {
-          setRows(response.data); // Cập nhật state nếu là mảng
+          setRows(response.data);
         } else {
-          console.error("Dữ liệu không phải là mảng");
-          setRows([]); // Hoặc xử lý theo cách khác
+          setRows([]);
         }
       } catch (error) {
         console.error("Error fetching ranks:", error);
       }
     };
 
-    fetchRanks(); // Gọi hàm fetchRanks
+    fetchRanks();
   }, []);
 
   return (
@@ -78,13 +218,13 @@ const RanknPoint = () => {
         variant="contained"
         color="secondary"
         className="w-fit flex items-center gap-2"
-        onClick={handleCreate}
+        onClick={handleCreateBtn}
       >
         <FaPlus />
         {t("create")}
       </Button>
       <Grid2 container spacing={4}>
-        <Grid2 size={6}>
+        <Grid2 size={7}>
           <TableContainer component={Paper} className="border">
             <Table sx={{ minWidth: 700 }} aria-label="simple table">
               <TableHead className="bg-gray-400 dark:bg-gray-100">
@@ -145,11 +285,17 @@ const RanknPoint = () => {
                         sx={{ width: "20%" }}
                       >
                         <Tooltip title={t("edit")}>
-                          <IconButton color="primary" onClick={handleEdit}>
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleEditBtn(row)}
+                          >
                             <EditIcon />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title={t("delete")}>
+                        <Tooltip
+                          title={t("delete")}
+                          onClick={() => handleDelete(row._id)}
+                        >
                           <IconButton>
                             <DeleteIcon className="text-red-500" />
                           </IconButton>
@@ -163,12 +309,21 @@ const RanknPoint = () => {
           </TableContainer>
         </Grid2>
         {isEdit && (
-          <Grid2 size={6}>
+          <Grid2 size={5}>
             <Typography variant="h6" color="primary">
               {t("edit")}
             </Typography>
-            <form action="">
+            <Box className="mt-4">
               <Grid2 container spacing={4}>
+                <TextField
+                  id="id"
+                  label="Id"
+                  variant="standard"
+                  fullWidth
+                  margin="dense"
+                  value={id}
+                  style={{ display: "none" }}
+                />
                 <Grid2 size={6}>
                   <TextField
                     id="rank"
@@ -176,6 +331,8 @@ const RanknPoint = () => {
                     variant="standard"
                     fullWidth
                     margin="dense"
+                    value={rank}
+                    onChange={(e) => setRank(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={6}>
@@ -185,6 +342,8 @@ const RanknPoint = () => {
                     variant="standard"
                     fullWidth
                     margin="dense"
+                    value={point}
+                    onChange={(e) => setPoint(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={12}>
@@ -194,6 +353,8 @@ const RanknPoint = () => {
                       id="ingredientUsageInstructions"
                       multiline
                       rows={3}
+                      value={benefits}
+                      onChange={(e) => setBenefits(e.target.value)}
                     />
                   </FormControl>
                 </Grid2>
@@ -205,7 +366,11 @@ const RanknPoint = () => {
                 sx={{ mt: 2, justifyContent: "flex-end" }}
               >
                 <Grid2>
-                  <Button type="submit" variant="contained" color="primary">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpdate}
+                  >
                     {t("update")}
                   </Button>
                 </Grid2>
@@ -219,15 +384,15 @@ const RanknPoint = () => {
                   </Button>
                 </Grid2>
               </Grid2>
-            </form>
+            </Box>
           </Grid2>
         )}
         {isCreate && (
-          <Grid2 size={6}>
+          <Grid2 size={5}>
             <Typography variant="h6" color="secondary">
               {t("create")}
             </Typography>
-            <form action="">
+            <Box className="mt-4">
               <Grid2 container spacing={4}>
                 <Grid2 size={6}>
                   <TextField
@@ -236,6 +401,8 @@ const RanknPoint = () => {
                     variant="standard"
                     fullWidth
                     margin="dense"
+                    value={rank}
+                    onChange={(e) => setRank(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={6}>
@@ -245,6 +412,8 @@ const RanknPoint = () => {
                     variant="standard"
                     fullWidth
                     margin="dense"
+                    value={point}
+                    onChange={(e) => setPoint(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={12}>
@@ -254,6 +423,8 @@ const RanknPoint = () => {
                       id="ingredientUsageInstructions"
                       multiline
                       rows={3}
+                      value={benefits}
+                      onChange={(e) => setBenefits(e.target.value)}
                     />
                   </FormControl>
                 </Grid2>
@@ -265,7 +436,11 @@ const RanknPoint = () => {
                 sx={{ mt: 2, justifyContent: "flex-end" }}
               >
                 <Grid2>
-                  <Button type="submit" variant="contained" color="secondary">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleCreate}
+                  >
                     {t("create")}
                   </Button>
                 </Grid2>
@@ -279,7 +454,7 @@ const RanknPoint = () => {
                   </Button>
                 </Grid2>
               </Grid2>
-            </form>
+            </Box>
           </Grid2>
         )}
       </Grid2>

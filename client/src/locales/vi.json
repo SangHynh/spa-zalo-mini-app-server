@@ -114,8 +114,8 @@
   "no-sub-categories-added": "Không có danh mục con được thêm",
   "nor-image": "Hình ảnh",
   "image-config": "Cấu hình ảnh",
-  "success-config": "Cấu hình thành công!",
-  "fail-config": "Cấu hình không thành công!",
+  "config-success": "Cấu hình thành công!",
+  "config-fail": "Cấu hình không thành công!",
   "order-mgmt": "Quản lý giao dịch",
   "voucher-mgmt": "Quản lý mã thưởng",
   "approve": "Chấp nhận",
@@ -140,5 +140,9 @@
   "existing-images": "Hình ảnh hiện có",
   "uploaded-images": "Hình ảnh mới (Upload trước để sắp xếp)",
   "rank": "Hạng",
-  "point": "Điểm"
+  "point": "Điểm",
+  "create-success": "Tạo mới thành công",
+  "confirm": "Xác nhận",
+  "yes": "Có",
+  "no": "Không"
 }

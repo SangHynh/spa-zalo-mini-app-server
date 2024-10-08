@@ -117,21 +117,21 @@ async function initializeAppConfig() {
 async function createSampleRanks() {
   try {
     const sampleRanks = [
-      { tier: "Member", minPoints: 0, benefits: ["Access to basic features"] },
+      { tier: "Member", minPoints: 0, benefits: "Access to basic features" },
       {
         tier: "Silver",
         minPoints: 1000,
-        benefits: ["Access to premium features", "Monthly report"],
+        benefits: "Access to premium features, Monthly report",
       },
       {
         tier: "Gold",
         minPoints: 2500,
-        benefits: ["All Silver benefits", "Priority support"],
+        benefits: "All Silver benefits, Priority support",
       },
       {
         tier: "Platinum",
         minPoints: 5000,
-        benefits: ["All Gold benefits", "Exclusive offers"],
+        benefits: "All Gold benefits, Exclusive offers",
       },
     ];
 
