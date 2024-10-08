@@ -137,6 +137,8 @@
   "detail": "Detail",
   "arrange": "Arrange",
   "no.": "No.",
+  "existing-images": "Existing Images",
+  "uploaded-images": "New Images (Upload to sort)",
   "rank": "Rank",
   "point": "Point"
 }

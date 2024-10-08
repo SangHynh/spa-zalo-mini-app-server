@@ -3,16 +3,10 @@ const mongoose = require("mongoose");
 const appConfigSchema = new mongoose.Schema(
   {
     version: { type: String, required: true },
-    images: {
-      type: [
-        {
-          index: { type: Number, required: true },
-          url: { type: String, required: true },
-        },
-      ],
-      required: true,
-      default: [],
-    },
+    images: [{
+      index: { type: Number, required: true },
+      url: { type: String, required: true },
+    }],
     // ...
   },
   {

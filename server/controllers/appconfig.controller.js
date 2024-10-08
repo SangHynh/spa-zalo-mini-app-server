@@ -10,7 +10,7 @@ class AppConfigController {
 
       // Get urls from the newly uploaded images
       const newImageurls = req.files.map((file, index) => ({
-        Index: index,
+        index: index,
         url: file.path,
       }));
 
@@ -18,7 +18,7 @@ class AppConfigController {
       if (Array.isArray(req.body.existingImages)) {
         req.body.existingImages.forEach((url, idx) => {
           newImageurls.push({
-            Index: newImageurls.length + idx, // Continue Index from where new images stopped
+            index: newImageurls.length + idx, // Continue Index from where new images stopped
             url: url,
           });
         });
@@ -30,7 +30,7 @@ class AppConfigController {
           const publicId = url
             .split("/")
             .slice(-2)
-            .join("/") // Get the last two parts: folder and filename
+            .join("/")
             .split(".")[0];
 
           deleteImage(publicId);
@@ -68,7 +68,7 @@ class AppConfigController {
 
       if (config && Array.isArray(config.images)) {
         // Sắp xếp images theo Index
-        config.images.sort((a, b) => a.Index - b.Index);
+        config.images.sort((a, b) => a.index - b.index);
       }
 
       return res.status(200).json(config);
