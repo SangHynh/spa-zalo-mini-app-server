@@ -136,5 +136,7 @@
   "select-account": "Select account",
   "detail": "Detail",
   "arrange": "Arrange",
-  "no.": "No."
+  "no.": "No.",
+  "existing-images": "Existing Images",
+  "uploaded-images": "New Images (Upload to sort)"
 }

@@ -136,5 +136,7 @@
   "select-account": "Chọn tài khoản",
   "detail": "Chi tiết",
   "arrange": "Sắp xếp",
-  "no.": "STT"
+  "no.": "STT",
+  "existing-images": "Hình ảnh hiện có",
+  "uploaded-images": "Hình ảnh mới (Upload trước để sắp xếp)"
 }

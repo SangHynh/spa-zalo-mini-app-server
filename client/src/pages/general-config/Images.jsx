@@ -37,40 +37,29 @@ const Images = () => {
     const files = event.target.files;
     const newImages = [...images];
 
-    // Thêm ảnh mới với index tiếp theo
+    // Add new files with the next available index
     for (let i = 0; i < files.length; i++) {
       newImages.push({
-        index: newImages.length, // Đặt index là độ dài hiện tại của mảng
-        url: url.createObjecturl(files[i]), // Tạo url cho từng file
+        index: existingImages.length + newImages.length, // Continue from existing image indexes
+        url: URL.createObjectURL(files[i]),
+        file: files[i], // Store actual file for backend upload
       });
     }
-
-    // Cập nhật lại index của từng ảnh
-    const updatedImages = newImages.map((img, i) => ({ ...img, index: i }));
-
-    setImages(updatedImages);
+    setImages(newImages);
   };
 
-  const handleRemoveImage = (indexToRemove) => {
-    setImages((prevImages) => {
-      const imageToRemove = prevImages.find(
-        (img) => img.index === indexToRemove
-      );
-      if (imageToRemove) {
-        setDeleteImages((prevDeleteImages) => {
-          if (existingImages.some((img) => img.index === imageToRemove.index)) {
-            return [...prevDeleteImages, imageToRemove];
-          }
-          return prevDeleteImages;
-        });
-      }
+  const handleRemoveImage = (index) => {
+    const allImages = existingImages.concat(images); // Kết hợp tất cả hình ảnh
+    const imgToRemove = allImages[index]; // Lấy hình ảnh muốn xóa theo chỉ số
 
-      const filteredImages = prevImages.filter(
-        (img) => img.index !== indexToRemove
-      );
-      // Cập nhật lại index của từng ảnh sau khi xóa
-      return filteredImages.map((img, i) => ({ ...img, index: i }));
-    });
+    if (existingImages.includes(imgToRemove)) {
+      // Nếu là hình ảnh đã tồn tại
+      setExistingImages(existingImages.filter((img) => img.index !== imgToRemove.index));
+      setDeleteImages([...deleteImages, imgToRemove.url]); // Thêm URL vào danh sách xóa
+    } else {
+      // Nếu là hình ảnh mới
+      setImages(images.filter((img) => img.index !== imgToRemove.index));
+    }
   };
 
   useEffect(() => {
@@ -78,13 +67,9 @@ const Images = () => {
       const response = await apiGetSlider();
       if (response.status === 200) {
         const data = response.data;
-
-        setImages(data.images);
         setExistingImages(data.images);
-        console.log("Images set from fetched data:", data.images);
       }
     };
-
     fetchSlider();
   }, []);
 
@@ -98,46 +83,16 @@ const Images = () => {
 
     const formData = new FormData();
 
-    const updatedExistingImages = existingImages.filter(
-      (imageurl) => !deleteImages.includes(imageurl)
-    );
-
-    const newImages = images.filter(
-      (imgSrc) => !existingImages.includes(imgSrc)
-    );
-
     // Append images
-    for (let index = 0; index < newImages.length; index++) {
-      const imageSrc = newImages[index];
+    images.forEach((img) => {
+      formData.append("images", img.file); // Actual file to backend
+    });
 
-      // Chuyển đổi blob url thành Blob
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
-
-      // Kiểm tra định dạng của hình ảnh
-      const type = blob.type; // Lấy loại MIME (ví dụ: image/jpeg, image/png)
-
-      let extension = "";
-      if (type === "image/jpeg") {
-        extension = "jpg";
-      } else if (type === "image/png") {
-        extension = "png";
-      } else if (type === "image/gif") {
-        extension = "gif";
-      } else {
-        console.error("Unsupported image type:", type);
-        continue; // Bỏ qua hình ảnh này nếu không phải định dạng hỗ trợ
-      }
-
-      const imageName = `${Math.random().toString(36).substring(2, 8)}-${
-        index + 1
-      }.${extension}`; // Tạo tên hình ảnh
-      formData.append("images", blob, imageName); // Thêm hình ảnh vào FormData
-    }
-
-    formData.append("existingImages", JSON.stringify(updatedExistingImages));
+    formData.append("existingImages", JSON.stringify(existingImages.map((img) => img.url)));
 
     formData.append("deleteImages", JSON.stringify(deleteImages));
+
+    console.log(formData.entries())
 
     // LOG
     for (let [key, value] of formData.entries()) {
@@ -195,176 +150,202 @@ const Images = () => {
     setOpen(false);
   };
 
+  // Handle image sorting (move up)
   const handleMoveUp = (index) => {
+    const allImages = existingImages.concat(images); // Kết hợp tất cả hình ảnh
     if (index > 0) {
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-        // Swap urls
-        [newImages[index].url, newImages[index - 1].url] = [
-          newImages[index - 1].url,
-          newImages[index].url,
-        ];
-      });
+      const newImages = [...allImages];
+      [newImages[index], newImages[index - 1]] = [newImages[index - 1], newImages[index]];
+      setExistingImages(newImages.slice(0, existingImages.length)); // Cập nhật ảnh hiện có
+      setImages(newImages.slice(existingImages.length)); // Cập nhật ảnh mới
     }
   };
 
+  // Handle image sorting (move down)
   const handleMoveDown = (index) => {
-    if (index < images.length - 1) {
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-        // Swap urls
-        [newImages[index].url, newImages[index + 1].url] = [
-          newImages[index + 1].url,
-          newImages[index].url,
-        ];
-        return newImages;
-      });
+    const allImages = existingImages.concat(images); // Kết hợp tất cả hình ảnh
+    if (index < allImages.length - 1) {
+      const newImages = [...allImages];
+      [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+      setExistingImages(newImages.slice(0, existingImages.length)); // Cập nhật ảnh hiện có
+      setImages(newImages.slice(existingImages.length)); // Cập nhật ảnh mới
     }
   };
 
   return (
     <Box className="p-8 w-full flex flex-col gap-6">
       <Typography variant="h5">{t("image-config")}</Typography>
-      {/* <form onSubmit={handleSubmit}> */}
-      <Button
-        component="label"
-        variant="contained"
-        tabindex={-1}
-        startIcon={<CloudUploadIcon />}
-        sx={{ mt: 2, width: "fit-content" }}
-      >
-        {t("upload-files")}
-        <VisuallyHiddenInput
-          type="file"
-          onChange={handleFileUpload}
-          multiple
-          accept="image/*"
-        />
-      </Button>
-
-      <div className="overflow-x-auto">
-        {console.log("Images trước khi render:", images)}
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-400 dark:bg-gray-100 text-black">
-              <th className="border px-4 py-2">{t("no.")}</th>
-              <th className="border px-4 py-2">{t("nor-image")}</th>
-              <th className="border px-4 py-2">{t("arrange")}</th>
-              <th className="border px-4 py-2">{t("operations")}</th>
-            </tr>
-          </thead>
-          {images.length > 0 && (
-            <tbody>
-              {images.map((imgSrc, index) => (
-                <tr key={imgSrc._id} className="relative">
-                  <td className="text-center border">{imgSrc.index}</td>
-                  {console.log("URL img:", imgSrc.url)}
-                  <td className="border">
-                    <div className="flex items-center justify-center m-4">
-                      {/* <img
-                        src={imgSrc.url}
-                        alt={`Uploaded ${imgSrc.index}`}
-                        loading="lazy"
-                        className="w-[500px] h-[250px]"
-                        onClick={() => handleOpen(imgSrc.url)}
-                      /> */}
-                      {imgSrc.url}
-                    </div>
-                  </td>
-                  <td className="border">
-                    <div className="flex h-full w-full gap-4 items-center justify-center">
-                      <button
-                        onClick={() => handleMoveUp(index)}
-                        disabled={index === 0}
-                      >
-                        <FaArrowUp />
-                      </button>
-                      <button
-                        onClick={() => handleMoveDown(index)}
-                        disabled={index === images.length - 1}
-                      >
-                        <FaArrowDown />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="border">
-                    <div className="flex h-full w-full items-center justify-center">
-                      {/* <Tooltip title={t("detail")}>
-                            <IconButton>
-                              <PendingIcon sx={{ color: blue[500] }} />
-                            </IconButton>
-                          </Tooltip> */}
-                      <IconButton onClick={() => handleRemoveImage(index)}>
-                        <CancelIcon sx={{ color: red[500] }} />
-                      </IconButton>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          )}
-        </table>
-      </div>
-
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-        // disableScrollLock
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            position: "relative",
-          }}
-          onClick={handleClose}
+      <form onSubmit={handleSubmit}>
+        <Button
+          component="label"
+          variant="contained"
+          tabIndex={-1}
+          startIcon={<CloudUploadIcon />}
+          sx={{ width: "fit-content" }}
         >
-          <IconButton
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              top: 16,
-              right: 16,
-              color: "white",
-            }}
-          >
-            <CloseIcon fontSize="large" />
-          </IconButton>
-          <img
-            src={selectedImage}
-            alt="Selected"
-            style={{ maxWidth: "100%", maxHeight: "100%" }}
-            onClick={(e) => e.stopPropagation()}
+          {t("upload-files")}
+          <VisuallyHiddenInput
+            type="file"
+            onChange={handleFileUpload}
+            multiple
+            accept="image/*"
           />
-        </Box>
-      </Modal>
+        </Button>
 
-      <Grid2
-        container
-        fullWidth
-        spacing={2}
-        sx={{ mt: 2, justifyContent: "flex-end" }}
-      >
-        <Grid2>
-          <Button type="submit" variant="contained" color="success">
-            {t("update")}
-          </Button>
+        <Grid2 container fullWidth spacing={2} sx={{ mt: 2 }}>
+          <Grid2 size={6}>
+            {/* Table for Existing Images */}
+            <Typography variant="h6">{t("existing-images")}</Typography>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-400 dark:bg-gray-100 text-black">
+                    <th className="border px-4 py-2">{t("no.")}</th>
+                    <th className="border px-4 py-2">{t("nor-image")}</th>
+                    <th className="border px-4 py-2">{t("arrange")}</th>
+                    <th className="border px-4 py-2">{t("operations")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {existingImages.map((imgSrc, index) => (
+                    <tr key={imgSrc.index} className="relative">
+                      <td className="text-center border">{index + 1}</td>
+                      <td className="border">
+                        <div className="flex items-center justify-center m-4">
+                          <img
+                            src={imgSrc.url}
+                            alt={`Uploaded ${imgSrc.index}`}
+                            loading="lazy"
+                            className="w-[150px] h-[75px]"
+                            onClick={() => handleOpen(imgSrc.url)}
+                          />
+                        </div>
+                      </td>
+                      <td className="border">
+                        <div className="flex h-full w-full gap-4 items-center justify-center">
+                          <IconButton
+                            onClick={() => handleMoveUp(index)}
+                            disabled={index === 0}
+                          >
+                            <FaArrowUp />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleMoveDown(index)}
+                            disabled={index === existingImages.length - 1}
+                          >
+                            <FaArrowDown />
+                          </IconButton>
+                        </div>
+                      </td>
+                      <td className="border">
+                        <div className="flex h-full w-full items-center justify-center">
+                          <IconButton onClick={() => handleRemoveImage(index)}>
+                            <CancelIcon sx={{ color: red[500] }} />
+                          </IconButton>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Grid2>
+          <Grid2 size={6}>
+
+            {/* Table for Uploaded Images */}
+            <Typography variant="h6">{t("uploaded-images")}</Typography>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-400 dark:bg-gray-100 text-black">
+                    <th className="border px-4 py-2">{t("no.")}</th>
+                    <th className="border px-4 py-2">{t("nor-image")}</th>
+                    <th className="border px-4 py-2">{t("operations")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {images.map((imgSrc, index) => (
+                    <tr key={imgSrc.index} className="relative">
+                      <td className="text-center border">{existingImages.length + index + 1}</td>
+                      <td className="border">
+                        <div className="flex items-center justify-center m-4">
+                          <img
+                            src={imgSrc.url}
+                            alt={`Uploaded ${imgSrc.index}`}
+                            loading="lazy"
+                            className="w-[150px] h-[75px]"
+                            onClick={() => handleOpen(imgSrc.url)}
+                          />
+                        </div>
+                      </td>
+                      <td className="border">
+                        <div className="flex h-full w-full items-center justify-center">
+                          <IconButton onClick={() => handleRemoveImage(existingImages.length + index)}>
+                            <CancelIcon sx={{ color: red[500] }} />
+                          </IconButton>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Grid2>
         </Grid2>
-        {/* <Grid2>
-          <Button variant="outlined" color="warning" onClick={handleCancel}>
-            {t("cancel")}
-          </Button>
-        </Grid2> */}
-      </Grid2>
-      {/* </form> */}
+  
+        <Modal
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              position: "relative",
+            }}
+            onClick={handleClose}
+          >
+            <IconButton
+              onClick={handleClose}
+              sx={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                color: "white",
+              }}
+            >
+              <CloseIcon fontSize="large" />
+            </IconButton>
+            <img
+              src={selectedImage}
+              alt="Selected"
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Box>
+        </Modal>
+  
+        <Grid2
+          container
+          fullWidth
+          spacing={2}
+          sx={{ mt: 2, justifyContent: "flex-end" }}
+        >
+          <Grid2>
+            <Button type="submit" variant="contained" color="success">
+              {t("update")}
+            </Button>
+          </Grid2>
+        </Grid2>
+      </form>
     </Box>
-  );
+  );  
 };
 
 export default Images;
