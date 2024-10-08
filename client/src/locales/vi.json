@@ -136,5 +136,7 @@
   "select-account": "Chọn tài khoản",
   "detail": "Chi tiết",
   "arrange": "Sắp xếp",
-  "no.": "STT"
+  "no.": "STT",
+  "rank": "Hạng",
+  "point": "Điểm"
 }

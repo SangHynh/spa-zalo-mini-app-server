@@ -136,5 +136,7 @@
   "select-account": "Select account",
   "detail": "Detail",
   "arrange": "Arrange",
-  "no.": "No."
+  "no.": "No.",
+  "rank": "Rank",
+  "point": "Point"
 }
