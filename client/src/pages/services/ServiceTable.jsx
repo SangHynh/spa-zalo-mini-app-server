@@ -231,12 +231,16 @@ const ServiceTable = ({ searchTerm }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [services, setServices] = useState([]);
-  const [totalServices, setTotalServices] = useState(0)
+  const [totalServices, setTotalServices] = useState(0);
 
   // GET SERVICES
   useEffect(() => {
     const fetchServices = async () => {
-      const response = await apiGetServices(currentPage, rowsPerPage, searchTerm);
+      const response = await apiGetServices(
+        currentPage,
+        rowsPerPage,
+        searchTerm
+      );
       if (response.status === 200) {
         setServices(response.data.services);
         setTotalServices(response.data.totalServices);
@@ -275,8 +279,9 @@ const ServiceTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
+        className="border"
       >
-        <Table aria-label="collapsible table" className="border">
+        <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" sx={{ maxWidth: "100px" }} />
@@ -338,7 +343,9 @@ const ServiceTable = ({ searchTerm }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={10} align="center">No services found</TableCell>
+                <TableCell colSpan={10} align="center">
+                  No services found
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

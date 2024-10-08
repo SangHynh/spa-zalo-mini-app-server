@@ -44,12 +44,6 @@ export const getSidebar = (t) => [
         path: `/${path.ADMIN_LAYOUT}/${path.CUSTOMER_MANAGEMENT}`,
         name: t("customer"),
       },
-      {
-        id: 12,
-        icon: <GoDash />,
-        path: `/${path.ADMIN_LAYOUT}/${path.STAFF_MANAGEMENT}`,
-        name: t("staff"),
-      },
     ],
   },
   {

@@ -124,10 +124,7 @@ function Row(props) {
             >
               {row.description}
             </TableCell>
-            <TableCell
-              align="center"
-              className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
-            >
+            <TableCell className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]">
               <div className="flex items-center justify-center gap-2">
                 <Tooltip title={t("edit")}>
                   <IconButton
@@ -229,8 +226,9 @@ const CategoryTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
+        className="border"
       >
-        <Table aria-label="collapsible table" className="border">
+        <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" sx={{ maxWidth: "100px" }} />

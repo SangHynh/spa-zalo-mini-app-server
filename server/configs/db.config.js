@@ -5,6 +5,7 @@ const Recommendation = require("../models/recommendation.model");
 const generateRandomPhoneNumber = require("../utils/genData.util");
 const createTestData = require("../utils/generateTestData");
 const AppConfig = require("../models/appconfig.model");
+const Rank = require("../models/rank.model");
 
 async function connect() {
   try {
@@ -21,6 +22,8 @@ async function connect() {
 
     // GENERATE TEST DATA
     // createTestData()
+
+    // await createSampleRanks();
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err);
   }
@@ -29,10 +32,18 @@ async function connect() {
 // TEST ADD DATA
 async function testAdd() {
   try {
-    const productNames = ["Product A", "Product B", "Product C", "Product D", "Product E", "Product F"];
+    const productNames = [
+      "Product A",
+      "Product B",
+      "Product C",
+      "Product D",
+      "Product E",
+      "Product F",
+    ];
     const productIds = ["12345", "67890", "54321", "11223", "33445", "55667"];
 
-    for (let i = 1; i <= 6; i++) { // Tạo 6 người dùng
+    for (let i = 1; i <= 6; i++) {
+      // Tạo 6 người dùng
       const user = new User({
         name: `John Doe ${i}`, // Tên thay đổi theo từng người dùng
         phone: generateRandomPhoneNumber(),
@@ -42,16 +53,16 @@ async function testAdd() {
         referralCode: `ABC123${i}`, // Mã giới thiệu thay đổi theo người dùng
         productSuggestions: [
           {
-            productId: productIds[0],  // Sản phẩm giống nhau
-            productName: productNames[0],  // Tên sản phẩm giống nhau
-            suggestedScore: 8.5 + i * 0.1,  // Điểm gợi ý thay đổi nhẹ
+            productId: productIds[0], // Sản phẩm giống nhau
+            productName: productNames[0], // Tên sản phẩm giống nhau
+            suggestedScore: 8.5 + i * 0.1, // Điểm gợi ý thay đổi nhẹ
           },
           {
             productId: productIds[i % productIds.length], // Thay đổi sản phẩm cho mỗi người
             productName: productNames[i % productNames.length], // Tên sản phẩm thay đổi
             suggestedScore: 9.0 + i * 0.2, // Điểm gợi ý thay đổi
-          }
-        ]
+          },
+        ],
       });
 
       const userResult = await user.save();
@@ -93,13 +104,48 @@ async function initializeAppConfig() {
     let config = await AppConfig.findOne();
     if (!config) {
       config = await AppConfig.create({
-        version: '1.0.0',
+        version: "1.0.0",
         images: [],
       });
-      console.log('AppConfig initialized:', config);
+      console.log("AppConfig initialized:", config);
     }
   } catch (error) {
-    console.error('Error initializing AppConfig:', error);
+    console.error("Error initializing AppConfig:", error);
+  }
+}
+
+async function createSampleRanks() {
+  try {
+    const sampleRanks = [
+      { tier: "Member", minPoints: 0, benefits: ["Access to basic features"] },
+      {
+        tier: "Silver",
+        minPoints: 1000,
+        benefits: ["Access to premium features", "Monthly report"],
+      },
+      {
+        tier: "Gold",
+        minPoints: 2500,
+        benefits: ["All Silver benefits", "Priority support"],
+      },
+      {
+        tier: "Platinum",
+        minPoints: 5000,
+        benefits: ["All Gold benefits", "Exclusive offers"],
+      },
+    ];
+
+    for (const rank of sampleRanks) {
+      const existingRank = await Rank.findOne({ tier: rank.tier });
+      if (!existingRank) {
+        const rankResult = await Rank.create(rank);
+        console.log(`Rank created successfully:`, rankResult);
+      } else {
+        console.log(`Rank ${rank.tier} already exists.`);
+      }
+    }
+  } catch (error) {
+    console.error("Error creating sample ranks:", error);
   }
 }
 

@@ -264,11 +264,7 @@ function Row(props) {
                     {row.variants &&
                       row.variants.map((variantRow) => (
                         <TableRow key={variantRow.volume}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {variantRow.volume}
                           </TableCell>
                           <TableCell align="center">
@@ -310,11 +306,7 @@ function Row(props) {
                     {row.ingredients &&
                       row.ingredients.map((ingredient) => (
                         <TableRow key={ingredient.name}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {ingredient.name}
                           </TableCell>
                           <TableCell align="center">
@@ -373,12 +365,16 @@ const ProductTable = ({ searchTerm }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [products, setProducts] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0)
+  const [totalProducts, setTotalProducts] = useState(0);
 
   // GET PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await apiGetProducts(currentPage, rowsPerPage, searchTerm);
+      const response = await apiGetProducts(
+        currentPage,
+        rowsPerPage,
+        searchTerm
+      );
       if (response.status === 200) {
         setProducts(response.data.products || []);
         setTotalProducts(response.data.totalProducts);
@@ -417,8 +413,9 @@ const ProductTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
+        className="border"
       >
-        <Table aria-label="collapsible table" className="border">
+        <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" />
@@ -506,7 +503,9 @@ const ProductTable = ({ searchTerm }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={10} align="center">No products found</TableCell>
+                <TableCell colSpan={10} align="center">
+                  No products found
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

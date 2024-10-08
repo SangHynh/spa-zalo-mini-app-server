@@ -432,8 +432,9 @@ const CustomerTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
+        className="border"
       >
-        <Table aria-label="collapsible table" className="border">
+        <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell className="relative" />
