@@ -144,5 +144,7 @@
   "create-success": "Tạo mới thành công",
   "confirm": "Xác nhận",
   "yes": "Có",
-  "no": "Không"
+  "no": "Không",
+  "delete-success": "Xóa thành công",
+  "delete-failed": "Xóa thất bại"
 }

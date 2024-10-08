@@ -163,19 +163,18 @@ const RanknPoint = () => {
         if (response.status === 200) {
           Swal.fire({
             title: `${t("success")}!`,
-            text: `${t("delete-success")}`, // Thay đổi thông báo thành công nếu cần
+            text: `${t("delete-success")}`,
             icon: "success",
             confirmButtonText: "Ok",
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.reload(); // Tải lại trang sau khi xóa thành công
+              window.location.reload();
             }
           });
         } else {
-          // Nếu không phải là 204, xử lý phản hồi không thành công
           Swal.fire({
             title: `${t("error")}!`,
-            text: `${t("delete-failed")}`, // Thay đổi thông báo nếu cần
+            text: `${t("delete-failed")}`,
             icon: "error",
             confirmButtonText: "Ok",
           });

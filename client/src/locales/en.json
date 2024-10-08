@@ -115,7 +115,7 @@
   "nor-image": "Image",
   "image-config": "Images Config",
   "config-success": "Config successfully",
-  "config-fail": "Config failed",
+  "config-failed": "Config failed",
   "order-mgmt": "Order Management",
   "voucher-mgmt": "Voucher Management",
   "approve": "Approve",
@@ -144,5 +144,7 @@
   "create-success": "Create successfully",
   "confirm": "Confirm",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "delete-success": "Delete successfully",
+  "delete-failed": "Delete failed"
 }
