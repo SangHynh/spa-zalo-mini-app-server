@@ -43,8 +43,6 @@ class ServiceController {
                         sortCriteria[field] = order;
                     }
                 });
-            } else {
-                sortCriteria = { createdAt: -1 };
             }
 
             const services = await Service.find(query)

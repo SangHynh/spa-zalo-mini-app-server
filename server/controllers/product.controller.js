@@ -73,8 +73,6 @@ exports.getAllProducts = async (req, res) => {
           sortCriteria[field] = order;
         }
       });
-    } else {
-      sortCriteria = { createdAt: -1 };
     }
 
     const products = await Product.find(query)

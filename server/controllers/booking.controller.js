@@ -42,8 +42,6 @@ class BookingController {
                 if (validSortFields.includes(sortBy)) {
                     sortCriteria[sortBy] = sortOrder === 'desc' ? -1 : 1;
                 }
-            } else {
-                sortCriteria = { date: -1 }; // Mặc định sắp xếp theo ngày
             }
 
             const bookingHistories = await BookingHistory.find(query)

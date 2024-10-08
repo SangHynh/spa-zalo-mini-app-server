@@ -88,7 +88,7 @@ const ProdRecommendSystem = () => {
   // GET PRODUCTS (Table A)
   useEffect(() => {
     const fetchProducts = async () => {
-      showLoading();
+      // showLoading();
       try {
         const productsResponse = await apiGetProducts(
           currentPageA,
@@ -113,7 +113,7 @@ const ProdRecommendSystem = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
-        hideLoading();
+        // hideLoading();
       }
     };
 
