@@ -15,9 +15,4 @@ router.delete('/:id',verifyAccessToken, userController.deleteUser);
 router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserInfo);
 router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
-router.put('/suggested-score/:id', productController.findProductToUpdateSuggestScoreOfUser);
-router.put('/rating-product/:id', productController.ratingToUpdateSuggestScoreOfUser);
-router.put('/suggest-products-for-user/:id', userController.suggestProductsForUser);
-router.put('/update-suggest-products-for-multiple-products/:id', productController.updateSuggestedScoresForMultipleProducts);
-router.put('/find-product-to-update-suggest-score-of-user/:productName', productController.findProductToUpdateSuggestScoreOfUser);
 module.exports = router;

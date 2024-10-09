@@ -22,10 +22,10 @@ const userSchema = new mongoose.Schema(
     discountsUsed: { type: [String], default: [] },
     serviceHistory: { type: [String], default: [] },
     address: { type: String, default: "" },
-    productSuggestions: [
+    suggestions: [
       {
-        productId: { type: String },  // ID của sản phẩm
-        productName: { type: String },  // Tên sản phẩm
+        categoryId: { type: String },  // ID của sản phẩm
+        category: { type: String },  // Tên sản phẩm
         suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
       }
     ],

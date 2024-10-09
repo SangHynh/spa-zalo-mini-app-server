@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const Product = require("../models/product.model");
 const Recommendation = require("../models/recommendation.model");
+const Review = require("../models/review.model");
 const generateRandomPhoneNumber = require("../utils/genData.util");
 const createTestData = require("../utils/generateTestData");
 const AppConfig = require("../models/appconfig.model");

@@ -155,7 +155,7 @@ const suggestProductsForUser = async (req, res) => {
     }
 
     // Lấy danh sách productId mà khách hàng hiện tại đã có
-    const customerProductIds = customer.productSuggestions.map(
+    const customerProductIds = customer.suggestions.map(
       (suggestion) => suggestion.productId
     );
 
@@ -167,7 +167,7 @@ const suggestProductsForUser = async (req, res) => {
 
     // Duyệt qua các sản phẩm của khách hàng khác
     otherUsers.forEach((user) => {
-      user.productSuggestions.forEach((suggestion) => {
+      user.suggestions.forEach((suggestion) => {
         // Nếu sản phẩm không có trong danh sách của khách hàng hiện tại
         if (!customerProductIds.includes(suggestion.productId)) {
           if (!productScores[suggestion.productId]) {
@@ -212,6 +212,33 @@ const suggestProductsForUser = async (req, res) => {
   }
 };
 
+// Lấy thông tin người dùng theo ID Zalo
+const getUserInfo = async (req, res) => {
+  const { zaloId } = await req.params; // Lấy zaloId từ path parameters
+  try {
+    // Tìm kiếm người dùng theo accountId từ mô hình User
+    const user = await User.findOne({ zaloId: zaloId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Trả về thông tin người dùng cùng với zaloId
+    const userInfo = {
+      _id: user._id,
+      accountId: user.accountId,
+      name: user.name,
+      urlImage: user.urlImage,
+      phone: user.phone,
+      membershipTier: user.membershipTier,
+      points: user.points,
+      zaloId: account.zaloId, 
+    };
+    res.status(200).json(userInfo);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -221,4 +248,5 @@ module.exports = {
   updateUserPhone,
   updateUserInfo,
   suggestProductsForUser,
+  getUserInfo,
 };
