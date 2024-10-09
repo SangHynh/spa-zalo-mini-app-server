@@ -34,11 +34,14 @@ const register = async (req, res, next) => {
       // Tạo tài khoản admin mới
       const newAdmin = new Admin({ email, password, zaloId: null });
       const savedAdmin = await newAdmin.save();
+      // Chuyển đối tượng Mongoose thành object và loại bỏ thuộc tính password
+      const adminData = savedAdmin.toObject();
+      delete adminData.password;
       // Tạo access token và refresh token
       const accessToken = await signAccessToken(savedAdmin.id);
       const refreshToken = await signRefreshToken(savedAdmin.id);
       // Trả về kết quả đăng ký thành công
-      return res.send({ admin: savedAdmin, accessToken, refreshToken });
+      return res.send({ admin: adminData, accessToken, refreshToken });
     } else if (role === "user") {
       const { zaloAccessToken, phoneToken } = req.body;
       if (!zaloAccessToken) {
@@ -113,10 +116,13 @@ const login = async (req, res, next) => {
       const isMatch = await admin.isValidPassword(password);
       if (!isMatch)
         throw createError.Unauthorized("Invalid username or password");
+      // Chuyển đối tượng Mongoose thành object và loại bỏ thuộc tính password
+      const adminData = admin.toObject();
+      delete adminData.password;
       // Tạo access token và refresh token sau khi đăng nhập thành công
       const accessToken = await signAccessToken(admin.id);
       const refreshToken = await signRefreshToken(admin.id);
-      return res.send({ admin, accessToken, refreshToken });
+      return res.send({ admin: adminData, accessToken, refreshToken });
     } else if (role === "user" && zaloAccessToken) {
       // Kiểm tra đăng nhập qua Zalo Access Token
       const data = await zaloTokenService(zaloAccessToken)
@@ -124,14 +130,9 @@ const login = async (req, res, next) => {
         .catch((error) => {
           throw createError.BadRequest("Invalid Zalo Access Token");
         });
-
       const zaloId = data.id;
-      console.log("zaloId:::::");
-      console.log(zaloId);
       const user = await User.findOne({ zaloId });
-
       if (!user) throw createError.NotFound("User not found");
-
       const userProfile = {
         zaloId: user.zaloId,
         name: user.name,

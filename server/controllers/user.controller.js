@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Admin = require("../models/admin.model");
+const { zaloPhoneService } = require("../services/zalo.service");
 
 // Controller để tạo người dùng mới
 const createUser = async (req, res) => {
@@ -121,24 +122,34 @@ const updateUserInfo = async (req, res) => {
 // Cập nhật số điện thoại người dùng
 const updateUserPhone = async (req, res) => {
   const { zaloId } = req.params;
-  const { phoneToken, zaloAccessToken } = req.headers;
+  const phoneToken = req.headers["phone-token"];
+  const zaloAccessToken = req.headers["zalo-access-token"];
   try {
     // Tìm kiếm người dùng theo zaloId từ mô hình User
     const user = await User.findOne({ zaloId: zaloId });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const phone = await zaloPhoneService(phoneToken, zaloAccessToken);
-    user.phone = phone + "00000";
-    await user.save();
-    const userInfo = {
-      _id: user._id,
-      zaloId: user.zaloId,
-      phone: user.phone,
-    };
-    res
-      .status(200)
-      .json({ message: "User info updated successfully", userInfo });
+
+    const phoneData = await zaloPhoneService(phoneToken, zaloAccessToken);
+    console.log(phoneData);
+    const phone = phoneData?.data?.data?.number ?? null;
+
+    // Cấp nhật số điện thoại người dùng
+    if (user.phone !== phone && phone) {
+      user.phone = phone;
+      await user.save();
+      const userInfo = {
+        _id: user._id,
+        zaloId: user.zaloId,
+        phone: user.phone,
+      };
+      res
+        .status(200)
+        .json({ message: "User info updated successfully", userInfo });
+    }else{
+      return res.status(204).send();
+    }
   } catch (error) {
     console.error("Error updating user:", error.message);
   }

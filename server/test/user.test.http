@@ -1,8 +1,8 @@
-### GET USER INFORMATION
+### GET USER INFORMATION BASED ON ZALO ID
 GET https://localhost:8080/api/users/user-info/12345648999
 Authorization: Bearer token_here
 
-### UPDATE USER INFORMATION
+### UPDATE USER INFORMATION BASED ON ZALO ID
 PUT http://localhost:8080/api/users/update-user-info/12345648999
 Content-Type: application/json
 Authorization: Bearer token_here
@@ -12,9 +12,9 @@ Authorization: Bearer token_here
     "phone": "0123456789"
 }
 
-### UPDATE USER PHONENUMBER
-PUT http://localhost:8080/api/users/update-user-phone/12345648999
+### UPDATE USER PHONENUMBER BASED ON ZALO ID
+PUT http://localhost:8080/api/users/update-user-phone/12345678999
 Content-Type: application/json
 Authorization: Bearer token_here
-phoneToken: phone_token_here
-zaloAccessToken: zalo_access_token_here
+phone-token: phone_token_here
+zalo-access-token: zalo_access_token_here

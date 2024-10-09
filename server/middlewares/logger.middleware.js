@@ -1,4 +1,4 @@
-const logger = require("../utils/logger.util");
+const createLogger = require("../utils/logger.util");
 
 const formatDate = (date) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -6,11 +6,15 @@ const formatDate = (date) => {
 };
 
 const loggingMiddleware = (req, res, next) => {
-  const { method, url } = req;
+  const { method, url, ip } = req;
+  
+  // Nếu có proxy, load balancer, lấy IP từ 'x-forwarded-for'
+  const clientIp = req.headers['x-forwarded-for'] || ip;
+
   res.on("finish", () => {
     const responseTime = formatDate(new Date());
-    logger.info(
-      ` Request: [${method}] ${url} | Response: [${res.statusCode}] ${responseTime}`
+    createLogger.info(
+      ` Request: [${method}] ${url} | Response: [${res.statusCode}] ${responseTime} | IP: [${clientIp}]`
     );
   });
   next();
