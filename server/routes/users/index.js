@@ -13,7 +13,7 @@ router.delete('/:id',verifyAccessToken, userController.deleteUser);
 
 // router.get('/user-info/:zaloId', userController.getUserInfo);
 router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserInfo);
-router.put('/update-user-phone/:zaloId', validateUpdateUserInfo, userController.updateUserPhone);
+router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
 router.put('/suggested-score/:id', productController.findProductToUpdateSuggestScoreOfUser);
 router.put('/rating-product/:id', productController.ratingToUpdateSuggestScoreOfUser);
