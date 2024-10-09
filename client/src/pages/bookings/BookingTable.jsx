@@ -53,7 +53,7 @@ function Row(props) {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success("Copy thành công");
+        toast.success(`${t("copy-success")}!`);
       })
       .catch((err) => {
         toast.success("Copy thất bại");
@@ -64,9 +64,9 @@ function Row(props) {
   const handleUpdateStatus = (id, status) => {
     Swal.fire({
       icon: "warning",
-      title: "Xác nhận cập nhật trạng thái lịch hẹn!",
+      title: `${t("confirm")}!`,
       showCancelButton: true,
-      confirmButtonText: "Yes",
+      confirmButtonText: `${t("yes")}`,
     }).then(async (result) => {
       if (result.isConfirmed) {
         showLoading();
@@ -76,12 +76,12 @@ function Row(props) {
         console.log(data);
         const res = await apiUpdateBookingStatus(id, data);
         if (res.status === 200) {
-          Swal.fire("Cập nhật thành công!", "", "success").then(() => {
+          Swal.fire(`${t("update-success")}!`, "", "success").then(() => {
             // Tải lại trang sau khi thông báo thành công
             window.location.reload();
           });
         } else {
-          Swal.fire("Cập nhật thất bại!", "", "error");
+          Swal.fire(`${t("update-failed")}!`, "", "error");
         }
         hideLoading();
       }

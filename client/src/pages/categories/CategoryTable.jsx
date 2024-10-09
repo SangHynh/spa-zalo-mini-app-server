@@ -43,7 +43,7 @@ function Row(props) {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success("Copy thành công");
+        toast.success(`${t("copy-success")}!`);
       })
       .catch((err) => {
         toast.success("Copy thất bại");
@@ -53,21 +53,19 @@ function Row(props) {
   const handleDelete = (id) => {
     Swal.fire({
       icon: "warning",
-      title:
-        "Bạn có chắc muốn xóa danh mục này, thao tác sẽ không thể hoàn trả",
+      title: `${t("confirm")}!`,
       showCancelButton: true,
-      confirmButtonText: "Yes",
+      confirmButtonText: `${t("yes")}`,
     }).then(async (result) => {
       if (result.isConfirmed) {
         showLoading();
         const res = await apiDeleteCategory(id);
         if (res) {
-          Swal.fire("Đã xóa danh mục!", "", "success").then(() => {
-            // Tải lại trang sau khi thông báo thành công
+          Swal.fire(`${t("delete-success")}!`, "", "success").then(() => {
             window.location.reload();
           });
         } else {
-          Swal.fire("Xóa danh mục thất bại!", "", "error");
+          Swal.fire(`${t("delete-failed")}!`, "", "error");
         }
         hideLoading();
       }

@@ -145,11 +145,11 @@ const EditCategory = () => {
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
-          title: "Successfully create new category!",
+          title: `${t("update-success")}!`,
           showConfirmButton: true,
           showCancelButton: true,
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: `${t("leave")}`,
+          cancelButtonText: `${t("stay")}`,
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
             navigate(`/${path.ADMIN_LAYOUT}/${path.CATEGORY_MANAGEMENT}`);

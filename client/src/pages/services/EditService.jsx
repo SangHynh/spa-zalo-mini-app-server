@@ -230,11 +230,11 @@ const EditService = () => {
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
-          title: "Successfully update service!",
+          title: `${t("update-success")}!`,
           showConfirmButton: true,
           showCancelButton: true,
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: `${t("leave")}`,
+          cancelButtonText: `${t("stay")}`,
         }).then(({ isConfirmed }) => {
           if (isConfirmed) {
             navigate(`/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`);

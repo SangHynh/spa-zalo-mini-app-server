@@ -155,7 +155,7 @@ const ProdRecommendSystem = () => {
       if (response.status === 200) {
         Swal.fire({
           title: `${t("success")}!`,
-          text: `${t("update-success")}`,
+          text: `${t("update-success")}!`,
           icon: "success",
           confirmButtonText: "Ok",
         }).then(() => {
@@ -165,7 +165,7 @@ const ProdRecommendSystem = () => {
         console.error("Failed to update recommendations");
         Swal.fire({
           title: `${t("error")}!`,
-          text: `${t("update-failed")}`,
+          text: `${t("update-failed")}!`,
           icon: "error",
           confirmButtonText: "Ok",
         });

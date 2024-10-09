@@ -118,9 +118,7 @@ const Images = () => {
           icon: "success",
           title: t("config-success"),
           showConfirmButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "Ok",
         }).then(({ isConfirmed }) => {
           window.location.reload();
         });
@@ -130,7 +128,7 @@ const Images = () => {
         icon: "danger",
         title: t("config-fail"),
         showCancelButton: true,
-        cancelButtonText: "Cancel",
+        cancelButtonText: "Ok",
       });
 
       console.error("Error config:", error);

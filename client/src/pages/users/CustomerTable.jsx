@@ -39,7 +39,7 @@ function Row(props) {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success("Copy thành công");
+        toast.success(`${t("copy-success")}!`);
       })
       .catch((err) => {
         toast.success("Copy thất bại");

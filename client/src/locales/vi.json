@@ -114,11 +114,13 @@
   "no-sub-categories-added": "Không có danh mục con được thêm",
   "nor-image": "Hình ảnh",
   "image-config": "Cấu hình ảnh",
-  "config-success": "Cấu hình thành công!",
-  "config-fail": "Cấu hình không thành công!",
+  "config-success": "Cấu hình thành công",
+  "config-fail": "Cấu hình không thành công",
   "order-mgmt": "Quản lý giao dịch",
   "voucher-mgmt": "Quản lý mã thưởng",
-  "approve": "Chấp nhận",
+  "approve": "Duyệt",
+  "pending": "Chờ duyệt",
+  "complete": "Hoàn thành",
   "voucher": "Mã giảm",
   "refresh": "Làm mới",
   "available-products": "Các sản phẩm có sẵn",
@@ -146,5 +148,8 @@
   "yes": "Có",
   "no": "Không",
   "delete-success": "Xóa thành công",
-  "delete-failed": "Xóa thất bại"
+  "delete-failed": "Xóa thất bại",
+  "copy-success": "Sao chép thành công",
+  "leave": "Rời khỏi",
+  "stay": "Ở lại"
 }

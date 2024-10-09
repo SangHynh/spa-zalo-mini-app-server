@@ -119,6 +119,8 @@
   "order-mgmt": "Order Management",
   "voucher-mgmt": "Voucher Management",
   "approve": "Approve",
+  "pending": "Pending",
+  "complete": "Complete",
   "voucher": "Voucher",
   "refresh": "Refresh",
   "available-products": "Available Product",
@@ -146,5 +148,8 @@
   "yes": "Yes",
   "no": "No",
   "delete-success": "Delete successfully",
-  "delete-failed": "Delete failed"
+  "delete-failed": "Delete failed",
+  "copy-success": "Copy successfully",
+  "leave": "Leave",
+  "stay": "Stay"
 }

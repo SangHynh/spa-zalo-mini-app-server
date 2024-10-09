@@ -93,7 +93,7 @@ const RanknPoint = () => {
       if (response.status === 200) {
         Swal.fire({
           title: `${t("success")}!`,
-          text: `${t("update-success")}`,
+          text: `${t("update-success")}!`,
           icon: "success",
           confirmButtonText: "Ok",
         }).then((result) => {
@@ -125,7 +125,7 @@ const RanknPoint = () => {
       if (response.status === 201) {
         Swal.fire({
           title: `${t("success")}!`,
-          text: `${t("create-success")}`,
+          text: `${t("create-success")}!`,
           icon: "success",
           confirmButtonText: "Ok",
         }).then((result) => {
@@ -145,25 +145,22 @@ const RanknPoint = () => {
   };
 
   const handleDelete = async (rankId) => {
-    // Hiển thị hộp thoại xác nhận trước khi xóa
     const confirmDelete = await Swal.fire({
-      title: `${t("confirm")}`, // Tiêu đề xác nhận
+      title: `${t("confirm")}!`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: `${t("yes")}`, // Nhãn nút xác nhận
-      cancelButtonText: `${t("no")}`, // Nhãn nút hủy
+      confirmButtonText: `${t("yes")}`,
+      cancelButtonText: `${t("no")}`,
     });
 
-    // Kiểm tra nếu người dùng xác nhận xóa
     if (confirmDelete.isConfirmed) {
       try {
         const response = await apiDeleteRank(rankId);
 
-        // Kiểm tra mã trạng thái
         if (response.status === 200) {
           Swal.fire({
             title: `${t("success")}!`,
-            text: `${t("delete-success")}`,
+            text: `${t("delete-success")}!`,
             icon: "success",
             confirmButtonText: "Ok",
           }).then((result) => {
@@ -174,7 +171,7 @@ const RanknPoint = () => {
         } else {
           Swal.fire({
             title: `${t("error")}!`,
-            text: `${t("delete-failed")}`,
+            text: `${t("delete-failed")}!`,
             icon: "error",
             confirmButtonText: "Ok",
           });
