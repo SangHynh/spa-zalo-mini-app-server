@@ -23,6 +23,7 @@ import Swal from "sweetalert2";
 import path from "../../utils/path";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
+import { toast } from "react-toastify";
 
 const Images = () => {
   const { t } = useTranslation();
@@ -32,20 +33,40 @@ const Images = () => {
   const [images, setImages] = useState([]);
   const [deleteImages, setDeleteImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
+  const [initialImages, setInitialImages] = useState([]);
 
   const handleFileUpload = (event) => {
     const files = event.target.files;
     const newImages = [...images];
+    const invalidFiles = [];
 
-    // Add new files with the next available index
-    for (let i = 0; i < files.length; i++) {
-      newImages.push({
-        index: existingImages.length + newImages.length, // Continue from existing image indexes
-        url: URL.createObjectURL(files[i]),
-        file: files[i], // Store actual file for backend upload
-      });
-    }
-    setImages(newImages);
+    Array.from(files).forEach((file) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        // Kiểm tra xem kích thước có lớn hơn hoặc bằng 1000x500 không
+        if (img.width >= 1000 || img.height >= 500) {
+          invalidFiles.push(file.name); // Nếu lớn hơn hoặc bằng, thêm vào danh sách lỗi
+        } else {
+          newImages.push({
+            index: existingImages.length + newImages.length,
+            url: img.src,
+            file: file,
+          });
+          setImages(newImages);
+        }
+
+        // Nếu có file không hợp lệ thì báo lỗi
+        if (invalidFiles.length > 0) {
+          Swal.fire({
+            icon: "error",
+            title: `${t("size-error")}`,
+            text: `${t("title-size-err")} ${invalidFiles.join(", ")}`,
+          });
+        }
+      };
+    });
   };
 
   const handleRemoveImage = (index) => {
@@ -70,10 +91,20 @@ const Images = () => {
       if (response.status === 200) {
         const data = response.data;
         setExistingImages(data.images);
+        setInitialImages(data.images);
       }
     };
     fetchSlider();
   }, []);
+
+  // Check handle change
+  const checkImagesChanged = () => {
+    if (initialImages.length !== existingImages.length) return true;
+    for (let i = 0; i < initialImages.length; i++) {
+      if (initialImages[i].url !== existingImages[i].url) return true;
+    }
+    return false;
+  };
 
   // SUBMIT
   const { showLoading, hideLoading } = useLoading();
@@ -82,6 +113,17 @@ const Images = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     showLoading();
+
+    // Check change
+    if (
+      !checkImagesChanged() &&
+      images.length === 0 &&
+      deleteImages.length === 0
+    ) {
+      toast.info(`${t("no-change")}`);
+      hideLoading();
+      return;
+    }
 
     const formData = new FormData();
 
@@ -136,10 +178,6 @@ const Images = () => {
       hideLoading();
     }
   };
-
-  // const handleCancel = () => {
-  //   navigate(`/${path.ADMIN_LAYOUT}/${path.DASHBOARD}`);
-  // };
 
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");

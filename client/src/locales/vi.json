@@ -151,5 +151,7 @@
   "delete-failed": "Xóa thất bại",
   "copy-success": "Sao chép thành công",
   "leave": "Rời khỏi",
-  "stay": "Ở lại"
+  "stay": "Ở lại",
+  "size-error": "Lỗi kích thước",
+  "title-size-err": "Các ảnh sau có kích thước không hợp lệ (>= 1000x500):"
 }

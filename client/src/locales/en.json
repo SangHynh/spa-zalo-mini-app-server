@@ -151,5 +151,7 @@
   "delete-failed": "Delete failed",
   "copy-success": "Copy successfully",
   "leave": "Leave",
-  "stay": "Stay"
+  "stay": "Stay",
+  "size-error": "Size Error",
+  "title-size-err": "The following images have invalid dimensions (>= 1000x500):"
 }
