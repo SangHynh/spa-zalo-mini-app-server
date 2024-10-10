@@ -409,44 +409,33 @@ exports.configureServiceRecommendations = async (req, res) => {
 
 exports.suggestProductsForUser = async (req, res) => {
   try {
-    // Lấy thông tin của khách hàng hiện tại từ req.params.id
     const customerId = req.params.id;
     const customer = await User.findById(customerId);
     
-    // Kiểm tra nếu không tìm thấy khách hàng
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    // Lấy danh sách categoryId mà khách hàng hiện tại đã có
     const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
-
-    // Tìm category từ các khách hàng khác không phải là khách hàng hiện tại
     const otherUsers = await User.find({ _id: { $ne: customerId } });
-
-    // Tạo một đối tượng để lưu trữ điểm gợi ý trung bình cho các category
     const categoryScores = {};
 
-    // Duyệt qua các category của khách hàng khác
     otherUsers.forEach(user => {
       user.suggestions.forEach(suggestion => {
-        // Nếu category không có trong danh sách của khách hàng hiện tại
         if (!customerCategoryIds.includes(suggestion.categoryId)) {
           if (!categoryScores[suggestion.categoryId]) {
             categoryScores[suggestion.categoryId] = {
-              categoryName: suggestion.categoryName, // Thêm thuộc tính tên danh mục
+              categoryName: suggestion.categoryName,
               totalScore: 0,
               count: 0
             };
           }
-          // Cộng dồn điểm và số lượng
           categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
           categoryScores[suggestion.categoryId].count += 1;
         }
       });
     });
 
-    // Tính điểm trung bình cho mỗi category
     const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
       return {
         categoryId,
@@ -455,19 +444,24 @@ exports.suggestProductsForUser = async (req, res) => {
       };
     });
 
-    // Sắp xếp category dựa trên điểm trung bình (cao đến thấp) và lấy top 3
     const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    
+    // Tìm sản phẩm tương ứng với các category gợi ý
+    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
+    const products = await Product.find({ categoryId: { $in: topCategoryIds } });
 
-    // Trả về danh sách category gợi ý
+    // Trả về danh sách category gợi ý và sản phẩm tương ứng
     return res.status(200).json({
       message: "Suggested categories found successfully",
-      recommendations: topRecommendations
+      recommendations: topRecommendations,
+      products // Thêm sản phẩm vào kết quả
     });
   } catch (error) {
     console.error("Error suggesting categories:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
+
 //update multiple suggestion scores
 exports.updateMultipleSuggestionScores = async (req, res) => {
   const { userIds, suggestionsToUpdate } = req.body; // Giả sử body chứa một mảng userId và suggestionsToUpdate
