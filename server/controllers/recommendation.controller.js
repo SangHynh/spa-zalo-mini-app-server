@@ -352,7 +352,7 @@ exports.configureProductRecommendations = async (req, res) => {
 };
 
 exports.getProductRecommendations = async (req, res) => {
-  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ params
+  const mainItemId = req.params.id; // Lấy mainItemId từ params
 
   console.log("Main Product ID:", mainItemId);
 
@@ -464,7 +464,7 @@ exports.configureServiceRecommendations = async (req, res) => {
   }
 };
 exports.getServiceRecommendations = async (req, res) => {
-  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
+  const mainItemId = req.params.id; // Lấy mainItemId từ body của yêu cầu
 
   console.log("Main Service ID:", mainItemId);
 

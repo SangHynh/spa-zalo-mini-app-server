@@ -65,13 +65,13 @@ const ProdRecommendSystem = () => {
         const recommendationsResponse = await apiGetProductRecommendations(id);
         if (recommendationsResponse.status === 200) {
           const recommendedProductIds =
-            recommendationsResponse.data.products.map(
-              (product) => product.productId
+            recommendationsResponse.data.suggestions.map(
+              (product) => product.itemId
             );
-          const transformedRowsB = recommendationsResponse.data.products.map(
+          const transformedRowsB = recommendationsResponse.data.suggestions.map(
             (product) => ({
-              id: product.productId,
-              name: product.productName,
+              id: product.itemId,
+              name: product.itemName,
               isRecommended: true,
             })
           );

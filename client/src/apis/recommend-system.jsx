@@ -9,8 +9,8 @@ export const apiConfigProductRecommendations = (id, data) =>
   });
 
 // GET RECOMMENDED PRODUCTS
-export const apiGetProductRecommendations = () =>
+export const apiGetProductRecommendations = (id) =>
   axios({
-    url: `/api/recommendations/get-product-recommendations`,
+    url: `/api/recommendations/get-product-recommendations/` + id,
     method: "GET",
   });

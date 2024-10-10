@@ -33,8 +33,8 @@ router.put(
   "/configure-product-recommendations/:id",
   recommendationController.configureProductRecommendations
 );
-router.post(
-  "/get-product-recommendations",
+router.get(
+  "/get-product-recommendations/:id",
   recommendationController.getProductRecommendations
 );
 //cập nhật danh sách dịch vụ gợi ý cho khách hàng khi khách hàng mua 1 dịch vụ
@@ -42,8 +42,8 @@ router.put(
   "/configure-service-recommendations/:id",
   recommendationController.configureServiceRecommendations
 );
-router.post(
-  "/get-service-recommendations",
+router.get(
+  "/get-service-recommendations/:id",
   recommendationController.getServiceRecommendations
 );
 //cập nhật suggestions nhiều khách hàng đề xuất nhiều sản phẩm
