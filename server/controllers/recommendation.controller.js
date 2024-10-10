@@ -330,8 +330,35 @@ exports.configureProductRecommendations = async (req, res) => {
   }
 };
 
+exports.getProductRecommendations = async (req, res) => {
+  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ params
 
-// SUGGEST SERVICES FOR USER
+  console.log('Main Product ID:', mainItemId);
+
+  try {
+    // Tìm kiếm recommendation theo mainItemId
+    const recommendation = await Recommendation.findOne({ mainItemId: mainItemId, itemType: 'Product' });
+
+    if (!recommendation) {
+      return res.status(404).json({ message: "Recommendations not found for this product" });
+    }
+
+    // Trả về thông tin recommendation
+    res.status(200).json({
+      message: "Recommendations retrieved successfully",
+      mainItem: {
+        id: recommendation.mainItemId,
+        name: recommendation.mainItemName,
+      },
+      suggestions: recommendation.items,
+      collection: "Recommendation"
+    });
+  } catch (error) {
+    console.error("Error retrieving product recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // SUGGEST SERVICES FOR USER
 exports.configureServiceRecommendations = async (req, res) => {
   const mainItemId = req.body.mainServiceId;
@@ -405,7 +432,38 @@ exports.configureServiceRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+exports.getServiceRecommendations = async (req, res) => {
+  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
 
+  console.log('Main Service ID:', mainItemId);
+
+  try {
+    // Tìm kiếm recommendation theo mainItemId
+    const recommendation = await Recommendation.findOne({
+      mainItemId: mainItemId,
+      itemType: 'Service' // Đảm bảo loại là 'Service'
+    });
+
+    // Kiểm tra nếu không tìm thấy recommendation
+    if (!recommendation) {
+      return res.status(404).json({ message: "Recommendations not found for this service." });
+    }
+
+    // Trả về thông tin recommendation
+    res.status(200).json({
+      message: "Service recommendations retrieved successfully.",
+      mainItem: {
+        id: recommendation.mainItemId,
+        name: recommendation.mainItemName,
+      },
+      suggestions: recommendation.items,
+      collection: "Recommendations"
+    });
+  } catch (error) {
+    console.error("Error retrieving service recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 exports.suggestProductsForUser = async (req, res) => {
   try {
