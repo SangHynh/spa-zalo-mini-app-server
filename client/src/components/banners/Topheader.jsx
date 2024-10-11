@@ -66,7 +66,7 @@ const Topheader = () => {
   };
 
   return (
-    <div className="flex justify-end items-center fixed z-50 w-full top-0 left-0 border-none dark:bg-[#1E1E1E] border-b pr-10 gap-4 py-2">
+    <div className="flex justify-end items-center fixed z-50 w-full top-0 left-0 border-none dark:bg-[#1E1E1E] border-b pr-8 gap-4 py-2">
       <button
         onClick={toggleDarkMode}
         className={

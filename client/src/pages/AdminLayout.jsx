@@ -61,9 +61,13 @@ const AdminLayout = () => {
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
-              transition: "width 0.3s ease",
+              transition: "width 5s ease",
               border: theme.palette.mode === "dark" ? "none" : "",
-              overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc
+              overflowY: "auto",
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? "none"
+                  : "0px 4px 10px rgba(0, 0, 0, 0.1)",
             },
           }}
         >
@@ -163,18 +167,18 @@ const AdminLayout = () => {
           sx={{
             position: "absolute",
             top: 13,
-            left: isDrawerOpen ? drawerWidth + 20 : 20, // Di chuyển sang phải nếu Drawer mở
+            left: isDrawerOpen ? drawerWidth + 32 : 32,
             zIndex: 1300,
-            transition: "left 0.3s ease", // Thêm hiệu ứng chuyển động cho sự mượt mà
+            transition: "left 0.2s ease",
           }}
         >
           <MenuIcon />
         </IconButton>
         <Topheader />
         <div
-          className="mt-[68px] p-8"
+          className="mt-[68px] px-8 py-4"
           style={{
-            transition: "margin-left 0.3s ease",
+            transition: "margin-left 5s ease",
             width: `calc(100% - ${isDrawerOpen ? drawerWidth : 0}px)`,
           }}
         >

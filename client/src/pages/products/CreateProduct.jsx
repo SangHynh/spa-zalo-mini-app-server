@@ -288,7 +288,7 @@ const CreateProduct = () => {
   };
 
   return (
-    <Container className="m-5">
+    <Container>
       <Typography variant="h5" gutterBottom>
         {t("new-product")}
       </Typography>
@@ -592,7 +592,7 @@ const CreateProduct = () => {
             </Button>
           </Grid2>
           <Grid2>
-            <Button variant="outlined" color="success" onClick={handleOpen}>
+            <Button variant="outlined" color="secondary" onClick={handleOpen}>
               {t("preview")}
             </Button>
           </Grid2>

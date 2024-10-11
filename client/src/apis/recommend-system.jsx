@@ -1,6 +1,7 @@
 import axios from "../utils/axios";
 
-// CONFIG PRODUCT
+// PRODUCTS
+// CONFIG
 export const apiConfigProductRecommendations = (id, data) =>
   axios({
     url: `/api/recommendations/configure-product-recommendations/${id}`,
@@ -8,9 +9,25 @@ export const apiConfigProductRecommendations = (id, data) =>
     data,
   });
 
-// GET RECOMMENDED PRODUCTS
+// GET RECOMMENDED
 export const apiGetProductRecommendations = (id) =>
   axios({
     url: `/api/recommendations/get-product-recommendations/` + id,
+    method: "GET",
+  });
+
+// SERVICES
+// CONFIG
+export const apiConfigServiceRecommendations = (id, data) =>
+  axios({
+    url: `/api/recommendations/configure-service-recommendations/${id}`,
+    method: "PUT",
+    data,
+  });
+
+// GET RECOMMENDED
+export const apiGetServiceRecommendations = (id) =>
+  axios({
+    url: `/api/recommendations/get-service-recommendations/` + id,
     method: "GET",
   });

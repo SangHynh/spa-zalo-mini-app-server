@@ -155,7 +155,7 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              maxWidth: "400px",
+              minWidth: "100px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
@@ -204,7 +204,7 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              maxWidth: "400px",
+              minWidth: "100px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}

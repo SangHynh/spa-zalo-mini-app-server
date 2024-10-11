@@ -39,7 +39,7 @@ const GiveVoucher = ({ open, onClose }) => {
   const [totalPagesUser, setTotalPagesUser] = useState(0);
   const [users, setUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [searchTermUser, setSearchTermUser] = useState('');
+  const [searchTermUser, setSearchTermUser] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState([]);
 
   // VOUCHERS
@@ -48,7 +48,7 @@ const GiveVoucher = ({ open, onClose }) => {
   const [totalPagesVoucher, setTotalPagesVoucher] = useState(0);
   const [vouchers, setVouchers] = useState([]);
   const [totalVouchers, setTotalVouchers] = useState(0);
-  const [searchTermVoucher, setSearchTermVoucher] = useState('');
+  const [searchTermVoucher, setSearchTermVoucher] = useState("");
   const [selectedVoucherIds, setSelectedVoucherIds] = useState([]);
 
   // GET USERS
@@ -197,42 +197,46 @@ const GiveVoucher = ({ open, onClose }) => {
         icon: "warning",
         title: `${t("warning")}!`,
         text: "Vui lòng chọn khách hàng và voucher",
-        target: ''
-      })
+        target: "",
+      });
     }
 
     const formData = {
       users: selectedUserIds,
-      vouchers: selectedVoucherIds
-    }
+      vouchers: selectedVoucherIds,
+    };
 
     try {
-      showLoading()
+      showLoading();
       const response = await apiGiveAwayVouchersToUsers(formData);
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
-          title: `${t("create-success")}!`,
+          title: `${t("give-success")}!`,
           showConfirmButton: true,
-          showCancelButton: true,
         }).then(() => {
           window.location.reload();
         });
       }
-    } catch(error) {
+    } catch (error) {
       Swal.fire({
         icon: "danger",
         title: `${t("error")}!`,
         text: error.message,
-      })
+      });
     } finally {
-      hideLoading()
+      hideLoading();
       onClose();
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullScreen TransitionComponent={Transition}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen
+      TransitionComponent={Transition}
+    >
       <DialogTitle>{t("give-away-vouchers")}</DialogTitle>
       <DialogContent>
         <Grid2 container spacing={2}>
@@ -259,8 +263,14 @@ const GiveVoucher = ({ open, onClose }) => {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={selectedUserIds.length > 0 && selectedUserIds.length < users.length}
-                        checked={users.length > 0 && selectedUserIds.length === users.length}
+                        indeterminate={
+                          selectedUserIds.length > 0 &&
+                          selectedUserIds.length < users.length
+                        }
+                        checked={
+                          users.length > 0 &&
+                          selectedUserIds.length === users.length
+                        }
                         onChange={handleSelectAllUsers}
                       />
                     </TableCell>
@@ -337,8 +347,14 @@ const GiveVoucher = ({ open, onClose }) => {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={selectedVoucherIds.length > 0 && selectedVoucherIds.length < vouchers.length}
-                        checked={vouchers.length > 0 && selectedVoucherIds.length === vouchers.length}
+                        indeterminate={
+                          selectedVoucherIds.length > 0 &&
+                          selectedVoucherIds.length < vouchers.length
+                        }
+                        checked={
+                          vouchers.length > 0 &&
+                          selectedVoucherIds.length === vouchers.length
+                        }
                         onChange={handleSelectAllVouchers}
                       />
                     </TableCell>
@@ -355,7 +371,9 @@ const GiveVoucher = ({ open, onClose }) => {
                     return (
                       <TableRow
                         hover
-                        onClick={(event) => handleClickVoucher(event, voucher._id)}
+                        onClick={(event) =>
+                          handleClickVoucher(event, voucher._id)
+                        }
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiGetProduct, apiGetProducts, apiGetProductsByIDs } from "../../apis/products";
+import {
+  apiGetProduct,
+  apiGetProducts,
+  apiGetProductsByIDs,
+} from "../../apis/products";
 import {
   Box,
   Button,
@@ -26,7 +30,7 @@ import {
 import path from "../../utils/path";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingProvider";
-import PreviewRecommend from "../recommends/PreviewRecommend";
+import PreviewProdRecommend from "./PreviewProdRecommend";
 
 const ProdRecommendSystem = () => {
   const { t } = useTranslation();
@@ -37,13 +41,12 @@ const ProdRecommendSystem = () => {
   const { showLoading, hideLoading } = useLoading();
   const [initialSelectedIds, setInitialSelectedIds] = useState(new Set());
 
-
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
 
   // GET PRODUCT
@@ -72,7 +75,7 @@ const ProdRecommendSystem = () => {
               (product) => product.itemId
             );
           setSelectedIds(recommendedProductIds);
-          setInitialSelectedIds(recommendedProductIds)
+          setInitialSelectedIds(recommendedProductIds);
         }
       } catch (error) {
         console.error("Error fetching recommendations:", error);
@@ -129,21 +132,21 @@ const ProdRecommendSystem = () => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = async () => {
-    console.log(selectedIds)
-    showLoading()
-    const response = await apiGetProductsByIDs({ productIds: selectedIds})
+    console.log(selectedIds);
+    showLoading();
+    const response = await apiGetProductsByIDs({ productIds: selectedIds });
     if (response.status === 200) {
       setSelectedProducts(response.data.products);
       setOpen(true);
     } else {
       toast.error("Chưa có sản phẩm gợi ý được chọn!");
     }
-    hideLoading()
+    hideLoading();
   };
 
   const handleClose = () => {
     setOpen(false);
-  }
+  };
 
   // Handle individual user selection
   const handleClickProduct = (event, id) => {
@@ -229,7 +232,7 @@ const ProdRecommendSystem = () => {
   return (
     <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5" gutterBottom>
-        {t("prod-recommend-system")}
+        {t("prod-recommend")}
       </Typography>
       <TextField
         id="productId"
@@ -274,8 +277,7 @@ const ProdRecommendSystem = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-              </TableCell>
+              <TableCell padding="checkbox"></TableCell>
               <TableCell>{t("product-id")}</TableCell>
               <TableCell>{t("name")}</TableCell>
               <TableCell>{t("category")}</TableCell>
@@ -329,7 +331,11 @@ const ProdRecommendSystem = () => {
         labelRowsPerPage={t("rows-per-page")}
       />
 
-      <PreviewRecommend open={open} onClose={handleClose} products={selectedProducts} />
+      <PreviewProdRecommend
+        open={open}
+        onClose={handleClose}
+        products={selectedProducts}
+      />
 
       <Box className="mt-2 flex justify-end gap-2">
         <Button

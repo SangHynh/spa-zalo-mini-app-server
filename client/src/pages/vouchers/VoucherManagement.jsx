@@ -29,7 +29,7 @@ const VoucherManagement = () => {
   const [openModal, setOpenModal] = useState(false);
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("voucher-mgmt")}</Typography>
       <div className="flex justify-between items-center space-x-3">
         <div className="flex-1 w-64 relative">
@@ -43,7 +43,7 @@ const VoucherManagement = () => {
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
         <Button
-          variant="text"
+          variant="outlined"
           color="success"
           onClick={handleOpenModal}
           className="flex-none gap-2"

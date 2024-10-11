@@ -92,16 +92,16 @@ export default function SignIn() {
           icon: "error",
           title: response.data.error.message,
           showCancelButton: true,
-          cancelButtonText: "Cancel",
+          cancelButtonText: `${t("cancel")}`,
         });
       }
     } catch (err) {
       console.log(err.message);
       Swal.fire({
-        icon: "success",
+        icon: "error",
         title: err.message,
         showCancelButton: true,
-        cancelButtonText: "Cancel",
+        cancelButtonText: `${t("cancel")}`,
       });
     }
   };
