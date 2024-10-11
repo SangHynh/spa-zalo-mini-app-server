@@ -220,7 +220,7 @@ const Images = () => {
   };
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("image-config")}</Typography>
       <form onSubmit={handleSubmit}>
         <Button

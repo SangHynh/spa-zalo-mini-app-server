@@ -22,6 +22,7 @@ import { apiDeleteService, apiGetServices } from "../../apis/services";
 import path from "../../utils/path";
 import { useLoading } from "../../context/LoadingProvider";
 import Swal from "sweetalert2";
+import WidgetsIcon from "@mui/icons-material/Widgets";
 
 function Row(props) {
   const { showLoading, hideLoading } = useLoading();
@@ -183,6 +184,11 @@ function Row(props) {
               <Tooltip title={t("delete")}>
                 <IconButton onClick={() => handleDelete(row._id)}>
                   <DeleteIcon className="text-red-500" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t("config")}>
+                <IconButton href={`${path.SVC_RECOMMEND_SYSTEM}/${row._id}`}>
+                  <WidgetsIcon className="text-green-500" />
                 </IconButton>
               </Tooltip>
             </div>

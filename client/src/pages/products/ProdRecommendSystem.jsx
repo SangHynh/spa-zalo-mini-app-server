@@ -36,6 +36,7 @@ const ProdRecommendSystem = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { showLoading, hideLoading } = useLoading();
+  const [initialSelectedIds, setInitialSelectedIds] = useState(new Set());
 
   // Pagination states for table A
   const [currentPageA, setCurrentPageA] = useState(1);
@@ -68,6 +69,7 @@ const ProdRecommendSystem = () => {
             recommendationsResponse.data.suggestions.map(
               (product) => product.itemId
             );
+          setInitialSelectedIds(new Set(recommendedProductIds));
           const transformedRowsB = recommendationsResponse.data.suggestions.map(
             (product) => ({
               id: product.itemId,
@@ -96,15 +98,14 @@ const ProdRecommendSystem = () => {
           searchTerm
         );
         if (productsResponse.status === 200) {
-          // const productsFromB = new Set(rowsB.map((prod) => prod.id)); // Các sản phẩm đã có ở bảng B
-          const transformedRowsA = productsResponse.data.products
-            // .filter((product) => !productsFromB.has(product._id) && product._id !== id) // Loại bỏ các sản phẩm đã có trong bảng B
-            .map((product) => ({
+          const transformedRowsA = productsResponse.data.products.map(
+            (product) => ({
               id: product._id,
               name: product.name,
               category: product.category,
               subCategory: product.subCategory,
-            }));
+            })
+          );
           setRowsA(transformedRowsA); // Cập nhật dữ liệu bảng A
 
           // Nếu server cung cấp tổng số lượng sản phẩm, cập nhật rowCount
@@ -148,6 +149,17 @@ const ProdRecommendSystem = () => {
       const currentlySelectedProductIds = Array.from(selectedIds).map((id) => ({
         productId: id,
       }));
+
+      // Kiểm tra có thay đổi không
+      const hasChanges =
+        initialSelectedIds.size !== selectedIds.size ||
+        !Array.from(initialSelectedIds).every((id) => selectedIds.has(id));
+
+      if (!hasChanges) {
+        toast.info(`${t("no-change")}`);
+        return;
+      }
+
       const response = await apiConfigProductRecommendations(id, {
         mainProductId: id,
         suggestions: currentlySelectedProductIds,
@@ -195,7 +207,7 @@ const ProdRecommendSystem = () => {
   };
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5" gutterBottom>
         {t("prod-recommend-system")}
       </Typography>

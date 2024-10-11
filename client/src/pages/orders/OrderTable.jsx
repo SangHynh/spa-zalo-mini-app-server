@@ -118,9 +118,9 @@ function Row(props) {
               textOverflow: "ellipsis",
             }}
             className="relative cursor-pointer"
-            onClick={() => handleCopy(row._id)}
+            onClick={() => handleCopy(row?._id)}
           >
-            {row._id}
+            {row?._id}
           </TableCell>
           <TableCell
             component="th"
@@ -133,9 +133,9 @@ function Row(props) {
               textOverflow: "ellipsis",
             }}
             className="relative cursor-pointer"
-            onClick={() => handleCopy(row.customerId._id)}
+            onClick={() => handleCopy(row.customerId?._id)}
           >
-            {row.customerId._id}
+            {row.customerId?._id}
           </TableCell>
           <TableCell
             align="left"
@@ -146,7 +146,7 @@ function Row(props) {
             }}
             className="relative"
           >
-            {row.customerId.name}
+            {row.customerId?.name}
           </TableCell>
           <TableCell
             align="left"
@@ -157,7 +157,7 @@ function Row(props) {
             }}
             className="relative"
           >
-            {row.customerId.phone}
+            {row.customerId?.phone}
           </TableCell>
           <TableCell
             align="right"

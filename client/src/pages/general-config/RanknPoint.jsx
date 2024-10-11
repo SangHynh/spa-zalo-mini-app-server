@@ -208,7 +208,7 @@ const RanknPoint = () => {
   }, []);
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("rank-point")}</Typography>
       <Button
         variant="contained"

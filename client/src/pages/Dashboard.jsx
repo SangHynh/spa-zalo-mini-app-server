@@ -1,10 +1,10 @@
 import { Box, Card, CardContent, Grid2, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import OverviewCard from "./dashboards/overviews/OverviewCard";
-import { LineChart } from '@mui/x-charts/LineChart';
+import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts";
 
 const Dashboard = () => {
@@ -17,7 +17,7 @@ const Dashboard = () => {
       change: "+12%",
       description: "Since last month",
       changeColor: "green",
-      icon: <ArrowUpwardIcon style={{ color: 'green' }} />
+      icon: <ArrowUpwardIcon style={{ color: "green" }} />,
     },
     {
       title: "TOTAL CUSTOMERS",
@@ -25,13 +25,13 @@ const Dashboard = () => {
       change: "-16%",
       description: "Since last month",
       changeColor: "red",
-      icon: <ArrowDownwardIcon style={{ color: 'red' }} />
+      icon: <ArrowDownwardIcon style={{ color: "red" }} />,
     },
     {
       title: "TASK PROGRESS",
       value: "75.5%",
       description: "",
-      progress: true
+      progress: true,
     },
     {
       title: "TOTAL PROFIT",
@@ -57,22 +57,22 @@ const Dashboard = () => {
   ];
 
   const months = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
   ];
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       {/* <Typography variant="h5" gutterBottom>
         {t("overview")}
       </Typography> */}
@@ -91,11 +91,10 @@ const Dashboard = () => {
           </Typography>
 
           <LineChart
-            xAxis={[{ data: months, scaleType: 'point' }]}
+            xAxis={[{ data: months, scaleType: "point" }]}
             series={[{ data: revenueData }]}
             height={400}
           />
-
         </Grid2>
 
         <Grid2 size={4}>
@@ -106,15 +105,14 @@ const Dashboard = () => {
             series={[
               {
                 data: [
-                  { id: 0, value: 10, label: 'series A' },
-                  { id: 1, value: 15, label: 'series B' },
-                  { id: 2, value: 20, label: 'series C' },
+                  { id: 0, value: 10, label: "series A" },
+                  { id: 1, value: 15, label: "series B" },
+                  { id: 2, value: 20, label: "series C" },
                 ],
               },
             ]}
             height={200}
           />
-
         </Grid2>
       </Grid2>
     </Box>

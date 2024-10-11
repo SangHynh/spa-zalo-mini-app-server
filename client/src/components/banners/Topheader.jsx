@@ -13,7 +13,7 @@ const options = [
   { value: "en", label: "English", flag: "/united-states.png" },
 ];
 
-const Topheader = ({ height }) => {
+const Topheader = () => {
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,14 +62,11 @@ const Topheader = ({ height }) => {
   const handleLogout = () => {
     logout();
 
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
-    <div
-      className="flex justify-end items-center fixed z-50 w-full top-0 dark:border-none dark:bg-[#121212] border-b pr-10 gap-4 py-2"
-      style={{ height: `${height}px` }}
-    >
+    <div className="flex justify-end items-center fixed z-50 w-full top-0 left-0 border-none dark:bg-[#1E1E1E] border-b pr-10 gap-4 py-2">
       <button
         onClick={toggleDarkMode}
         className={

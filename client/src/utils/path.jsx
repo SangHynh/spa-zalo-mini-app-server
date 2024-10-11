@@ -4,7 +4,7 @@ const path = {
   ADMIN_LAYOUT: "admin",
   DASHBOARD: "dashboard",
 
-  // Management
+  // MAGEMENT
   PRODUCT_MANAGEMENT: "product-management",
   SERVICE_MANAGEMENT: "service-management",
   CUSTOMER_MANAGEMENT: "customer-management",
@@ -13,14 +13,17 @@ const path = {
   CATEGORY_MANAGEMENT: "category-management",
   VOUCHER_MANAGEMENT: "voucher-management",
 
-  // General-config
+  // GENERAL-CONFIG
   AFFILIATE_MARKETING: "affiliate-marketing",
   COMMISSION: "commission",
   RANK_POINT: "rank-point",
   IMAGES: "images",
 
-  // Sub
+  // RECOMMENDED
   PROD_RECOMMEND_SYSTEM: "prod-recommend-system",
+  SVC_RECOMMEND_SYSTEM: "svc-recommend-system",
+
+  // SUB
   CREATE_PRODUCT: "create-product",
   CREATE_SERVICE: "create-service",
   CREATE_CUSTOMER: "create-customer",

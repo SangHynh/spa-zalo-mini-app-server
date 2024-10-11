@@ -26,6 +26,7 @@ import EditCategory from "../pages/categories/EditCategory";
 import ProdRecommendSystem from "../pages/products/ProdRecommendSystem";
 import CreateVoucher from "../pages/vouchers/CreateVoucher";
 import EditVoucher from "../pages/vouchers/EditVoucher";
+import SvcRecommendSystem from "../pages/services/SvcRecommendSystem";
 
 const routes = [
   {
@@ -91,6 +92,10 @@ const routes = [
           {
             path: path.PROD_RECOMMEND_SYSTEM + "/:id",
             element: <ProdRecommendSystem />,
+          },
+          {
+            path: path.SVC_RECOMMEND_SYSTEM + "/:id",
+            element: <SvcRecommendSystem />,
           },
           {
             path: path.CREATE_PRODUCT,

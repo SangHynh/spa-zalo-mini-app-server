@@ -17,7 +17,7 @@ const BookingManagement = () => {
   };
 
   return (
-    <Box className="p-8 w-full flex flex-col gap-6">
+    <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("booking-mgmt")}</Typography>
       <div className="flex justify-between items-center">
         <div className="relative w-64">

@@ -17,7 +17,6 @@ import { useTheme } from "@emotion/react";
 import Swal from "sweetalert2";
 import PrivateRoute from "../context/PrivateRoute";
 
-const TOP_HEADER_HEIGHT = 64;
 const drawerWidth = 240;
 
 const AdminLayout = () => {
@@ -52,17 +51,7 @@ const AdminLayout = () => {
 
   return (
     <PrivateRoute>
-      <Topheader height={TOP_HEADER_HEIGHT} />
-      <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        onClick={toggleDrawer}
-        edge="start"
-        sx={{ position: "absolute", top: 13, left: 16, zIndex: 1300 }}
-      >
-        <MenuIcon />
-      </IconButton>
-      <main className="w-full grid grid-cols-12 h-screen overflow-auto">
+      <main className="w-full flex h-screen overflow-auto">
         <Drawer
           variant="persistent"
           open={isDrawerOpen}
@@ -73,13 +62,14 @@ const AdminLayout = () => {
               width: drawerWidth,
               boxSizing: "border-box",
               transition: "width 0.3s ease",
-              marginTop: `${TOP_HEADER_HEIGHT}px`,
               border: theme.palette.mode === "dark" ? "none" : "",
               overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc
-              maxHeight: `calc(100vh - ${TOP_HEADER_HEIGHT}px)`, // Giới hạn chiều cao
             },
           }}
         >
+          <div className="h-fit w-full flex items-center justify-center">
+            <img src="/logo.png" alt="logo" className="w-40 h-20 mt-4" />
+          </div>
           <List>
             {sidebar.map((item) => (
               <Fragment key={item.id}>
@@ -165,20 +155,29 @@ const AdminLayout = () => {
             ))}
           </List>
         </Drawer>
-        <div
-          className="col-span-12 flex flex-col"
-          style={{
-            marginLeft: isDrawerOpen ? drawerWidth : 0,
-            transition: "margin-left 0.3s ease",
-            height: `calc(100vh - ${TOP_HEADER_HEIGHT}px)`,
-            alignItems: "flex-start",
-            marginTop: `${TOP_HEADER_HEIGHT}px`,
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          onClick={toggleDrawer}
+          edge="start"
+          sx={{
+            position: "absolute",
+            top: 13,
+            left: isDrawerOpen ? drawerWidth + 20 : 20, // Di chuyển sang phải nếu Drawer mở
+            zIndex: 1300,
+            transition: "left 0.3s ease", // Thêm hiệu ứng chuyển động cho sự mượt mà
           }}
         >
-          <div
-            className="fixed z-40 top-0 right-0 left-0 bg-white"
-            style={{ height: `${TOP_HEADER_HEIGHT}px` }}
-          ></div>
+          <MenuIcon />
+        </IconButton>
+        <Topheader />
+        <div
+          className="mt-[68px] p-8"
+          style={{
+            transition: "margin-left 0.3s ease",
+            width: `calc(100% - ${isDrawerOpen ? drawerWidth : 0}px)`,
+          }}
+        >
           <Outlet />
         </div>
       </main>
