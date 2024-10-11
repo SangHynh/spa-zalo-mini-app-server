@@ -470,7 +470,7 @@ const CustomerTable = ({ searchTerm }) => {
       );
       if (response.status === 200) {
         setCustomers(response.data.users);
-        setTotalProducts(response.data.totalUsers);
+        setTotalCustomers(response.data.totalUsers);
         setTotalPages(response.data.totalPages);
       } 
     };
@@ -588,7 +588,7 @@ const CustomerTable = ({ searchTerm }) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={10} align="center">
-                  No products found
+                  No customers found
                 </TableCell>
               </TableRow>
             )}
