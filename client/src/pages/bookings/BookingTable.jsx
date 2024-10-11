@@ -147,7 +147,7 @@ function Row(props) {
             }}
             className="relative"
           >
-            {row.customer.name}
+            {row.customer?.name}
           </TableCell>
           <TableCell
             align="left"
@@ -158,7 +158,7 @@ function Row(props) {
             }}
             className="relative"
           >
-            {row.customer.phone}
+            {row.customer?.phone}
           </TableCell>
           <TableCell
             align="right"

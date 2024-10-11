@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Admin = require("../models/admin.model");
+const mongoose = require('mongoose');
 
 // Controller để tạo người dùng mới
 const createUser = async (req, res) => {
@@ -37,8 +38,42 @@ const createUser = async (req, res) => {
 // Controller để lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const { keyword, sortBy, sortOrder } = req.query;
+
+    // Tạo điều kiện tìm kiếm
+    const query = {};
+
+    if (keyword) {
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword); 
+
+      query.$or = [
+        { name: { $regex: keyword, $options: 'i' } },
+        { phone: { $regex: keyword, $options: 'i' } }
+      ];
+
+      if (isObjectId) {
+        query.$or.push({ _id: new mongoose.Types.ObjectId(keyword) });
+      }
+    }
+
+    const users = await User.find(query)
+      .skip(skip)
+      .limit(limit)
+      // .sort(sortCriteria)
+
+    const totalUsers = await User.countDocuments(query);
+
+    return res.status(200).json({
+      totalUsers,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      users
+    });
   } catch (error) {
     console.error("Error fetching users:", error.message);
     res.status(500).json({ message: error.message });
@@ -224,7 +259,7 @@ const getUserInfo = async (req, res) => {
     // Trả về thông tin người dùng cùng với zaloId
     const userInfo = {
       _id: user._id,
-      accountId: user.accountId,
+      // accountId: user.accountId,
       name: user.name,
       urlImage: user.urlImage,
       phone: user.phone,

@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // CUSTOMERS
-export const apiGetCustomers = () =>
+export const apiGetCustomers = (page, limit, keyword) =>
   axios({
-    url: "/api/users/",
+    url: `/api/users?page=${page}&limit=${limit}&keyword=${keyword}`,
     method: "GET",
   });
 
