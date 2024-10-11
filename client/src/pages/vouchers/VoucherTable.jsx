@@ -39,14 +39,14 @@ function Row(props) {
   //   row._id.toLowerCase().includes(lowerCaseSearchTerm);
 
   const handleOpen = () => {
-    setOpen(true);
+    setOpenCol(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenCol(false);
   };
 
-  const [open, setOpen] = useState(false);
+  const [openCol, setOpenCol] = useState(false);
 
   const { t } = useTranslation();
 
@@ -94,15 +94,15 @@ function Row(props) {
               theme.palette.mode === "dark" ? "#2F2F2F" : "#FFFFFF",
           }}
         >
-          <TableCell className="relative">
+          {/* <TableCell className="relative">
             <IconButton
               aria-label="expand row"
               size="small"
-              onClick={() => setOpen(!open)}
+              onClick={() => setOpenCol(!openCol)}
             >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {openCol ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
-          </TableCell>
+          </TableCell> */}
           <TableCell
             align="right"
             component="th"
@@ -246,17 +246,16 @@ function Row(props) {
                   <DeleteIcon className="text-red-500" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title={t("give-voucher")}>
+              {/* <Tooltip title={t("give-voucher")}>
                 <IconButton onClick={handleOpen}>
                   <ForwardToInboxIcon color="success" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </div>
           </TableCell>
         </TableRow>
       </React.Fragment>
       {/* )} */}
-      <GiveVoucher open={open} onClose={handleClose} />
     </>
   );
 }
@@ -321,7 +320,7 @@ const VoucherTable = ({ searchTerm }) => {
         <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
-              <TableCell className="relative" sx={{ maxWidth: "100px" }} />
+              {/* <TableCell className="relative" sx={{ maxWidth: "100px" }} /> */}
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold" }}

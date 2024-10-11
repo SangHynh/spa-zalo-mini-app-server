@@ -394,6 +394,46 @@ function Row(props) {
               </Collapse>
             </TableCell>
           </TableRow>
+          <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ margin: 1 }}>
+                  <Typography variant="h6" gutterBottom component="div">
+                    {t("voucher")}
+                  </Typography>
+                  <Table
+                    size="small"
+                    aria-label="related-products"
+                    sx={{ tableLayout: "fixed", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">{t("voucher-id")}</TableCell>
+                        <TableCell align="center">{t("code")}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.vouchers &&
+                        row.vouchers.map((voucher) => (
+                          <TableRow key={voucher._id}>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {voucher.voucherId}
+                            </TableCell>
+                            <TableCell align="center">
+                              {voucher.code}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
         </React.Fragment>
       )}
     </>
@@ -403,29 +443,40 @@ function Row(props) {
 const CustomerTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
+  const [customers, setCustomers] = useState([]);
+  const [totalCustomers, setTotalCustomers] = useState(0);
 
+  // Handle page change
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setCurrentPage(newPage + 1);
   };
 
+  // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setCurrentPage(1); // Reset to the first page
   };
-
-  const [customers, setCustomers] = useState([]);
 
   // GET CUSTOMERS
   useEffect(() => {
     const fetchCustomers = async () => {
-      const response = await apiGetCustomers();
-      if (response.status === 200) setCustomers(response.data);
+      const response = await apiGetCustomers(
+        currentPage,
+        rowsPerPage,
+        searchTerm
+      );
+      if (response.status === 200) {
+        setCustomers(response.data.users);
+        setTotalProducts(response.data.totalUsers);
+        setTotalPages(response.data.totalPages);
+      } 
     };
 
     fetchCustomers();
-  }, []);
+  }, [currentPage, rowsPerPage, searchTerm]);
 
   return (
     <>
@@ -525,20 +576,31 @@ const CustomerTable = ({ searchTerm }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <Row key={row._id} row={row} searchTerm={searchTerm} />
-              ))}
+          {Array.isArray(customers) && customers.length > 0 ? (
+              customers.map((row) => (
+                <Row
+                  key={row._id}
+                  row={row}
+                  searchTerm={searchTerm}
+                  className="bg-[343541]"
+                />
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} align="center">
+                  No products found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={customers.length}
+        count={totalCustomers}
         rowsPerPage={rowsPerPage}
-        page={page}
+        page={currentPage - 1}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage={t("rows-per-page")}

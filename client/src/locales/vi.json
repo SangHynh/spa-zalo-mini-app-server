@@ -153,5 +153,9 @@
   "leave": "Rời khỏi",
   "stay": "Ở lại",
   "size-error": "Lỗi kích thước",
-  "title-size-err": "Các ảnh sau có kích thước không hợp lệ (>= 1000x500):"
+  "title-size-err": "Các ảnh sau có kích thước không hợp lệ (>= 1000x500):",
+  "select-vouchers": "Chọn voucher",
+  "missing-users-vouchers": "Vui lòng chọn khách hàng và voucher",
+  "warning": "Cảnh báo",
+  "give-away-vouchers": "Tặng Voucher"
 }

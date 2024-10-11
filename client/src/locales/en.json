@@ -153,5 +153,9 @@
   "leave": "Leave",
   "stay": "Stay",
   "size-error": "Size Error",
-  "title-size-err": "The following images have invalid dimensions (>= 1000x500):"
+  "title-size-err": "The following images have invalid dimensions (>= 1000x500):",
+  "select-vouchers": "Select vouchers",
+  "missing-users-vouchers": "Please select users and vouchers",
+  "warning": "Warning",
+  "give-away-vouchers": "Give Away Voucher"
 }

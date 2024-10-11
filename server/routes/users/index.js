@@ -6,7 +6,10 @@ const {validateUpdateUserInfo} = require('../../validations/user.validation');
 const { verifyAccessToken } = require('../../configs/jwt.config')
 
 router.post('/',verifyAccessToken, userController.createUser); 
+
+// GET: /api/users?page=...&limit=...&keyword=...
 router.get('/',verifyAccessToken, userController.getAllUsers);   
+
 router.get('/:id',verifyAccessToken, userController.getUserById);  
 router.put('/:id',verifyAccessToken, userController.updateUser);   
 router.delete('/:id',verifyAccessToken, userController.deleteUser); 

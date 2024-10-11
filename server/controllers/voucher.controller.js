@@ -1,3 +1,4 @@
+const User = require("../models/user.model");
 const Voucher = require("../models/voucher.model")
 const moment = require('moment');
 
@@ -150,9 +151,10 @@ class VoucherController {
         try {
             const { vouchers, users } = req.body;
 
+            console.log(req.body)
+
             // Vouchers validation
-            const voucherIds = vouchers.map(voucher => voucher.voucherId);
-            const validVouchers = await Voucher.find({ _id: { $in: voucherIds } });
+            const validVouchers = await Voucher.find({ _id: { $in: vouchers } });
 
             if (validVouchers.length !== vouchers.length) {
                 return res.status(400).json({
@@ -161,8 +163,7 @@ class VoucherController {
             }
 
             // Users Validation
-            const userIds = users.map(user => user.userId);
-            const validUsers = await User.find({ _id: { $in: userIds } });
+            const validUsers = await User.find({ _id: { $in: users } });
 
             if (validUsers.length !== users.length) {
                 return res.status(400).json({
@@ -186,13 +187,22 @@ class VoucherController {
             }
 
             await Promise.all(users.map(async (user) => {
-                const userRecord = await User.findById(user.userId);
-                vouchers.forEach(voucher => {
-                    userRecord.vouchers.push({
-                        code: voucher.code,
-                        voucherId: voucher.voucherId
-                    });
+                const userRecord = await User.findById(user);
+
+                vouchers.forEach(voucherId => {
+                    const existingVoucher = userRecord.vouchers.find(voucher => voucher.voucherId.toString() === voucherId);
+    
+                    if (!existingVoucher) {
+                        const validVoucher = validVouchers.find(voucher => voucher._id.toString() === voucherId);
+                        userRecord.vouchers.push({
+                            code: validVoucher.code,
+                            voucherId: validVoucher._id
+                        });
+                    } else {
+                        console.log(`User already has voucher: ${existingVoucher.code}`);
+                    }
                 });
+
                 await userRecord.save();
             }));
 

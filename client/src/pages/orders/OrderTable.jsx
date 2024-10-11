@@ -600,7 +600,7 @@ const OrderTable = ({ searchTerm }) => {
             {Array.isArray(orders) && orders.length > 0 ? (
               orders.map((row) => (
                 <Row
-                  key={row._id}
+                  key={row?._id}
                   row={row}
                   searchTerm={searchTerm}
                   className="bg-[343541]"
