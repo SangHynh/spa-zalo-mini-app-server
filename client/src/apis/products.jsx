@@ -8,6 +8,15 @@ export const apiGetProducts = (page, limit, keyword) =>
   }
 )
 
+// POST IDS TO GET PRODUCTS
+export const apiGetProductsByIDs = (body) =>
+  axios({
+    url: "/api/products/byIDs",
+    method: "POST",
+    data: body
+  }
+)
+
 // GET PRODUCT
 export const apiGetProduct = (id) => axios(
   {

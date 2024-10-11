@@ -68,6 +68,23 @@ class ServiceController {
         }
     }
 
+    // GET SERVICES BY IDS
+    async getServicesByIDs(req, res) {
+        try {
+            const { serviceIds } = req.body;
+
+            const services = await Service.find({ _id: { $in: serviceIds } })
+                .select('_id name category subCategory');
+
+            return res.status(200).json({ services })
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message,
+                message: 'An error occurred'
+            })
+        }
+    }
+
     // GET SERVICE BY ID
     async getServiceById(req, res) {
         try {

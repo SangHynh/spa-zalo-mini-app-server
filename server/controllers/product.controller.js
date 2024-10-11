@@ -93,6 +93,20 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+// GET PRODUCTS BY PRODUCT'S IDS
+exports.getProductsByIDs = async (req, res) => {
+  try {
+    const { productIds } = req.body;
+
+    const products = await Product.find({ _id: { $in: productIds } })
+      .select('_id name category subCategory');
+
+    return res.status(200).json({ products });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 // GET BY ID
 exports.getProductById = async (req, res, next) => {
   try {

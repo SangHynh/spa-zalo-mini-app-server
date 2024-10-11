@@ -21,6 +21,9 @@ router.post('/', (req, res, next) => {
     serviceController.createService
 );
 
+// POST: Get products by array of ID
+router.post('/byIDs', verifyAccessToken, serviceController.getServicesByIDs);
+
 // PUT
 router.put('/:id', (req, res, next) => {
     req.folder = process.env.SERVICE_FOLDER; // Folder name in cloud

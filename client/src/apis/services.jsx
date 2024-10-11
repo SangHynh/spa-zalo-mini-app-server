@@ -7,6 +7,14 @@ export const apiGetServices = (page, limit, keyword) =>
     method: "GET",
   });
 
+// POST IDS TO GET SERVICES
+export const apiGetServicesByIDs = (body) =>
+  axios({
+    url: "/api/services/byIDs",
+    method: "POST",
+    data: body
+  });
+
 // CREATE SERVICE
 export const apiCreateServices = (formData) =>
   axios({

@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiGetProduct, apiGetProducts } from "../../apis/products";
+import { apiGetProduct, apiGetProducts, apiGetProductsByIDs } from "../../apis/products";
 import {
   Box,
   Button,
   Checkbox,
-  FormControlLabel,
-  Grid2,
   Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { FaSearch } from "react-icons/fa";
-import PreviewRecommend from "../recommends/PreviewRecommend";
 import { toast } from "react-toastify";
 import {
   apiConfigProductRecommendations,
@@ -23,26 +26,25 @@ import {
 import path from "../../utils/path";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingProvider";
+import PreviewRecommend from "../recommends/PreviewRecommend";
 
 const ProdRecommendSystem = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [productName, setProductName] = useState("");
-  const [rowsA, setRowsA] = useState([]); // Bảng A
-  const [rowsB, setRowsB] = useState([]); // Bảng B
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIds, setSelectedIds] = useState(new Set()); // Sản phẩm đã chọn
-  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
   const { showLoading, hideLoading } = useLoading();
   const [initialSelectedIds, setInitialSelectedIds] = useState(new Set());
 
-  // Pagination states for table A
-  const [currentPageA, setCurrentPageA] = useState(1);
-  const [rowsPerPageA, setRowsPerPageA] = useState(5);
-  const [totalPagesA, setTotalPagesA] = useState(0);
-  const [totalRowCount, setTotalRowCount] = useState(50);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
+  const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // GET PRODUCT
   useEffect(() => {
@@ -69,16 +71,8 @@ const ProdRecommendSystem = () => {
             recommendationsResponse.data.suggestions.map(
               (product) => product.itemId
             );
-          setInitialSelectedIds(new Set(recommendedProductIds));
-          const transformedRowsB = recommendationsResponse.data.suggestions.map(
-            (product) => ({
-              id: product.itemId,
-              name: product.itemName,
-              isRecommended: true,
-            })
-          );
-          setRowsB(transformedRowsB);
-          setSelectedIds(new Set(recommendedProductIds)); // Lưu các sản phẩm gợi ý
+          setSelectedIds(recommendedProductIds);
+          setInitialSelectedIds(recommendedProductIds)
         }
       } catch (error) {
         console.error("Error fetching recommendations:", error);
@@ -93,23 +87,16 @@ const ProdRecommendSystem = () => {
       // showLoading();
       try {
         const productsResponse = await apiGetProducts(
-          currentPageA,
-          rowsPerPageA,
+          currentPage,
+          rowsPerPage,
           searchTerm
         );
         if (productsResponse.status === 200) {
-          const transformedRowsA = productsResponse.data.products.map(
-            (product) => ({
-              id: product._id,
-              name: product.name,
-              category: product.category,
-              subCategory: product.subCategory,
-            })
-          );
-          setRowsA(transformedRowsA); // Cập nhật dữ liệu bảng A
+          setProducts(productsResponse.data.products); // Cập nhật dữ liệu bảng A
 
           // Nếu server cung cấp tổng số lượng sản phẩm, cập nhật rowCount
-          setTotalRowCount(productsResponse.data.totalProducts || -1);
+          setTotalProducts(productsResponse.data.totalProducts);
+          setTotalPages(productsResponse.data.totalPages);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -119,41 +106,83 @@ const ProdRecommendSystem = () => {
     };
 
     fetchProducts();
-  }, [currentPageA, rowsPerPageA, searchTerm, rowsB]);
+  }, [currentPage, rowsPerPage, searchTerm]);
 
-  const handleSelectionChange = (newSelection) => {
-    const newSelectedIds = new Set(selectedIds);
-    newSelection.forEach((id) => newSelectedIds.add(id));
-    if (newSelectedIds.size > 12) {
-      toast.error("Đã vượt quá số lượng gợi ý");
-      return;
+  // Handle page change
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage + 1);
+  };
+
+  // Handle user rows per page change
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setCurrentPage(1); // Reset to the first page
+  };
+
+  // Handle search for users
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to the first page on search
+  };
+
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = async () => {
+    console.log(selectedIds)
+    showLoading()
+    const response = await apiGetProductsByIDs({ productIds: selectedIds})
+    if (response.status === 200) {
+      setSelectedProducts(response.data.products);
+      setOpen(true);
+    } else {
+      toast.error("Chưa có sản phẩm gợi ý được chọn!");
     }
-    setSelectedIds(newSelectedIds);
-  };
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
+    hideLoading()
   };
 
   const handleClose = () => {
     setOpen(false);
+  }
+
+  // Handle individual user selection
+  const handleClickProduct = (event, id) => {
+    const selectedIndex = selectedIds.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedIds, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedIds.slice(1));
+    } else if (selectedIndex === selectedIds.length - 1) {
+      newSelected = newSelected.concat(selectedIds.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedIds.slice(0, selectedIndex),
+        selectedIds.slice(selectedIndex + 1)
+      );
+    }
+
+    if (newSelected.length > 12) {
+      toast.error("Đã vượt quá số lượng gợi ý");
+    } else {
+      setSelectedIds(newSelected);
+    }
   };
+
+  const isSelected = (id) => selectedIds.indexOf(id) !== -1;
 
   const handleUpdate = async () => {
     showLoading();
     try {
-      const currentlySelectedProductIds = Array.from(selectedIds).map((id) => ({
+      const currentlySelectedProductIds = selectedIds.map((id) => ({
         productId: id,
       }));
 
       // Kiểm tra có thay đổi không
       const hasChanges =
-        initialSelectedIds.size !== selectedIds.size ||
-        !Array.from(initialSelectedIds).every((id) => selectedIds.has(id));
+        initialSelectedIds.length !== selectedIds.length ||
+        !initialSelectedIds.every((id) => selectedIds.includes(id));
 
       if (!hasChanges) {
         toast.info(`${t("no-change")}`);
@@ -197,15 +226,6 @@ const ProdRecommendSystem = () => {
     window.location.reload(); // Làm mới toàn bộ trang
   };
 
-  const handleRemoveProduct = (id) => {
-    // Xóa sản phẩm khỏi bảng B
-    const updatedRowsB = rowsB.filter((product) => product.id !== id);
-    setRowsB(updatedRowsB);
-    const updatedSelectedIds = new Set(selectedIds);
-    updatedSelectedIds.delete(id); // Xóa ID khỏi danh sách đã chọn
-    setSelectedIds(updatedSelectedIds);
-  };
-
   return (
     <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5" gutterBottom>
@@ -238,95 +258,78 @@ const ProdRecommendSystem = () => {
             type="text"
             placeholder={t("search...")}
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={handleSearchChange}
             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
         </div>
         <Box>
           <span>{t("number-of-suggested-products")} : </span>
-          <span>{selectedIds.size}</span>
+          <span>{selectedIds.length}</span>
           <span>/12</span>
         </Box>
       </div>
-      <Paper sx={{ width: "100%" }}>
-        {/* Table A - Products */}
-        <Grid2 container fullWidth spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={6}>
-            <DataGrid
-              rows={rowsA} // Dữ liệu từ server
-              columns={[
-                { field: "id", headerName: "ID", flex: 1 },
-                { field: "name", headerName: t("product-name"), flex: 1 },
-                { field: "category", headerName: t("category"), flex: 1 },
-                {
-                  field: "subCategory",
-                  headerName: t("sub-category"),
-                  flex: 1,
-                },
-              ]}
-              initialState={{
-                pagination: { paginationModel: { pageSize: 5 } },
-              }}
-              pageSize={rowsPerPageA} // Số dòng hiển thị mỗi trang
-              pageSizeOptions={[5, 10, 25]}
-              pagination
-              paginationMode="server" // Phân trang từ phía server
-              rowCount={totalRowCount} // Tổng số lượng dòng (nếu biết trước)
-              onPaginationModelChange={({ page, pageSize }) => {
-                setCurrentPageA(page + 1); // Cập nhật trang hiện tại
-                setRowsPerPageA(pageSize); // Cập nhật số dòng mỗi trang
-              }}
-              checkboxSelection
-              rowSelectionModel={[...selectedIds]} // Các sản phẩm được chọn
-              onRowSelectionModelChange={handleSelectionChange}
-              disableSelectionOnClick
-              isRowSelectable={(params) => {
-                const productsFromB = new Set(rowsB.map((prod) => prod.id));
-                const productId = params.row.id;
-                // Disable selection for products that are in rowsB or match the current product ID
-                return !(productsFromB.has(productId) || productId === id);
-              }}
-            />
-          </Grid2>
-          <Grid2 size={6}>
-            <DataGrid
-              rows={rowsB}
-              pagination
-              pageSizeOptions={[5, 10, 25]}
-              autoPageSize
-              columns={[
-                { field: "id", headerName: "ID", flex: 1 },
-                { field: "name", headerName: t("product-name"), flex: 1 },
-                {
-                  field: "action",
-                  headerName: t("actions"),
-                  flex: 1,
-                  renderCell: (params) => (
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => handleRemoveProduct(params.row.id)} // Gọi hàm xóa khi nhấn nút
-                    >
-                      {t("remove")}
-                    </Button>
-                  ),
-                },
-              ]}
-            />
-          </Grid2>
-        </Grid2>
 
-        {/* Table B - Selected Recommendations */}
-      </Paper>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+              </TableCell>
+              <TableCell>{t("product-id")}</TableCell>
+              <TableCell>{t("name")}</TableCell>
+              <TableCell>{t("category")}</TableCell>
+              <TableCell>{t("sub-category")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products.map((product, index) => {
+              const isItemSelected = isSelected(product._id);
+              const labelId = `enhanced-table-checkbox-${index}`;
 
-      {/* Preview */}
-      <PreviewRecommend
-        open={open}
-        onClose={handleClose}
-        previewRows={rowsB}
-        availableProducts={rowsA.filter((row) => selectedIds.has(row.id))}
+              return (
+                <TableRow
+                  hover
+                  onClick={(event) => handleClickProduct(event, product._id)}
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
+                  key={product._id}
+                  selected={isItemSelected}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={isItemSelected}
+                      inputProps={{
+                        "aria-labelledby": labelId,
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell component="th" id={labelId} scope="row">
+                    {product._id}
+                  </TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>{product.subCategory}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 20]}
+        component="div"
+        count={totalProducts}
+        rowsPerPage={rowsPerPage}
+        page={currentPage - 1}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage={t("rows-per-page")}
       />
+
+      <PreviewRecommend open={open} onClose={handleClose} products={selectedProducts} />
 
       <Box className="mt-2 flex justify-end gap-2">
         <Button
@@ -337,9 +340,9 @@ const ProdRecommendSystem = () => {
         >
           {t("update")}
         </Button>
-        {/* <Button variant="outlined" color="success" onClick={handleOpen}>
+        <Button variant="outlined" color="secondary" onClick={handleOpen}>
           {t("preview")}
-        </Button> */}
+        </Button>
         <Button variant="outlined" color="warning" onClick={handleCancel}>
           {t("cancel")}
         </Button>
