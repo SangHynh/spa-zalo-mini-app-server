@@ -174,7 +174,7 @@ class VoucherController {
             // Expiration, Usage Limit Validation
             const currentDate = new Date();
             for (let voucher of validVouchers) {
-                if (voucher.usageLimit <= voucher.usedBy.length) {
+                if (voucher.usageLimit <= 0) {
                     return res.status(400).json({
                         message: `Voucher ${voucher.code} has reached its usage limit`
                     });
@@ -186,18 +186,26 @@ class VoucherController {
                 }
             }
 
+            const vouchersToUpdate = {};
+
             await Promise.all(users.map(async (user) => {
                 const userRecord = await User.findById(user);
 
                 vouchers.forEach(voucherId => {
                     const existingVoucher = userRecord.vouchers.find(voucher => voucher.voucherId.toString() === voucherId);
-    
+
                     if (!existingVoucher) {
                         const validVoucher = validVouchers.find(voucher => voucher._id.toString() === voucherId);
+
                         userRecord.vouchers.push({
                             code: validVoucher.code,
                             voucherId: validVoucher._id
                         });
+
+                        if (!vouchersToUpdate[voucherId]) {
+                            vouchersToUpdate[voucherId] = validVoucher;
+                            validVoucher.usageLimit -= 1;
+                        }
                     } else {
                         console.log(`User already has voucher: ${existingVoucher.code}`);
                     }
@@ -205,6 +213,8 @@ class VoucherController {
 
                 await userRecord.save();
             }));
+
+            await Promise.all(Object.values(vouchersToUpdate).map(voucher => voucher.save()));
 
             return res.status(200).json({ message: 'Vouchers successfully given away' });
         } catch (error) {

@@ -24,6 +24,7 @@ import { apiGetCustomers } from "../../apis/users";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { apiGetVouchers, apiGiveAwayVouchersToUsers } from "../../apis/voucher";
 import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -134,11 +135,22 @@ const GiveVoucher = ({ open, onClose }) => {
   // Handle selection of vouchers
   const handleSelectAllVouchers = (event) => {
     if (event.target.checked) {
-      const newSelectedVouchers = vouchers.map((voucher) => voucher._id);
+      const now = new Date();
+      const newSelectedVouchers = vouchers
+        .filter((voucher) => {
+          const validFrom = new Date(voucher.validFrom);
+          const validTo = new Date(voucher.validTo);
+          const isExpired = voucher.usageLimit <= 0;
+          const isInvalidPeriod = now < validFrom || now > validTo;
+
+          return !isExpired && !isInvalidPeriod;
+        })
+        .map((voucher) => voucher._id);
+
       setSelectedVoucherIds(newSelectedVouchers);
-      return;
+    } else {
+      setSelectedVoucherIds([]);
     }
-    setSelectedVoucherIds([]);
   };
 
   // Handle individual user selection
@@ -361,6 +373,7 @@ const GiveVoucher = ({ open, onClose }) => {
                     <TableCell>{t("code")}</TableCell>
                     <TableCell>{t("discount-type")}</TableCell>
                     <TableCell>{t("discount-value")}</TableCell>
+                    <TableCell>{t("usage-limit")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -368,11 +381,30 @@ const GiveVoucher = ({ open, onClose }) => {
                     const isItemSelected = isVoucherSelected(voucher._id);
                     const labelId = `enhanced-table-checkbox-${index}`;
 
+                    const now = new Date();
+                    const validFrom = new Date(voucher.validFrom);
+                    const validTo = new Date(voucher.validTo);
+
+                    const isExpired = voucher.usageLimit <= 0;
+                    const isInvalidPeriod = now < validFrom || now > validTo;
+
+                    const handleClickDisabledCheckbox = () => {
+                      if (isExpired) {
+                        toast.warning(t("voucher-expired"));
+                      } else if (isInvalidPeriod) {
+                        toast.warning(t("voucher-invalid-period"));
+                      }
+                    };
                     return (
                       <TableRow
                         hover
-                        onClick={(event) =>
-                          handleClickVoucher(event, voucher._id)
+                        onClick={(event) => {
+                          if (isExpired || isInvalidPeriod) {
+                            handleClickDisabledCheckbox();
+                          } else {
+                            handleClickVoucher(event, voucher._id);
+                          }
+                        }
                         }
                         role="checkbox"
                         aria-checked={isItemSelected}
@@ -393,6 +425,7 @@ const GiveVoucher = ({ open, onClose }) => {
                         </TableCell>
                         <TableCell>{voucher.discountType}</TableCell>
                         <TableCell>{voucher.discountValue}</TableCell>
+                        <TableCell>{voucher.usageLimit}</TableCell>
                       </TableRow>
                     );
                   })}

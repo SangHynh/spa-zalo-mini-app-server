@@ -162,5 +162,7 @@
   "missing-users-vouchers": "Vui lòng chọn khách hàng và voucher",
   "warning": "Cảnh báo",
   "give-away-vouchers": "Tặng Voucher",
-  "give-success": "Tặng thành công"
+  "give-success": "Tặng thành công",
+  "voucher-expired": "Voucher đã hết số lượng",
+  "voucher-invalid-period": "Voucher không khả dụng ở thời điểm hiện tại"
 }

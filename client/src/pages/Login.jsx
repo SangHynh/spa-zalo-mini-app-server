@@ -107,71 +107,57 @@ export default function SignIn() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Paper>
-        <AvatarStyled>
-          <LockOutlinedIcon />
-        </AvatarStyled>
-        <Typography component="h1" variant="h5">
-          {t("signin")}
-        </Typography>
-        <Form noValidate onSubmit={handleSubmit}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label={t("password")}
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {/* <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          /> */}
-          <SubmitButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-          >
+    <main className="w-full flex h-screen overflow-auto">
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Paper>
+          <AvatarStyled>
+            <LockOutlinedIcon />
+          </AvatarStyled>
+          <Typography component="h1" variant="h5">
             {t("signin")}
-          </SubmitButton>
-          {/* <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid> */}
-        </Form>
-      </Paper>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-    </Container>
+          </Typography>
+          <Form noValidate onSubmit={handleSubmit}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label={t("password")}
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <SubmitButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              {t("signin")}
+            </SubmitButton>
+          </Form>
+        </Paper>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
+    </main>
   );
 }

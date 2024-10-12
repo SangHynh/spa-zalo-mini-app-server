@@ -162,5 +162,7 @@
   "missing-users-vouchers": "Please select users and vouchers",
   "warning": "Warning",
   "give-away-vouchers": "Give Away Voucher",
-  "give-success": "Give successfully"
+  "give-success": "Give successfully",
+  "voucher-expired": "The number of voucher expired",
+  "voucher-invalid-period": "Voucher is not valid now"
 }
