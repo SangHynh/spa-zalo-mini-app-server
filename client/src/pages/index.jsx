@@ -10,7 +10,7 @@ export { default as CategoryManagement } from "./categories/CategoryManagement";
 export { default as AffiliateMarketing } from "./general-config/AffiliateMarketing";
 export { default as VoucherManagement } from "./vouchers/VoucherManagement";
 export { default as Commission } from "./general-config/Commission";
-export { default as RanknPoint } from "./general-config/RanknPoint";
+export { default as RanknPoint } from "./general-config/rank-point/RanknPoint";
 export { default as Images } from "./general-config/Images";
 export { default as ProductTable } from "./products/ProductTable";
 export { default as ServiceTable } from "./services/ServiceTable";

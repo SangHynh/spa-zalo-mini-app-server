@@ -232,7 +232,7 @@ const SvcRecommendSystem = () => {
   return (
     <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5" gutterBottom>
-        {t("prod-recommend")}
+        {t("svc-recommend")}
       </Typography>
       <TextField
         id="serviceId"

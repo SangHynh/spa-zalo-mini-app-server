@@ -25,6 +25,7 @@ async function connect() {
     // createTestData()
 
     // await createSampleRanks();
+    // await initializeAndSaveOrderPoints();
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err);
   }
@@ -114,6 +115,56 @@ async function initializeAppConfig() {
     console.error("Error initializing AppConfig:", error);
   }
 }
+
+// async function initializeAndSaveOrderPoints() {
+//   try {
+//     // Khởi tạo AppConfig
+//     let config = await AppConfig.findOne();
+//     if (!config) {
+//       config = await AppConfig.create({
+//         version: "1.0.0",
+//         images: [],
+//         orderPoints: [
+//           { price: 100, minPoints: 500 },
+//           { price: 200, minPoints: 1000 },
+//           { price: 300, minPoints: 1500 },
+//           { price: 400, minPoints: 2500 },
+//         ],
+//       });
+//       console.log("AppConfig initialized:", config);
+//     } else {
+//       console.log("AppConfig already exists:", config);
+//     }
+
+//     // Lưu orderPoints nếu cần
+//     await saveOrderPoints(config.orderPoints);
+//   } catch (error) {
+//     console.error("Error during initialization or saving order points:", error);
+//   }
+// }
+
+// async function saveOrderPoints(orderPoints) {
+//   try {
+//     for (const point of orderPoints) {
+//       const existingPoint = await OrderPoint.findOne({
+//         price: point.price,
+//         minPoints: point.minPoints,
+//       });
+
+//       if (!existingPoint) {
+//         const newOrderPoint = new OrderPoint(point);
+//         await newOrderPoint.save();
+//         console.log(`Order point created:`, newOrderPoint);
+//       } else {
+//         console.log(
+//           `Order point with price ${point.price} and minPoints ${point.minPoints} already exists.`
+//         );
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error saving order points:", error);
+//   }
+// }
 
 async function createSampleRanks() {
   try {

@@ -23,21 +23,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { FaPlus } from "react-icons/fa";
 import {
-  apiCreateRank,
-  apiDeleteRank,
-  apiGetRanks,
-  apiUpdateRank,
-} from "../../apis/rank";
+  apiCreateOrderPoint,
+  apiDeleteOrderPoint,
+  apiGetOrderPoints,
+  apiUpdateOrderPoint,
+} from "../../../apis/config";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 
-const RanknPoint = () => {
+const ForOrder = () => {
   const { t } = useTranslation();
-
   const [isEdit, setIsEdit] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [id, setId] = useState("");
-  const [rank, setRank] = useState("");
+  const [price, setPrice] = useState("");
   const [point, setPoint] = useState("");
   const [benefits, setBenefits] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
@@ -46,9 +45,8 @@ const RanknPoint = () => {
     setIsEdit(true);
     setIsCreate(false);
     setId(row._id);
-    setRank(row.tier);
+    setPrice(row.price);
     setPoint(row.minPoints);
-    setBenefits(row.benefits);
     setOriginalRow(row); // Save original row
   };
 
@@ -56,9 +54,8 @@ const RanknPoint = () => {
     setIsCreate(true);
     setIsEdit(false);
     setId(null);
-    setRank("");
+    setPrice("");
     setPoint(0);
-    setBenefits([]);
     setOriginalRow(null);
   };
 
@@ -70,129 +67,129 @@ const RanknPoint = () => {
     setIsCreate(false);
   };
 
-  const handleUpdate = async () => {
-    try {
-      const formData = {
-        tier: rank,
-        minPoints: point,
-        benefits: benefits,
-      };
+  // const handleUpdate = async () => {
+  //   try {
+  //     const formData = {
+  //       tier: rank,
+  //       minPoints: point,
+  //       benefits: benefits,
+  //     };
 
-      const response = await apiUpdateRank(id, formData);
+  //     const response = await apiUpdateRank(id, formData);
 
-      if (
-        originalRow &&
-        formData.tier === originalRow.tier &&
-        formData.minPoints === originalRow.minPoints &&
-        formData.benefits === originalRow.benefits
-      ) {
-        toast.info(t("no-change"));
-        return;
-      }
+  //     if (
+  //       originalRow &&
+  //       formData.tier === originalRow.tier &&
+  //       formData.minPoints === originalRow.minPoints &&
+  //       formData.benefits === originalRow.benefits
+  //     ) {
+  //       toast.info(t("no-change"));
+  //       return;
+  //     }
 
-      if (response.status === 200) {
-        Swal.fire({
-          title: `${t("success")}!`,
-          text: `${t("update-success")}!`,
-          icon: "success",
-          confirmButtonText: "Ok",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload();
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error updating rank:", error);
-      Swal.fire({
-        title: `${t("error")}!`,
-        icon: "error",
-        confirmButtonText: "Ok",
-      });
-    }
-  };
+  //     if (response.status === 200) {
+  //       Swal.fire({
+  //         title: `${t("success")}!`,
+  //         text: `${t("update-success")}!`,
+  //         icon: "success",
+  //         confirmButtonText: "Ok",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload();
+  //         }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating rank:", error);
+  //     Swal.fire({
+  //       title: `${t("error")}!`,
+  //       icon: "error",
+  //       confirmButtonText: "Ok",
+  //     });
+  //   }
+  // };
 
-  const handleCreate = async () => {
-    try {
-      const formData = {
-        tier: rank,
-        minPoints: point,
-        benefits: benefits,
-      };
+  // const handleCreate = async () => {
+  //   try {
+  //     const formData = {
+  //       tier: rank,
+  //       minPoints: point,
+  //       benefits: benefits,
+  //     };
 
-      const response = await apiCreateRank(formData);
+  //     const response = await apiCreateRank(formData);
 
-      if (response.status === 201) {
-        Swal.fire({
-          title: `${t("success")}!`,
-          text: `${t("create-success")}!`,
-          icon: "success",
-          confirmButtonText: "Ok",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload();
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error create rank:", error);
-      Swal.fire({
-        title: `${t("error")}!`,
-        icon: "error",
-        confirmButtonText: "Ok",
-      });
-    }
-  };
+  //     if (response.status === 201) {
+  //       Swal.fire({
+  //         title: `${t("success")}!`,
+  //         text: `${t("create-success")}!`,
+  //         icon: "success",
+  //         confirmButtonText: "Ok",
+  //       }).then((result) => {
+  //         if (result.isConfirmed) {
+  //           window.location.reload();
+  //         }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error create rank:", error);
+  //     Swal.fire({
+  //       title: `${t("error")}!`,
+  //       icon: "error",
+  //       confirmButtonText: "Ok",
+  //     });
+  //   }
+  // };
 
-  const handleDelete = async (rankId) => {
-    const confirmDelete = await Swal.fire({
-      title: `${t("confirm")}!`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: `${t("yes")}`,
-      cancelButtonText: `${t("no")}`,
-    });
+  // const handleDelete = async (rankId) => {
+  //   const confirmDelete = await Swal.fire({
+  //     title: `${t("confirm")}!`,
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonText: `${t("yes")}`,
+  //     cancelButtonText: `${t("no")}`,
+  //   });
 
-    if (confirmDelete.isConfirmed) {
-      try {
-        const response = await apiDeleteRank(rankId);
+  //   if (confirmDelete.isConfirmed) {
+  //     try {
+  //       const response = await apiDeleteRank(rankId);
 
-        if (response.status === 200) {
-          Swal.fire({
-            title: `${t("success")}!`,
-            text: `${t("delete-success")}!`,
-            icon: "success",
-            confirmButtonText: "Ok",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.reload();
-            }
-          });
-        } else {
-          Swal.fire({
-            title: `${t("error")}!`,
-            text: `${t("delete-failed")}!`,
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
-        }
-      } catch (error) {
-        console.error("Error deleting rank:", error);
-        Swal.fire({
-          title: `${t("error")}!`,
-          icon: "error",
-          confirmButtonText: "Ok",
-        });
-      }
-    }
-  };
+  //       if (response.status === 200) {
+  //         Swal.fire({
+  //           title: `${t("success")}!`,
+  //           text: `${t("delete-success")}!`,
+  //           icon: "success",
+  //           confirmButtonText: "Ok",
+  //         }).then((result) => {
+  //           if (result.isConfirmed) {
+  //             window.location.reload();
+  //           }
+  //         });
+  //       } else {
+  //         Swal.fire({
+  //           title: `${t("error")}!`,
+  //           text: `${t("delete-failed")}!`,
+  //           icon: "error",
+  //           confirmButtonText: "Ok",
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error deleting rank:", error);
+  //       Swal.fire({
+  //         title: `${t("error")}!`,
+  //         icon: "error",
+  //         confirmButtonText: "Ok",
+  //       });
+  //     }
+  //   }
+  // };
 
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const fetchRanks = async () => {
+    const fetchOrderPoints = async () => {
       try {
-        const response = await apiGetRanks();
+        const response = await apiGetOrderPoints();
 
         if (Array.isArray(response.data)) {
           setRows(response.data);
@@ -200,25 +197,28 @@ const RanknPoint = () => {
           setRows([]);
         }
       } catch (error) {
-        console.error("Error fetching ranks:", error);
+        console.error("Error fetching oderPoints:", error);
       }
     };
 
-    fetchRanks();
+    fetchOrderPoints();
   }, []);
 
   return (
     <Box className="w-full flex flex-col gap-6">
-      <Typography variant="h5">{t("rank-point")}</Typography>
-      <Button
-        variant="contained"
-        color="secondary"
-        className="w-fit flex items-center gap-2"
-        onClick={handleCreateBtn}
-      >
-        <FaPlus />
-        {t("create")}
-      </Button>
+      <div className="flex items-center justify-between">
+        <Typography variant="h6">{t("order")}</Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          className="w-fit flex items-center gap-2"
+          onClick={handleCreateBtn}
+        >
+          <FaPlus />
+          {t("create")}
+        </Button>
+        <div></div>
+      </div>
       <Grid2 container spacing={4}>
         <Grid2 size={7}>
           <TableContainer component={Paper} className="border">
@@ -235,19 +235,13 @@ const RanknPoint = () => {
                     align="center"
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
-                    {t("rank")}
+                    {t("price")}
                   </TableCell>
                   <TableCell
                     align="center"
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
                     {t("point")}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{ fontWeight: "bold", color: "black" }}
-                  >
-                    {t("benefits")}
                   </TableCell>
                   <TableCell
                     align="center"
@@ -263,22 +257,19 @@ const RanknPoint = () => {
                     key={row._id}
                     className="bg-[#FFFFFF] dark:bg-[#2F2F2F]"
                   >
-                    <TableCell align="center" sx={{ width: "10%" }}>
+                    <TableCell align="center" sx={{ width: "20%" }}>
                       {index + 1}
                     </TableCell>
-                    <TableCell component="th" scope="row" sx={{ width: "20%" }}>
-                      {row.tier}
+                    <TableCell component="th" scope="row" sx={{ width: "30%" }}>
+                      {row.price}
                     </TableCell>
-                    <TableCell align="center" sx={{ width: "20%" }}>
+                    <TableCell align="center" sx={{ width: "30%" }}>
                       {row.minPoints}
-                    </TableCell>
-                    <TableCell align="left" sx={{ width: "30%" }}>
-                      {row.benefits}
                     </TableCell>
                     <TableCell>
                       <div
                         className="flex justify-center gap-2"
-                        sx={{ width: "20%" }}
+                        sx={{ width: "30%" }}
                       >
                         <Tooltip title={t("edit")}>
                           <IconButton
@@ -322,13 +313,13 @@ const RanknPoint = () => {
                 />
                 <Grid2 size={6}>
                   <TextField
-                    id="rank"
-                    label={t("rank")}
+                    id="price"
+                    label={t("price")}
                     variant="standard"
                     fullWidth
                     margin="dense"
-                    value={rank}
-                    onChange={(e) => setRank(e.target.value)}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={6}>
@@ -341,18 +332,6 @@ const RanknPoint = () => {
                     value={point}
                     onChange={(e) => setPoint(e.target.value)}
                   />
-                </Grid2>
-                <Grid2 size={12}>
-                  <FormControl fullWidth margin="dense" variant="standard">
-                    <InputLabel>{t("benefits")}</InputLabel>
-                    <Input
-                      id="ingredientUsageInstructions"
-                      multiline
-                      rows={3}
-                      value={benefits}
-                      onChange={(e) => setBenefits(e.target.value)}
-                    />
-                  </FormControl>
                 </Grid2>
               </Grid2>
               <Grid2
@@ -392,13 +371,13 @@ const RanknPoint = () => {
               <Grid2 container spacing={4}>
                 <Grid2 size={6}>
                   <TextField
-                    id="rank"
-                    label={t("rank")}
+                    id="price"
+                    label={t("price")}
                     variant="standard"
                     fullWidth
                     margin="dense"
-                    value={rank}
-                    onChange={(e) => setRank(e.target.value)}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={6}>
@@ -435,7 +414,7 @@ const RanknPoint = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={handleCreate}
+                    // onClick={handleCreate}
                   >
                     {t("create")}
                   </Button>
@@ -458,4 +437,4 @@ const RanknPoint = () => {
   );
 };
 
-export default RanknPoint;
+export default ForOrder;
