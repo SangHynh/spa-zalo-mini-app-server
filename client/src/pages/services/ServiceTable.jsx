@@ -229,7 +229,7 @@ function Row(props) {
   );
 }
 
-const ServiceTable = ({ searchTerm }) => {
+const ServiceTable = ({ searchTerm, subCategoryId, priceSort }) => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -244,7 +244,9 @@ const ServiceTable = ({ searchTerm }) => {
       const response = await apiGetServices(
         currentPage,
         rowsPerPage,
-        searchTerm
+        searchTerm,
+        subCategoryId,
+        priceSort
       );
       if (response.status === 200) {
         setServices(response.data.services);
@@ -254,19 +256,7 @@ const ServiceTable = ({ searchTerm }) => {
     };
 
     fetchServices();
-  }, [currentPage, rowsPerPage, searchTerm]);
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1); // Chuyển sang trang tiếp theo
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1); // Quay lại trang trước
-    }
-  };
+  }, [currentPage, rowsPerPage, searchTerm, subCategoryId, priceSort]);
 
   // Handle page change
   const handleChangePage = (event, newPage) => {

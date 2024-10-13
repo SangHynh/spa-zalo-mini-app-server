@@ -9,7 +9,7 @@ const MAX_FILES = 10;
 router.get('/:id', productController.getProductById);
 
 // GET: /api/products?page=...&limit=...&keyword=...&subCategoryId=...&sortBy=...&sortOrder=...
-// Sort by attributes: ...&sortBy=price,stock,...&sortOrder=desc,esc,...
+// Sort by attributes: ...&sortBy=price,stock,expiryDate&sortOrder=desc,esc,esc
 router.get('/', productController.getAllProducts);
 
 // POST 

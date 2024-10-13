@@ -16,22 +16,40 @@ class BookingController {
 
             const skip = (page - 1) * limit;
 
-            const { status, customerId, sortBy, sortOrder } = req.query;
+            const { keyword, status, sortBy, sortOrder } = req.query;
 
             // Tạo điều kiện tìm kiếm
             const query = {};
+            let userIds = [];
+
+            if (keyword) {
+                const userSearchCriteria = {
+                    $or: [
+                        { phone: { $regex: keyword, $options: 'i' } }, // Case-insensitive search by phone
+                        { name: { $regex: keyword, $options: 'i' } }  // Case-insensitive search by name
+                    ]
+                };
+    
+                const users = await User.find(userSearchCriteria).select('_id');
+                userIds = users.map(user => user._id); // Extract user IDs
+    
+                const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
+                if (isObjectId) {
+                    query.$or = [
+                        { _id: new mongoose.Types.ObjectId(keyword) },
+                        { customerId: new mongoose.Types.ObjectId(keyword) } // Also search by customerId
+                    ];
+                }
+    
+                // If users were found, include their IDs in the query
+                if (userIds.length > 0) {
+                    query.$or = query.$or || [];
+                    query.$or.push({ customerId: { $in: userIds } }); // Add userIds to the query
+                }
+            }
 
             if (status) {
                 query.status = { $regex: status, $options: 'i' }; // Case-insensitive search
-            }
-
-            if (customerId) {
-                const isObjectId = mongoose.Types.ObjectId.isValid(customerId);
-                if (isObjectId) {
-                    query.customerId = mongoose.Types.ObjectId(customerId); // Exact match on ObjectId
-                } else {
-                    return res.status(400).json({ message: 'Invalid customerId format' });
-                }
             }
 
             const totalBookingHistories = await BookingHistory.countDocuments(query);

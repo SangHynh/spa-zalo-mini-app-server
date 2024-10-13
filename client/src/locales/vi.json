@@ -164,5 +164,7 @@
   "give-away-vouchers": "Tặng Voucher",
   "give-success": "Tặng thành công",
   "voucher-expired": "Voucher đã hết số lượng",
-  "voucher-invalid-period": "Voucher không khả dụng ở thời điểm hiện tại"
+  "voucher-invalid-period": "Vocher không khả dụng ở thời điểm hiện tại",
+  "every": "Tất cả",
+  "status": "Trạng thái"
 }

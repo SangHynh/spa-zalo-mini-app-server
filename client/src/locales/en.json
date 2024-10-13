@@ -164,5 +164,7 @@
   "give-away-vouchers": "Give Away Voucher",
   "give-success": "Give successfully",
   "voucher-expired": "The number of voucher expired",
-  "voucher-invalid-period": "Voucher is not valid now"
+  "voucher-invalid-period": "Voucher is not valid now",
+  "every": "All",
+  "status": "Status"
 }

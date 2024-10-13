@@ -8,11 +8,18 @@ import { FaPlus, FaSearch } from "react-icons/fa";
 import VoucherTable from "../vouchers/VoucherTable";
 import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 import GiveVoucher from "./GiveVoucher";
+import dayjs from "dayjs";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { Grid2, InputAdornment, TextField } from "@mui/material";
 
 const VoucherManagement = () => {
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [validFrom, setValidFrom] = useState(dayjs().subtract(10, 'year'));
+  const [validTo, setValidTo] = useState(dayjs().add(10, 'year'));
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -32,16 +39,51 @@ const VoucherManagement = () => {
     <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("voucher-mgmt")}</Typography>
       <div className="flex justify-between items-center space-x-3">
-        <div className="flex-1 w-64 relative">
-          <input
-            type="text"
-            placeholder={t("search...")}
-            value={searchTerm}
-            onChange={handleSearch}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-          <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
-        </div>
+        <Grid2 container spacing={2}>
+          <Grid2 size={4}>
+            <TextField
+              // size="small"
+              id="searchTerm"
+              placeholder={t("search...")}
+              variant="outlined"
+              value={searchTerm}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FaSearch />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid2>
+          <Grid2 size={4}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DatePicker"]}>
+                <DatePicker
+                  label={t("valid-from")}
+                  variant="standard"
+                  value={validFrom}
+                  onChange={(newValue) => setValidFrom(newValue)}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+
+          </Grid2>
+          <Grid2 size={4}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DatePicker"]}>
+                <DatePicker
+                  label={t("valid-to")}
+                  variant="standard"
+                  value={validTo}
+                  onChange={(newValue) => setValidTo(newValue)}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+
+          </Grid2>
+        </Grid2>
         <Button
           variant="outlined"
           color="success"
@@ -62,7 +104,7 @@ const VoucherManagement = () => {
           {t("create")}
         </Button>
       </div>
-      <VoucherTable searchTerm={searchTerm} />
+      <VoucherTable searchTerm={searchTerm} validFrom={validFrom.format("DD/MM/YYYY")} validTo={validTo.format("DD/MM/YYYY")} />
       <GiveVoucher open={openModal} onClose={handleCloseModal} />
     </Box>
   );

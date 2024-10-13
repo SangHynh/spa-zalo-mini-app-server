@@ -25,7 +25,7 @@ exports.createProduct = async (req, res) => {
       ...req.body,
       images: imageUrls
     })
-    
+
     const savedProduct = await product.save();
     return res.status(201).json(savedProduct);
   } catch (err) {
@@ -49,9 +49,9 @@ exports.getAllProducts = async (req, res) => {
     if (subCategoryId) {
       query.subCategoryId = subCategoryId;
     }
-    
+
     if (keyword) {
-      const isObjectId = mongoose.Types.ObjectId.isValid(keyword); 
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
 
       query.$or = [
         { name: { $regex: keyword, $options: 'i' } },
@@ -68,9 +68,11 @@ exports.getAllProducts = async (req, res) => {
       const sortFields = sortBy.split(',');
       const sortOrders = sortOrder ? sortOrder.split(',') : [];
       sortFields.forEach((field, index) => {
-        const order = sortOrders[index] === 'desc' ? -1 : 1;
-        if (['stock', 'price', 'expiryDate'].includes(field)) {
-          sortCriteria[field] = order;
+        if (sortOrders[index] === 'asc' || sortOrders[index] === 'desc') {
+          const order = sortOrders[index] === 'desc' ? -1 : 1;
+          if (['stock', 'price', 'expiryDate'].includes(field)) {
+            sortCriteria[field] = order;
+          }
         }
       });
     }
@@ -149,7 +151,7 @@ exports.updateProduct = async (req, res) => {
         const publicId = url
           .split('/').slice(-2).join('/') // Get the last two parts: folder and filename
           .split('.')[0];
-        
+
         deleteImage(publicId);
       });
     }

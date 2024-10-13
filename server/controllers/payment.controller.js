@@ -3,6 +3,8 @@ const TestOrder = require('../models/testorder.model');
 const Order = require('../models/order.model');
 const moment = require('moment');
 const User = require('../models/user.model');
+const Product = require('../models/product.model');
+const Voucher = require('../models/voucher.model');
 
 class PaymentController {
     // GET ORDERS
@@ -14,16 +16,31 @@ class PaymentController {
             const skip = (page - 1) * limit;
 
             const { keyword } = req.query;
-
-            if (keyword) {
-                query.$or = [
-                    { 'customerId.name': { $regex: keyword, $options: 'i' } },  // Tìm kiếm theo tên khách hàng
-                    { 'customerId.phone': { $regex: keyword, $options: 'i' } }, // Tìm kiếm theo số điện thoại
-                ];
-            }
-
+            
             // Tạo điều kiện tìm kiếm
             const query = {};
+
+            if (keyword) {
+                const users = await User.find({
+                    $or: [
+                        { name: { $regex: keyword, $options: 'i' } },
+                        { phone: { $regex: keyword, $options: 'i' } }
+                    ]
+                }).select('_id');
+    
+                const userIds = users.map(user => user._id);
+    
+                if (userIds.length > 0) {
+                    query.customerId = { $in: userIds };
+                } else {
+                    return res.status(200).json({
+                        orders: [],
+                        currentPage: page,
+                        totalPages: 0,
+                        totalOrders: 0,
+                    });
+                }
+            }
 
             const orders = await Order.find(query)
                 .populate({
@@ -53,7 +70,7 @@ class PaymentController {
 
             // Kiểm tra nếu body có object cart
             if (data.items) {
-                const { name, total, items } = data;
+                const { items } = data;
 
                 // Chuyển đổi các items trong cart thành products cho bảng Order
                 data.products = items.map(item => ({
@@ -78,10 +95,37 @@ class PaymentController {
 
             if (!user) return res.status(404).json({ message: "User not found" })
 
+            let discountAmount = 0;
+            let discountApplied = false;
+            let finalAmount = data.totalAmount;
+
+            if (data.voucherId) {
+                const voucher = await Voucher.findById(data.voucherId);
+                if (!voucher) return res.status(404).json({ message: "Voucher not found" });
+    
+                const now = new Date();
+                if (now < voucher.validFrom || now > voucher.validTo) {
+                    return res.status(400).json({ message: "Voucher is not valid" });
+                }
+    
+                discountApplied = true;
+    
+                discountAmount = (data.totalAmount * voucher.discountValue) / 100;
+    
+                if (discountAmount > data.totalAmount) {
+                    discountAmount = data.totalAmount;
+                }
+    
+                finalAmount = data.totalAmount - discountAmount;
+            }
+
             const order = new Order({
                 ...data,
-                customerId: user._id
-            })
+                customerId: user._id,
+                discountApplied,
+                discountAmount,
+                finalAmount,
+            });
 
             // Tạo order
             const newOrder = await Order.create(order);
@@ -117,6 +161,43 @@ class PaymentController {
 
             order.transactionId = transactionId;
             order.paymentStatus = paymentStatus;
+
+            // Cập nhật thành completed nhưng order trước đó không phải completed mới đc phép giảm só lượng sản phẩm
+            if (paymentStatus === "completed" && order.paymentStatus !== "completed") {
+                for (let productOrder of order.products) {
+                    const product = await Product.findById(productOrder.productId);
+                    if (!product) {
+                        return res.status(404).json({ message: `Product with ID ${productOrder.productId} not found` });
+                    }
+
+                    // Nếu sản phẩm có variant, tìm và cập nhật stock của variant
+                    if (productOrder.variantId) {
+                        const variant = product.variants.id(productOrder.variantId);
+                        if (!variant) {
+                            return res.status(404).json({ message: `Variant with ID ${productOrder.variantId} not found` });
+                        }
+
+                        if (variant.stock < productOrder.quantity) {
+                            return res.status(400).json({ message: `Insufficient stock for variant ${variant._id}` });
+                        }
+
+                        variant.stock -= productOrder.quantity;
+
+                        // Tính lại tổng stock của sản phẩm từ tất cả các variant còn lại
+                        const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
+
+                        product.stock = totalStock;
+                    } else {
+                        if (product.stock < productOrder.quantity) {
+                            return res.status(400).json({ message: `Insufficient stock for product ${product._id}` });
+                        }
+
+                        product.stock -= productOrder.quantity;
+                    }
+
+                    await product.save();
+                }
+            }
 
             const updatedOrder = await order.save();
 
@@ -314,12 +395,12 @@ class PaymentController {
                 }
             } else {
                 const dataForMac = `appId=${appId}&amount=${amount}&description=${description}&orderId=${orderId}&message=${message}&resultCode=${resultCode}&transId=${transId}`;
-                
+
                 const reqMac = CryptoJS.HmacSHA256(
                     dataForMac,
                     process.env.ZALO_CHECKOUT_SECRET_KEY
                 ).toString();
-    
+
                 if (reqMac == mac) {
                     console.log(str)
                     return res.json({

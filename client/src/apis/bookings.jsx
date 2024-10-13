@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // GET CATEGORIES
-export const apiGetBookings = (page, limit, keyword) => axios(
+export const apiGetBookings = (page, limit, keyword = "", status = "", sortDate = "") => axios(
     {
-        url: `/api/bookings?page=${page}&limit=${limit}&keyword=${keyword}`,
+        url: `/api/bookings?page=${page}&limit=${limit}&keyword=${keyword}&status=${status}&sortBy=date&sortOrder=${sortDate}`,
         method: "GET",
     }
 )

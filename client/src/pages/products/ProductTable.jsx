@@ -357,7 +357,7 @@ function Row(props) {
   );
 }
 
-const ProductTable = ({ searchTerm }) => {
+const ProductTable = ({ searchTerm, subCategoryId, stockSort, priceSort, expiryDateSort }) => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -372,7 +372,11 @@ const ProductTable = ({ searchTerm }) => {
       const response = await apiGetProducts(
         currentPage,
         rowsPerPage,
-        searchTerm
+        searchTerm,
+        subCategoryId,
+        stockSort,
+        priceSort,
+        expiryDateSort
       );
       if (response.status === 200) {
         setProducts(response.data.products || []);
@@ -382,19 +386,7 @@ const ProductTable = ({ searchTerm }) => {
     };
 
     fetchProducts();
-  }, [currentPage, rowsPerPage, searchTerm]);
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1); // Chuyển sang trang tiếp theo
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1); // Quay lại trang trước
-    }
-  };
+  }, [currentPage, rowsPerPage, searchTerm, subCategoryId, stockSort, priceSort, expiryDateSort]);
 
   // Handle page change
   const handleChangePage = (event, newPage) => {

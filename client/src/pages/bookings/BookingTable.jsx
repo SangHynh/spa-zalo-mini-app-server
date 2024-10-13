@@ -81,7 +81,7 @@ function Row(props) {
             window.location.reload();
           });
         } else {
-          Swal.fire(`${t("update-failed")}!`, "", "error");
+          Swal.fire(`${t("update-failed")}!`, res.data.message, "error");
         }
         hideLoading();
       }
@@ -360,7 +360,7 @@ function Row(props) {
   );
 }
 
-const BookingTable = ({ searchTerm }) => {
+const BookingTable = ({ searchTerm, status, sortDate }) => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -375,7 +375,9 @@ const BookingTable = ({ searchTerm }) => {
       const response = await apiGetBookings(
         currentPage,
         rowsPerPage,
-        searchTerm
+        searchTerm,
+        status,
+        sortDate
       );
       if (response.status === 200) {
         setBookings(response.data.bookings);
@@ -385,7 +387,7 @@ const BookingTable = ({ searchTerm }) => {
     };
 
     fetchBookings();
-  }, [currentPage, rowsPerPage, searchTerm]);
+  }, [currentPage, rowsPerPage, searchTerm, status, sortDate]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {

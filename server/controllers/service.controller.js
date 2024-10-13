@@ -38,9 +38,11 @@ class ServiceController {
                 const sortFields = sortBy.split(',');
                 const sortOrders = sortOrder ? sortOrder.split(',') : [];
                 sortFields.forEach((field, index) => {
-                    const order = sortOrders[index] === 'desc' ? -1 : 1;
-                    if (['price'].includes(field)) {
-                        sortCriteria[field] = order;
+                    if (sortOrders[index] === 'asc' || sortOrders[index] === 'desc') {
+                        const order = sortOrders[index] === 'desc' ? -1 : 1;
+                        if (['price'].includes(field)) {
+                            sortCriteria[field] = order;
+                        }
                     }
                 });
             }

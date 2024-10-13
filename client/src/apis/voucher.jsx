@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // GET VOUCHERS
-export const apiGetVouchers = (page, limit, keyword) =>
+export const apiGetVouchers = (page, limit, keyword = "", validFrom = "", validTo = "") =>
   axios({
-    url: `/api/vouchers?page=${page}&limit=${limit}&keyword=${keyword}`,
+    url: `/api/vouchers?page=${page}&limit=${limit}&keyword=${keyword}&validFrom=${validFrom}&validTo=${validTo}`,
     method: "GET",
   }
 )

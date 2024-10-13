@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // GET SERVICES
-export const apiGetServices = (page, limit, keyword) =>
+export const apiGetServices = (page, limit, keyword = "", subCategoryId = "", priceSort = "") =>
   axios({
-    url: `/api/services/?page=${page}&limit=${limit}&keyword=${keyword}`,
+    url: `/api/services/?page=${page}&limit=${limit}&keyword=${keyword}&subCategoryId=${subCategoryId}&sortBy=price&sortOrder=${priceSort}`,
     method: "GET",
   });
 

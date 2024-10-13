@@ -14,6 +14,8 @@ class VoucherController {
 
             const query = {};
 
+            console.log(validFrom)
+
             if (keyword) {
                 query.$or = [
                     { code: { $regex: keyword, $options: 'i' } },        // Search in 'code'
@@ -22,10 +24,10 @@ class VoucherController {
             }
 
             if (validFrom) {
-                query.validFrom = { $gte: new Date(validFrom) };
+                query.validFrom = { $gte: moment(validFrom, 'DD/MM/YYYY').format('YYYY-MM-DD') };
             }
             if (validTo) {
-                query.validTo = { $lte: new Date(validTo) };
+                query.validTo = { $lte: moment(validTo, 'DD/MM/YYYY').format('YYYY-MM-DD') };
             }
 
             const vouchers = await Voucher.find(query)

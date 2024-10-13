@@ -116,32 +116,25 @@ async function initializeAppConfig() {
   }
 }
 
-// async function initializeAndSaveOrderPoints() {
-//   try {
-//     // Khởi tạo AppConfig
-//     let config = await AppConfig.findOne();
-//     if (!config) {
-//       config = await AppConfig.create({
-//         version: "1.0.0",
-//         images: [],
-//         orderPoints: [
-//           { price: 100, minPoints: 500 },
-//           { price: 200, minPoints: 1000 },
-//           { price: 300, minPoints: 1500 },
-//           { price: 400, minPoints: 2500 },
-//         ],
-//       });
-//       console.log("AppConfig initialized:", config);
-//     } else {
-//       console.log("AppConfig already exists:", config);
-//     }
-
-//     // Lưu orderPoints nếu cần
-//     await saveOrderPoints(config.orderPoints);
-//   } catch (error) {
-//     console.error("Error during initialization or saving order points:", error);
-//   }
-// }
+async function initializeAndSaveOrderPoints() {
+  try {
+    const updatedConfig = await AppConfig.findOneAndUpdate(
+      {},
+      {
+        orderPoints: [
+          { price: 50000, minPoints: 10 },
+          { price: 100000, minPoints: 20 },
+          { price: 500000, minPoints: 30 },
+          { price: 1000000, minPoints: 50 },
+        ]
+      },
+      { new: true, upsert: true }
+    );
+    console.log("Order points updated:", updatedConfig);
+  } catch (error) {
+    console.error("Error during initialization or saving order points:", error);
+  }
+}
 
 // async function saveOrderPoints(orderPoints) {
 //   try {

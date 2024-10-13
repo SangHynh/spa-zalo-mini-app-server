@@ -260,7 +260,7 @@ function Row(props) {
   );
 }
 
-const VoucherTable = ({ searchTerm }) => {
+const VoucherTable = ({ searchTerm, validFrom, validTo }) => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -275,7 +275,9 @@ const VoucherTable = ({ searchTerm }) => {
       const response = await apiGetVouchers(
         currentPage,
         rowsPerPage,
-        searchTerm
+        searchTerm,
+        validFrom,
+        validTo
       );
       if (response.status === 200) {
         setVouchers(response.data.vouchers);
@@ -285,7 +287,7 @@ const VoucherTable = ({ searchTerm }) => {
     };
 
     fetchVouchers();
-  }, [currentPage, rowsPerPage, searchTerm]);
+  }, [currentPage, rowsPerPage, searchTerm, validFrom, validTo]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
