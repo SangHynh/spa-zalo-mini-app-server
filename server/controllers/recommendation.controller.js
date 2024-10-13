@@ -520,6 +520,100 @@ exports.suggestProductsForUser = async (req, res) => {
   }
 };
 
+exports.getCombinedProductRecommendations = async (req, res) => {
+  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
+  const customerId = req.body.id; // Lấy customerId từ body của yêu cầu
+
+  console.log('Main Product ID:', mainItemId);
+  console.log('Customer ID:', customerId);
+
+  try {
+    // Bước 1: Lấy recommendation cho sản phẩm chính
+    const recommendation = await Recommendation.findOne({
+      mainItemId: mainItemId,
+      itemType: 'Product'
+    });
+
+    // Bước 2: Lấy thông tin khách hàng và gợi ý từ các category của họ
+    const customer = await User.findById(customerId);
+    
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
+    const otherUsers = await User.find({ _id: { $ne: customerId } });
+    const categoryScores = {};
+
+    otherUsers.forEach(user => {
+      user.suggestions.forEach(suggestion => {
+        if (!customerCategoryIds.includes(suggestion.categoryId)) {
+          if (!categoryScores[suggestion.categoryId]) {
+            categoryScores[suggestion.categoryId] = {
+              categoryName: suggestion.categoryName,
+              totalScore: 0,
+              count: 0
+            };
+          }
+          categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
+          categoryScores[suggestion.categoryId].count += 1;
+        }
+      });
+    });
+
+    const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
+      return {
+        categoryId,
+        categoryName,
+        averageScore: totalScore / count
+      };
+    });
+
+    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    
+    // Bước 3: Tìm sản phẩm tương ứng với các category gợi ý, giới hạn 3 sản phẩm mỗi category
+    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
+    const suggestedProductsByCategory = await Promise.all(
+      topCategoryIds.map(async (categoryId) => {
+        const products = await Product.find({ categoryId }).limit(3);
+        return products;
+      })
+    );
+
+    // Bước 4: Trả về thông tin recommendation kết hợp
+    const response = {
+      message: "Combined product recommendations retrieved successfully",
+      suggestions: [],
+      collection: "Recommendation"
+    };
+
+    // Nếu có recommendation cho sản phẩm chính, ưu tiên hiển thị trước
+    if (recommendation) {
+      response.suggestions.push({
+        mainItem: {
+          id: recommendation.mainItemId,
+          name: recommendation.mainItemName,
+        },
+        products: recommendation.items // Gợi ý từ sản phẩm chính
+      });
+    }
+
+    // Gợi ý sản phẩm từ các danh mục dựa trên hành vi người dùng, giới hạn 3 sản phẩm / category
+    suggestedProductsByCategory.forEach((products, index) => {
+      response.suggestions.push({
+        category: topRecommendations[index].categoryName,
+        products: products // Giới hạn 3 sản phẩm cho mỗi danh mục
+      });
+    });
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error retrieving combined recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 //update multiple suggestion scores
 exports.updateMultipleSuggestionScores = async (req, res) => {
   const { userIds, suggestionsToUpdate } = req.body; // Giả sử body chứa một mảng userId và suggestionsToUpdate
