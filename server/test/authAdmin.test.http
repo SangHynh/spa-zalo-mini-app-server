@@ -1,7 +1,3 @@
-
-GET https://spa-zalo-mini-app-server-6.onrender.com/
-Authorization: Bearer token_here
-
 ### REGISTER ROUTE ADMIN CMS
 POST http://localhost:8080/auth/register
 Content-Type: application/json

@@ -3,6 +3,7 @@ const cors = require("cors");
 const createError = require("http-errors");
 require("dotenv").config();
 const helmet = require('helmet');
+const path = require('path');
 
 const { connect } = require("./configs/db.config");
 const initRoutes = require("./routes/index.route");
@@ -70,6 +71,10 @@ app.use((err, req, res, next) => {
     },
   });
 });
+
+// Cấu hình Express để sử dụng EJS
+app.set('view engine', 'ejs');  // Đặt engine là 'ejs'
+app.set('views', path.join(__dirname, 'views'));
 
 // Start server
 const PORT = process.env.PORT || 8080;

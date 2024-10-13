@@ -14,6 +14,7 @@ const {
 const generateReferralCode = require("../utils/genRefCode");
 const { getUserInfo } = require("../controllers/user.controller");
 
+//ĐĂNG KÝ BÌNH THƯỜNG
 const register = async (req, res, next) => {
   try {
     const { role } = req.body;
@@ -67,13 +68,19 @@ const register = async (req, res, next) => {
       if (doesExist) {
         throw createError.Conflict(`User is already registered`);
       }
+      //Thông tin tiếp thị liên kết
+      const referralCode = await generateReferralCode();
+      const referralInfo = {
+        paths: `,${referralCode}`,
+      };
       // Tạo hồ sơ người dùng cho user
       const user = new User({
         zaloId,
         name,
         avatar,
         membershipTier: "Member",
-        referralCode: await generateReferralCode(zaloId),
+        referralCode: referralCode,
+        referralInfo: referralInfo,
         points: 0,
         gender: "male",
         phone,
@@ -87,6 +94,7 @@ const register = async (req, res, next) => {
         phone: user.phone,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
+        referralInfo: referralInfo,
         points: user.points,
       };
       const accessToken = await signAccessToken(user.id);
@@ -101,6 +109,93 @@ const register = async (req, res, next) => {
   }
 };
 
+//ĐĂNG KÝ THÔNG QUA TIẾP THỊ LIÊN KẾT
+const registerWithReferral = async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    const { referralCode } = req.params; // Mã ttlk của người giới thiệu
+    // Kiểm tra role không khớp
+    if (!role || !["user"].includes(role)) {
+      throw createError.BadRequest("Invalid role");
+    }
+    if (role === "user") {
+      const { zaloAccessToken, phoneToken } = req.body;
+      if (!zaloAccessToken) {
+        throw createError.BadRequest("Zalo Access Token is required");
+      }
+      //lấy thông tin người dùng
+      const data = await zaloTokenService(zaloAccessToken)
+        .then((data) => data.data)
+        .catch((error) => {
+          throw createError.BadRequest("Invalid Zalo Access Token");
+        });
+      console.log(data);
+
+      const phoneData = await zaloPhoneService(phoneToken, zaloAccessToken);
+      console.log(phoneData);
+      const phone = phoneData?.data?.data?.number ?? null;
+      console.log(phone);
+
+      const zaloId = data.id;
+      const name = data?.name;
+      const avatar = data?.picture?.data?.url;
+      const doesExist = await User.findOne({ zaloId });
+      if (doesExist) {
+        throw createError.Conflict(`User is already registered`);
+      }
+
+      // Lấy đường dẫn theo refCode của người giơi thiệu
+      const referrerUser = await User.findOne({referralCode: referralCode});//
+      if (!referrerUser) {
+        throw createError.BadRequest("Invalid referral code");
+      }
+
+      const {paths} = referrerUser.referralInfo;
+
+      //Tạo thông tin tiếp thị liên kết của người dùng
+      const refCode = await generateReferralCode();// refCode của người dùng hiện tại
+      const referralInfo = {
+        paths: `${paths},${refCode}`,
+        referredAt: new Date(),
+      };
+
+      // Tạo hồ sơ người dùng cho user
+      const user = new User({
+        zaloId,
+        name,
+        avatar,
+        membershipTier: "Member",
+        referralCode: refCode,
+        referralInfo: referralInfo,
+        points: 0,
+        gender: "male",
+        phone,
+      });
+      await user.save();
+      const userProfile = {
+        zaloId: user.zaloId,
+        name: user.name,
+        avatar: user.avatar,
+        gender: user.gender,
+        phone: user.phone,
+        membershipTier: user.membershipTier,
+        referralCode: user.referralCode,
+        referralInfo: referralInfo,
+        points: user.points,
+      };
+      const accessToken = await signAccessToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
+      return res.send({ userProfile, accessToken, refreshToken });
+    } else {
+      throw createError.BadRequest("Invalid role or missing required fields");
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    next(error);
+  }
+};
+
+//ĐĂNG NHẬP
 const login = async (req, res, next) => {
   try {
     const { email, password, zaloAccessToken, role } = req.body;
@@ -141,6 +236,7 @@ const login = async (req, res, next) => {
         phone: user.phone,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
+        referralInfo: user.referralInfo,
         points: user.points,
       };
       if (!user) throw createError.NotFound("User not found");
@@ -156,6 +252,7 @@ const login = async (req, res, next) => {
   }
 };
 
+//LẤY REFRESH TOKEN MỚI
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -169,6 +266,7 @@ const refreshToken = async (req, res, next) => {
   }
 };
 
+// ĐĂNG XUẤT
 const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -189,6 +287,7 @@ const logout = async (req, res, next) => {
 
 module.exports = {
   register,
+  registerWithReferral,
   login,
   refreshToken,
   logout,

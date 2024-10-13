@@ -1,5 +1,4 @@
 const User = require("../models/user.model");
-const Admin = require("../models/admin.model");
 const { zaloPhoneService } = require("../services/zalo.service");
 
 // Controller để tạo người dùng mới

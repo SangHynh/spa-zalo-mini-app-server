@@ -1,0 +1,8 @@
+### FIND REFERRAL INFO BY ID
+GET http://localhost:8080/api/users/referral-info/:referralCode
+Content-Type: application/json
+Authorization: Bearer token_here
+
+
+### GET REGISTER PAGE AFTER SCANING QR
+GET http://localhost:8080/api/users/register-page/:referralCode
