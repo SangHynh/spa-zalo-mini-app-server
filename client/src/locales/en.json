@@ -166,5 +166,15 @@
   "voucher-expired": "The number of voucher expired",
   "voucher-invalid-period": "Voucher is not valid now",
   "every": "All",
-  "status": "Status"
+  "status": "Status",
+  "booking-date": "Booking date",
+  "order-date": "Order date",
+  "discount-applied": "Discount applied",
+  "discount-amount": "Discount amount",
+  "final-amount": "Final amount",
+  "payment-method": "Payment method",
+  "payment-status": "Payment status",
+  "transaction-id": "Transaction Id (Zalo OrderID)",
+  "remarks": "Remarks",
+  "referral-id": "Referral Id"
 }

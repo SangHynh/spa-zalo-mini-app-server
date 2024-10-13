@@ -456,7 +456,7 @@ const BookingTable = ({ searchTerm, status, sortDate }) => {
                 sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
-                {t("date")}
+                {t("booking-date")}
               </TableCell>
               <TableCell
                 align="center"

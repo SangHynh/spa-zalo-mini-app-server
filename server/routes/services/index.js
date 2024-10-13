@@ -8,7 +8,7 @@ const MAX_FILES = 10;
 // GET
 router.get('/:id', serviceController.getServiceById);
 
-// GET: /api/products?page=...&limit=...&keyword=...&subCategoryId=...&sortBy=...&sortOrder=...
+// GET: /api/products?page=...&limit=...&keyword=...&subCategoryId=...&startPrice=...&endPrice=...&sortBy=...&sortOrder=...
 router.get('/', serviceController.getServices);
 
 // POST 

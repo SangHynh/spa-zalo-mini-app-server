@@ -166,5 +166,15 @@
   "voucher-expired": "Voucher đã hết số lượng",
   "voucher-invalid-period": "Vocher không khả dụng ở thời điểm hiện tại",
   "every": "Tất cả",
-  "status": "Trạng thái"
+  "status": "Trạng thái",
+  "booking-date": "Ngày thực hiện",
+  "order-date": "Ngày mua",
+  "discount-applied": "Áp dụng giảm giá",
+  "discount-amount": "Số tiền giảm",
+  "final-amount": "Giá sau khi giảm",
+  "payment-method": "Phương thức thanh toán",
+  "payment-status": "Trạng thái thanh toán",
+  "transaction-id": "Mã giao dịch (Zalo OrderID)",
+  "remarks": "Nhận xét",
+  "referral-id": "Id tiếp thị"
 }

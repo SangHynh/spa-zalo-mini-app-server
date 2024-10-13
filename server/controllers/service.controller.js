@@ -11,7 +11,7 @@ class ServiceController {
 
             const skip = (page - 1) * limit;
 
-            const { keyword, subCategoryId, sortBy, sortOrder } = req.query;
+            const { keyword, subCategoryId, startPrice, endPrice, sortBy, sortOrder } = req.query;
 
             // Tạo điều kiện tìm kiếm
             const query = {};
@@ -30,6 +30,18 @@ class ServiceController {
 
             if (subCategoryId) {
                 query.subCategoryId = subCategoryId;
+            }
+
+            // Lọc theo price range
+            if (startPrice && endPrice) {
+                query.price = {
+                    $gte: parseFloat(startPrice),
+                    $lte: parseFloat(endPrice)
+                };
+            } else if (startPrice) {
+                query.price = { $gte: parseFloat(startPrice) };
+            } else if (endPrice) {
+                query.price = { $lte: parseFloat(endPrice) };
             }
 
             // Cấu hình sắp xếp

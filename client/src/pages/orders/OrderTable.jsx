@@ -562,28 +562,28 @@ const OrderTable = ({ searchTerm }) => {
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("transaction-id")}
               </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("remarks")}
               </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("referral-id")}
               </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
+                className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("voucher-id")}
               </TableCell>

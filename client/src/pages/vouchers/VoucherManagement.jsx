@@ -12,7 +12,8 @@ import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { Grid2, InputAdornment, TextField } from "@mui/material";
+import { Grid2, IconButton, InputAdornment, TextField } from "@mui/material";
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const VoucherManagement = () => {
   const { t } = useTranslation();
@@ -33,6 +34,12 @@ const VoucherManagement = () => {
     setOpenModal(false);
   };
 
+  const handleRefresh = () => {
+    setSearchTerm("");
+    setValidFrom(dayjs().subtract(10, 'year'));
+    setValidTo(dayjs().add(10, 'year'));
+  };
+
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -40,49 +47,46 @@ const VoucherManagement = () => {
       <Typography variant="h5">{t("voucher-mgmt")}</Typography>
       <div className="flex justify-between items-center space-x-3">
         <Grid2 container spacing={2}>
-          <Grid2 size={4}>
-            <TextField
-              // size="small"
-              id="searchTerm"
-              placeholder={t("search...")}
-              variant="outlined"
-              value={searchTerm}
-              onChange={handleSearch}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FaSearch />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid2>
-          <Grid2 size={4}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DatePicker"]}>
-                <DatePicker
-                  label={t("valid-from")}
-                  variant="standard"
-                  value={validFrom}
-                  onChange={(newValue) => setValidFrom(newValue)}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-
-          </Grid2>
-          <Grid2 size={4}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DatePicker"]}>
-                <DatePicker
-                  label={t("valid-to")}
-                  variant="standard"
-                  value={validTo}
-                  onChange={(newValue) => setValidTo(newValue)}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-
-          </Grid2>
+          <TextField
+            // size="small"
+            id="searchTerm"
+            placeholder={t("search...")}
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearch}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaSearch />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <DatePicker
+                label={t("valid-from")}
+                variant="standard"
+                value={validFrom}
+                onChange={(newValue) => setValidFrom(newValue)}
+                sx={{ maxWidth: 100 }}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <DatePicker
+                label={t("valid-to")}
+                variant="standard"
+                value={validTo}
+                onChange={(newValue) => setValidTo(newValue)}
+                sx={{ maxWidth: 100 }}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+          <IconButton aria-label="refresh" size="medium" onClick={handleRefresh}>
+            <RefreshIcon fontSize="inherit" />
+          </IconButton>
         </Grid2>
         <Button
           variant="outlined"
