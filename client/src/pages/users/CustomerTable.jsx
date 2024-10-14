@@ -84,7 +84,18 @@ function Row(props) {
             <TableCell
               align="right"
               sx={{
-                minWidth: "300px",
+                minWidth: "100px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              <img class='w-12 h-12 rounded-full' src={row.avatar} alt={row.name}></img>
+            </TableCell>
+            <TableCell
+              align="left"
+              sx={{
+                minWidth: "150px",
                 overflowX: "auto",
                 whiteSpace: "nowrap",
               }}
@@ -93,7 +104,7 @@ function Row(props) {
               {row.name}
             </TableCell>
             <TableCell
-              align="right"
+              align="center"
               sx={{
                 minWidth: "150px",
                 overflowX: "auto",
@@ -104,17 +115,6 @@ function Row(props) {
               {row.phone}
             </TableCell>
             <TableCell
-              align="center"
-              sx={{
-                minWidth: "150px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.points}
-            </TableCell>
-            <TableCell
               align="right"
               sx={{
                 minWidth: "100px",
@@ -123,7 +123,7 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.gender}
+              {row.points}
             </TableCell>
             <TableCell
               align="center"
@@ -134,7 +134,7 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.cumulativePoints}
+              {row.gender}
             </TableCell>
             <TableCell
               align="center"
@@ -145,9 +145,9 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.age}
+              {row.membershipTier}
             </TableCell>
-            <TableCell
+            {/* <TableCell
               align="right"
               sx={{
                 minWidth: "150px",
@@ -168,7 +168,7 @@ function Row(props) {
               className="relative"
             >
               {row.hairType}
-            </TableCell>
+            </TableCell> */}
             <TableCell
               component="th"
               scope="row"
@@ -182,7 +182,7 @@ function Row(props) {
               className="relative cursor-pointer"
               onClick={() => handleCopy(row._id)}
             >
-              {row.refferalCode}
+              {row.referralCode}
             </TableCell>
             <TableCell
               align="right"
@@ -193,7 +193,26 @@ function Row(props) {
               }}
               className="relative"
             >
-              {row.refferedBy}
+              {row.referralInfo?.paths}
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                minWidth: "200px",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+              className="relative"
+            >
+              {new Date(row.referralInfo?.referredAt).toLocaleString("vi-VN", {
+                timeZone: "Asia/Ho_Chi_Minh",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false, // 24-hour format
+              })}
             </TableCell>
             <TableCell
               align="right"
@@ -472,7 +491,7 @@ const CustomerTable = ({ searchTerm }) => {
         setCustomers(response.data.users);
         setTotalCustomers(response.data.totalUsers);
         setTotalPages(response.data.totalPages);
-      } 
+      }
     };
 
     fetchCustomers();
@@ -495,6 +514,13 @@ const CustomerTable = ({ searchTerm }) => {
                 className="relative dark:text-black"
               >
                 Id
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="relative dark:text-black"
+              >
+                {t("customer-avatar")}
               </TableCell>
               <TableCell
                 align="center"
@@ -529,16 +555,16 @@ const CustomerTable = ({ searchTerm }) => {
                 sx={{ fontWeight: "bold", minWidth: "200px" }}
                 className="relative dark:text-black"
               >
-                {t("cumulative-points")}
+                {t("membership-tier")}
               </TableCell>
-              <TableCell
+              {/* <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", maxWidth: "100px" }}
                 className="relative dark:text-black"
               >
                 {t("age")}
-              </TableCell>
-              <TableCell
+              </TableCell> */}
+              {/* <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
@@ -551,7 +577,7 @@ const CustomerTable = ({ searchTerm }) => {
                 className="relative dark:text-black"
               >
                 {t("hair-style")}
-              </TableCell>
+              </TableCell> */}
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "120px" }}
@@ -568,6 +594,13 @@ const CustomerTable = ({ searchTerm }) => {
               </TableCell>
               <TableCell
                 align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("referred-at")}
+              </TableCell>
+              <TableCell
+                align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
                 className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
@@ -576,7 +609,7 @@ const CustomerTable = ({ searchTerm }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-          {Array.isArray(customers) && customers.length > 0 ? (
+            {Array.isArray(customers) && customers.length > 0 ? (
               customers.map((row) => (
                 <Row
                   key={row._id}
