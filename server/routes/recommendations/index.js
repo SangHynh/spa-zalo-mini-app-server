@@ -30,10 +30,12 @@ router.put(
 );
 //cập nhật danh sách sản phẩm gợi ý cho khách hàng khi khách hàng mua 1 sản phẩm
 router.put('/configure-product-recommendations/:id', recommendationController.configureProductRecommendations);
-router.post('/get-product-recommendations', recommendationController.getProductRecommendations);
+//danh sách sản phẩm gợi ý (req.body.mainItemId => req.params.id)
+router.get('/get-product-recommendations/:id', recommendationController.getProductRecommendations);
 //cập nhật danh sách dịch vụ gợi ý cho khách hàng khi khách hàng mua 1 dịch vụ
 router.put('/configure-service-recommendations/:id', recommendationController.configureServiceRecommendations);
-router.post('/get-service-recommendations', recommendationController.getServiceRecommendations);
+//danh sách dịch vụ gợi ý (req.body.mainItemId => req.params.id)
+router.get('/get-service-recommendations/:id', recommendationController.getServiceRecommendations);
 //cập nhật suggestions nhiều khách hàng đề xuất nhiều sản phẩm
 router.put('/update-multiple-suggestion-scores', recommendationController.updateMultipleSuggestionScores);
 //lấy danh sách sản phẩm gợi ý cho khách hàng gồm từ top sản phẩm config và từ phân tích gợi ý từ các khách hàng khác

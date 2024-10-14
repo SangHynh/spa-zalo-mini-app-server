@@ -98,7 +98,7 @@ class BookingController {
     // GET BOOKING HISTORIES BY USERID
     async getBookingHistoriesByUserId(req, res) {
         try {
-            const userId = req.payload.audience
+            const userId = req.payload.aud
 
             const user = await User.findById(userId);
 
@@ -152,8 +152,10 @@ class BookingController {
     // CREATE BOOKING
     async createBooking(req, res) {
         try {
-            const userId = req.payload.audience
+            const userId = req.payload.aud
             // const { userId } = req.params.id
+
+            console.log(userId)
 
             const user = await User.findById(userId);
             if (!user) {

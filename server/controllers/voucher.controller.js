@@ -213,7 +213,7 @@ class VoucherController {
                     }
                 });
 
-                await userRecord.save();
+                await userRecord.save({ validateBeforeSave: false });
             }));
 
             await Promise.all(Object.values(vouchersToUpdate).map(voucher => voucher.save()));

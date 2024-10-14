@@ -5,7 +5,7 @@ class CartController {
     // GET CART BY USER ID
     async getCartByUserId(req, res) {
         try {
-            const userId = req.payload.audience
+            const userId = req.payload.aud
             // const { userId } = req.params.id;
             const response = await User.findById(userId);
 
@@ -27,7 +27,7 @@ class CartController {
 
             const { variantId, quantity } = req.body;
 
-            const userId = req.payload.audience
+            const userId = req.payload.aud
             // const { userId } = req.params.id;
             const user = await User.findById(userId);
 
@@ -69,7 +69,7 @@ class CartController {
         try {
             const productId = req.params.id;
             const { variantId, quantity } = req.body;
-            const userId = req.payload.audience
+            const userId = req.payload.aud
 
             const user = await User.findById(userId);
             if (!user) return res.status(404).json("User not found");
@@ -103,7 +103,7 @@ class CartController {
 
             const { variantId } = req.body;
 
-            const userId = req.payload.audience
+            const userId = req.payload.aud
             // const { userId } = req.params.id;
             const user = await User.findById(userId);
 

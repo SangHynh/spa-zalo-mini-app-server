@@ -89,7 +89,7 @@ class PaymentController {
                 data.orderDate = moment(data.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
             }
 
-            const userId = req.payload.audience
+            const userId = req.payload.aud
 
             const user = await User.findById(userId);
 
