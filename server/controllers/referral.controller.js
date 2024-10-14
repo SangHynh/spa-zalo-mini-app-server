@@ -8,41 +8,48 @@ const getReferralInfo = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     // Tìm thông tin của cha (parent)
-    const parentPath = user.referralInfo.paths;
+    const userPath = user.referralInfo.paths;
     let parent = null;
-    if (parentPath) {
-      const parentReferralCode = parentPath.split(",").pop(); // Đoạn mã của cha
-      parent = await Users.findOne({ referralCode: parentReferralCode });
+    if (userPath) {
+      const pathSegments = userPath.split(",").filter(Boolean); // Tách các đoạn mã và lọc bỏ phần tử rỗng
+      if (pathSegments.length > 1) {
+        // Kiểm tra nếu có ít nhất 2 phần tử
+        const parentReferralCode = pathSegments[pathSegments.length - 2]; // Mã cha là phần tử kế cuối
+        parent = await Users.findOne({ referralCode: parentReferralCode });
+      }
     }
-    
+
     // Tìm các con gần nhất dựa trên referralInfo.paths
     const immediateDescendants = await Users.find({
-      "referralInfo.paths": { 
-        $regex: `^${parentPath},[^,]+$` // tìm paths bắt đầu với parentPath, tiếp theo là một nhánh con
-      }
+      "referralInfo.paths": {
+        $regex: `^${userPath},[^,]+$`, // tìm paths bắt đầu với parentPath, tiếp theo là một nhánh con
+      },
     });
-    
+
     // Tìm tất cả con cháu (bao gồm các cấp con cháu nhiều nhánh)
     const allDescendants = await Users.find({
-      "referralInfo.paths": { 
-        $regex: `^${parentPath},` // tìm paths bắt đầu với parentPath, có thể có nhiều dấu phẩy
-      }
+      "referralInfo.paths": {
+        $regex: `^${userPath},`, // tìm paths bắt đầu với parentPath, có thể có nhiều dấu phẩy
+      },
     });
-    
+
     // Tổng số tất cả con cháu (bao gồm cả các cấp con cháu)
     const totalDescendants = allDescendants.length;
-    
+
     // Trả về thông tin người dùng, tổng số con cháu và danh sách các con gần nhất
     return res.status(200).json({
-      parent: parent ? {  // Nếu có cha, trả về thông tin của cha
-        zaloId: parent.zaloId,
-        name: parent.name,
-        membershipTier: parent.membershipTier,
-        referralCode: parent.referralCode,
-        referralInfo: parent.referralInfo,
-      } : null,  // Nếu không có cha thì null
+      parent: parent
+        ? {
+            // Nếu có cha, trả về thông tin của cha
+            zaloId: parent.zaloId,
+            name: parent.name,
+            membershipTier: parent.membershipTier,
+            referralCode: parent.referralCode,
+            referralInfo: parent.referralInfo,
+          }
+        : null, // Nếu không có cha thì null
       user: {
         zaloId: user._id,
         name: user.name,
@@ -50,7 +57,7 @@ const getReferralInfo = async (req, res) => {
         referralCode: user.referralCode,
         referralInfo: user.referralInfo,
       },
-      totalDescendants: totalDescendants, // tổng số tất cả con cháu 
+      totalDescendants: totalDescendants, // tổng số tất cả con cháu
       descendants: immediateDescendants.map((child) => ({
         zaloId: child.zaloId,
         name: child.name,
@@ -66,8 +73,6 @@ const getReferralInfo = async (req, res) => {
     });
   }
 };
-
-
 
 
 // Đăng ký người dùng theo mã tiếp thị liên kết
