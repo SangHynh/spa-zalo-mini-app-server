@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    //Thông tin người dùng
     zaloId: {
       type: String,
       required: true,
@@ -9,7 +10,7 @@ const userSchema = new mongoose.Schema(
     },
     name: { type: String, required: true, unique: false },
     avatar: { type: String, default: "", unique: false },
-    phone: { type: String, default: null, unique: false},
+    phone: { type: String, default: null, unique: false },
     gender: { type: String, enum: ["male", "female"], default: "male" },
     membershipTier: {
       type: String,
@@ -17,9 +18,19 @@ const userSchema = new mongoose.Schema(
       default: "Member",
     },
     points: { type: Number, default: 0 },
+    // Lịch sử
     history: { type: [String], default: [] },
+    // Tiếp thị liên kết
     referralCode: { type: String, unique: true },
+    referralInfo: {
+      paths: { type: String, required: true }, // ",ABC,DEF,GHI,JKL,..."
+      // tierLevel: { type: Number, required: true },
+      // commissionPercentage: { type: Number, default: 0 },
+      referredAt: { type: Date},
+    },
+    // Danh sách giảm giá
     discountsUsed: { type: [String], default: [] },
+    //Lịch sử dịch vụ
     serviceHistory: { type: [String], default: [] },
     address: { type: String, default: "" },
     suggestions: [

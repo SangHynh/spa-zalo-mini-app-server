@@ -10,6 +10,8 @@ const { connect } = require("../configs/db.config");
 
 // Hàm để tạo đối tượng User giả lập
 const generateUser = async () => {
+  const refCode = await generateReferralCode();
+
   return new User({
     zaloId: faker.string.uuid(),
     name: faker.person.fullName(),
@@ -22,8 +24,11 @@ const generateUser = async () => {
       "Gold",
       "Diamond",
     ]),
-    points: faker.number.int({ min: 0, max: 1000 }), 
-    referralCode: await generateReferralCode(),
+    points: faker.number.int({ min: 0, max: 1000 }),
+    referralCode: refCode,
+    referralInfo: {
+      paths: `,${refCode}`,
+    },
     discountsUsed: [],
     serviceHistory: [],
     productSuggestions: [],
@@ -34,12 +39,12 @@ const generateUser = async () => {
 // Hàm để tạo đối tượng Admin giả lập
 const generateAdmin = async () => {
   return new Admin({
-    email: faker.internet.email(),  
-    password: faker.internet.password(),  
-    name: faker.person.fullName(),  
-    branch: faker.company.name(),  
-    zaloId: faker.string.uuid(),  
-    avatar: faker.image.avatar(),  
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    name: faker.person.fullName(),
+    branch: faker.company.name(),
+    zaloId: faker.string.uuid(),
+    avatar: faker.image.avatar(),
     permissions: [
       "read_products",
       "write_products",
@@ -58,16 +63,18 @@ const generateData = async (numUsers = 5, numAdmins = 5) => {
     const users = [];
     const admins = [];
     for (let i = 0; i < numUsers; i++) {
-      users.push(await generateUser()); 
+      users.push(await generateUser());
     }
     for (let i = 0; i < numAdmins; i++) {
-      admins.push(await generateAdmin()); 
+      admins.push(await generateAdmin());
     }
 
     await User.insertMany(users);
     await Admin.insertMany(admins);
-    
-    console.log(`${numUsers} users and ${numAdmins} admins created successfully!`);
+
+    console.log(
+      `${numUsers} users and ${numAdmins} admins created successfully!`
+    );
   } catch (error) {
     console.error("Error creating users or admins:", error);
   }
@@ -76,12 +83,12 @@ const generateData = async (numUsers = 5, numAdmins = 5) => {
 // Kết nối đến MongoDB và gọi hàm tạo người dùng và admin
 const start = async () => {
   try {
-    await connect(); 
-    await generateData();  
+    await connect();
+    await generateData();
   } catch (error) {
     console.error("Error in start function:", error);
   } finally {
-    await mongoose.disconnect();  
+    await mongoose.disconnect();
   }
 };
 
