@@ -86,7 +86,7 @@ class PaymentController {
             }
 
             if (data.orderDate) {
-                data.orderDate = moment(data.orderDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                data.orderDate = moment(data.orderDate).format('YYYY-MM-DD');
             }
 
             const userId = req.payload.aud
