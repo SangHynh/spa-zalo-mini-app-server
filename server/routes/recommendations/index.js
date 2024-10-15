@@ -11,8 +11,10 @@ router.get('/get-reviews-by-product-id/:productId', recommendationController.get
 router.get('/suggest-products-for-user/:id', recommendationController.suggestProductsForUser);
 //chọn các danh mục yêu thích của khách hàng khi lần đầu vào app
 router.put('/update-suggest-products-for-multiple-products/:id', recommendationController.updateSuggestedScoresForMultipleProducts);
-//tìm kiếm và dựa vào tìm kiếm thu thập thông tin về danh mục yêu thích của khách hàng
+//tìm kiếm sản phẩm và dựa vào tìm kiếm thu thập thông tin về danh mục yêu thích của khách hàng
 router.put('/find-product-to-update-suggest-score-of-user/:productName', recommendationController.findProductToUpdateSuggestScoreOfUser);
+//tìm kiếm dịch vụ và dựa vào tìm kiếm thu thập thông tin về danh mục yêu thích của khách hàng
+router.put('/find-service-to-update-suggest-score-of-user/:serviceName', recommendationController.findServiceToUpdateSuggestScoreOfUser);
 //cập nhật danh sách sản phẩm gợi ý cho khách hàng khi khách hàng mua 1 sản phẩm
 router.put('/configure-product-recommendations/:id', recommendationController.configureProductRecommendations);
 router.post('/get-product-recommendations', recommendationController.getProductRecommendations);

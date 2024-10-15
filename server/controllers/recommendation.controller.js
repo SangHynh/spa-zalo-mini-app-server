@@ -69,6 +69,68 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   }
 };
 
+exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
+  const userId = req.body.id; // Lấy user ID từ body
+  const serviceName = req.params.serviceName; // Lấy service name từ params
+
+  try {
+    // Tìm kiếm dịch vụ dựa trên tên với regex
+    const services = await Service.find({
+      name: { $regex: serviceName, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+    });
+
+    if (!services || services.length === 0) {
+      return res.status(404).json({ message: "No services found" });
+    }
+
+    // Tìm người dùng
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Kiểm tra và khởi tạo mảng suggestions nếu chưa có
+    if (!user.suggestions) {
+      user.suggestions = [];
+    }
+
+    // Lặp qua các dịch vụ tìm được
+    for (const service of services) {
+      const categoryId = service.categoryId; // Lấy categoryId từ dịch vụ
+      const category = service.category; // Lấy category từ dịch vụ
+
+      // Tìm kiếm category trong mảng suggestions của user
+      const existingCategory = user.suggestions.find(
+        (suggestedCategory) => suggestedCategory.categoryId && suggestedCategory.categoryId.toString() === categoryId.toString()
+      );
+
+      if (existingCategory) {
+        // Nếu category đã tồn tại, tăng điểm suggestedScore lên 1
+        existingCategory.suggestedScore += 1;
+      } else {
+        // Nếu category chưa tồn tại, thêm category mới vào mảng với điểm suggestedScore = 1
+        user.suggestions.push({
+          categoryId: categoryId,
+          category: category, // Đảm bảo thêm category vào đây
+          suggestedScore: 1
+        });
+      }
+    }
+
+    // Lưu cập nhật vào cơ sở dữ liệu
+    const updatedUser = await user.save();
+
+    // Trả về thông tin cần thiết cùng với danh sách dịch vụ tìm kiếm
+    res.status(200).json({
+      message: "Updated successfully",
+      suggestions: updatedUser.suggestions,
+      services: services // Thêm danh sách dịch vụ tìm được vào phản hồi
+    });
+  } catch (error) {
+    console.error("Error updating suggested score:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.params.id; // User ID cố định
@@ -255,7 +317,6 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
   }
 };
 
-// SUGGEST PRODUCTS FOR USER
 // SUGGEST PRODUCTS FOR USER
 exports.configureProductRecommendations = async (req, res) => {
   const mainItemId = req.body.mainProductId;
