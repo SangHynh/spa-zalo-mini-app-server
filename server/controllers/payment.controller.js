@@ -162,8 +162,8 @@ class PaymentController {
             order.transactionId = transactionId;
             order.paymentStatus = paymentStatus;
 
-            // Cập nhật thành completed nhưng order trước đó không phải completed mới đc phép giảm só lượng sản phẩm
-            if (paymentStatus === "completed" && order.paymentStatus !== "completed") {
+            // Cập nhật thành completed và giảm só lượng sản phẩm
+            if (paymentStatus === "completed") {
                 for (let productOrder of order.products) {
                     const product = await Product.findById(productOrder.productId);
                     if (!product) {
