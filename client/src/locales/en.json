@@ -179,5 +179,6 @@
   "referral-id": "Referral Id",
   "customer-avatar": "Avatar",
   "membership-tier": "Membership tier",
-  "referred-at": "Referred date"
+  "referred-at": "Referred date",
+  "enter-referral-code": "Enter Referral Code"
 }
