@@ -40,7 +40,6 @@ function Row(props) {
 
   return (
     <>
-
       <React.Fragment>
         <TableRow
           sx={{
@@ -82,7 +81,11 @@ function Row(props) {
             }}
             className="relative"
           >
-            <img class='w-12 h-12 rounded-full' src={row.avatar} alt={row.name}></img>
+            <img
+              class="w-12 h-12 rounded-full"
+              src={row.avatar}
+              alt={row.name}
+            ></img>
           </TableCell>
           <TableCell
             align="left"
@@ -172,7 +175,7 @@ function Row(props) {
               textOverflow: "ellipsis",
             }}
             className="relative cursor-pointer"
-            onClick={() => handleCopy(row._id)}
+            onClick={() => handleCopy(row.referralCode)}
           >
             {row.referralCode}
           </TableCell>
@@ -240,9 +243,7 @@ function Row(props) {
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">{t("service-id")}</TableCell>
-                      <TableCell align="center">
-                        {t("service-name")}
-                      </TableCell>
+                      <TableCell align="center">{t("service-name")}</TableCell>
                       <TableCell align="center">{t("usage-count")}</TableCell>
                     </TableRow>
                   </TableHead>
@@ -250,11 +251,7 @@ function Row(props) {
                     {row.favoriteServices &&
                       row.favoriteServices.map((favoriteServiceRow) => (
                         <TableRow key={favoriteServiceRow._id}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {favoriteServiceRow._id}
                           </TableCell>
                           <TableCell align="center">
@@ -286,9 +283,7 @@ function Row(props) {
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">{t("product-id")}</TableCell>
-                      <TableCell align="center">
-                        {t("product-name")}
-                      </TableCell>
+                      <TableCell align="center">{t("product-name")}</TableCell>
                       <TableCell align="center">
                         {t("suggested-score")}
                       </TableCell>
@@ -298,11 +293,7 @@ function Row(props) {
                     {row.productSuggestions &&
                       row.productSuggestions.map((productSuggestion) => (
                         <TableRow key={productSuggestion._id}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {productSuggestion._id}
                           </TableCell>
                           <TableCell align="center">
@@ -341,11 +332,7 @@ function Row(props) {
                     {row.discountsUsed &&
                       row.discountsUsed.map((discountUsed) => (
                         <TableRow key={discountUsed._id}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {discountUsed._id}
                           </TableCell>
                           <TableCell align="center">
@@ -383,20 +370,14 @@ function Row(props) {
                     {row.carts &&
                       row.carts.map((cart) => (
                         <TableRow key={cart._id}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {cart._id}
                           </TableCell>
                           <TableCell align="center">
                             {cart.productName}
                           </TableCell>
                           <TableCell align="center">{cart.price}</TableCell>
-                          <TableCell align="center">
-                            {cart.quantity}
-                          </TableCell>
+                          <TableCell align="center">{cart.quantity}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -427,16 +408,10 @@ function Row(props) {
                     {row.vouchers &&
                       row.vouchers.map((voucher) => (
                         <TableRow key={voucher._id}>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                          >
+                          <TableCell component="th" scope="row" align="center">
                             {voucher.voucherId}
                           </TableCell>
-                          <TableCell align="center">
-                            {voucher.code}
-                          </TableCell>
+                          <TableCell align="center">{voucher.code}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -446,7 +421,6 @@ function Row(props) {
           </TableCell>
         </TableRow>
       </React.Fragment>
-
     </>
   );
 }

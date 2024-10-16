@@ -51,7 +51,7 @@ const getReferralInfo = async (req, res) => {
           }
         : null, // Nếu không có cha thì null
       user: {
-        zaloId: user._id,
+        zaloId: user.zaloId,
         name: user.name,
         membershipTier: user.membershipTier,
         referralCode: user.referralCode,
@@ -74,7 +74,6 @@ const getReferralInfo = async (req, res) => {
   }
 };
 
-
 // Đăng ký người dùng theo mã tiếp thị liên kết
 /* 
 auth/auth.controller.js
@@ -83,7 +82,7 @@ auth/auth.controller.js
 // Mở trang đăng ký điều hướng khi quét mã qr
 const getRegisterPage = async (req, res) => {
   try {
-    const { referralCode } = req.params; 
+    const { referralCode } = req.params;
     res.render("register", { referralCode });
   } catch (error) {
     return res.status(500).json({
