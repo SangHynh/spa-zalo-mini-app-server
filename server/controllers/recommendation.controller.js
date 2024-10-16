@@ -71,6 +71,69 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   }
 };
 
+exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
+  const userId = req.body.id; // Lấy user ID từ body
+  const serviceName = req.params.serviceName; // Lấy service name từ params
+
+  try {
+    // Tìm kiếm dịch vụ dựa trên tên với regex
+    const services = await Service.find({
+      name: { $regex: serviceName, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+    });
+
+    if (!services || services.length === 0) {
+      return res.status(404).json({ message: "No services found" });
+    }
+
+    // Tìm người dùng
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Kiểm tra và khởi tạo mảng suggestions nếu chưa có
+    if (!user.suggestions) {
+      user.suggestions = [];
+    }
+
+    // Lặp qua các dịch vụ tìm được
+    for (const service of services) {
+      const categoryId = service.categoryId; // Lấy categoryId từ dịch vụ
+      const category = service.category; // Lấy category từ dịch vụ
+
+      // Tìm kiếm category trong mảng suggestions của user
+      const existingCategory = user.suggestions.find(
+        (suggestedCategory) => suggestedCategory.categoryId && suggestedCategory.categoryId.toString() === categoryId.toString()
+      );
+
+      if (existingCategory) {
+        // Nếu category đã tồn tại, tăng điểm suggestedScore lên 1
+        existingCategory.suggestedScore += 1;
+      } else {
+        // Nếu category chưa tồn tại, thêm category mới vào mảng với điểm suggestedScore = 1
+        user.suggestions.push({
+          categoryId: categoryId,
+          category: category, // Đảm bảo thêm category vào đây
+          suggestedScore: 1
+        });
+      }
+    }
+
+    // Lưu cập nhật vào cơ sở dữ liệu
+    const updatedUser = await user.save();
+
+    // Trả về thông tin cần thiết cùng với danh sách dịch vụ tìm kiếm
+    res.status(200).json({
+      message: "Updated successfully",
+      suggestions: updatedUser.suggestions,
+      services: services // Thêm danh sách dịch vụ tìm được vào phản hồi
+    });
+  } catch (error) {
+    console.error("Error updating suggested score:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.params.id; // User ID cố định
   const productId = req.body.productID; // Lấy productId từ body
@@ -271,7 +334,6 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
   }
 };
 
-// SUGGEST PRODUCTS FOR USER
 // SUGGEST PRODUCTS FOR USER
 exports.configureProductRecommendations = async (req, res) => {
   const mainItemId = req.body.mainProductId;
@@ -554,11 +616,15 @@ exports.getCombinedProductRecommendations = async (req, res) => {
   console.log('Customer ID:', customerId);
 
   try {
-    // Bước 1: Lấy recommendation cho sản phẩm chính
-    const recommendation = await Recommendation.findOne({
-      mainItemId: mainItemId,
-      itemType: 'Product'
-    });
+    let recommendation = null;
+
+    // Bước 1: Lấy recommendation cho sản phẩm chính nếu có mainItemId
+    if (mainItemId) {
+      recommendation = await Recommendation.findOne({
+        mainItemId: mainItemId,
+        itemType: 'Product'
+      });
+    }
 
     // Bước 2: Lấy thông tin khách hàng và gợi ý từ các category của họ
     const customer = await User.findById(customerId);
@@ -638,6 +704,101 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getCombinedServiceRecommendations = async (req, res) => {
+  const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
+  const customerId = req.body.id; // Lấy customerId từ body của yêu cầu
+
+  console.log('Main Service ID:', mainItemId);
+  console.log('Customer ID:', customerId);
+
+  try {
+    // Bước 1: Lấy thông tin khách hàng và gợi ý từ các category của họ
+    const customer = await User.findById(customerId);
+    
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
+    const otherUsers = await User.find({ _id: { $ne: customerId } });
+    const categoryScores = {};
+
+    otherUsers.forEach(user => {
+      user.suggestions.forEach(suggestion => {
+        if (!customerCategoryIds.includes(suggestion.categoryId)) {
+          if (!categoryScores[suggestion.categoryId]) {
+            categoryScores[suggestion.categoryId] = {
+              categoryName: suggestion.categoryName,
+              totalScore: 0,
+              count: 0
+            };
+          }
+          categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
+          categoryScores[suggestion.categoryId].count += 1;
+        }
+      });
+    });
+
+    const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
+      return {
+        categoryId,
+        categoryName,
+        averageScore: totalScore / count
+      };
+    });
+
+    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    
+    // Bước 2: Tìm dịch vụ tương ứng với các category gợi ý, giới hạn 3 dịch vụ mỗi category
+    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
+    const suggestedServicesByCategory = await Promise.all(
+      topCategoryIds.map(async (categoryId) => {
+        const services = await Service.find({ categoryId }).limit(3);
+        return services;
+      })
+    );
+
+    // Bước 3: Tạo phản hồi
+    const response = {
+      message: "Combined service recommendations retrieved successfully",
+      suggestions: [],
+      collection: "Recommendation"
+    };
+
+    // Nếu có mainItemId thì lấy recommendation cho sản phẩm chính
+    if (mainItemId) {
+      const recommendation = await Recommendation.findOne({
+        mainItemId: mainItemId,
+        itemType: 'Service'
+      });
+
+      if (recommendation) {
+        response.suggestions.push({
+          mainItem: {
+            id: recommendation.mainItemId,
+            name: recommendation.mainItemName,
+          },
+          services: recommendation.items // Gợi ý từ sản phẩm chính
+        });
+      }
+    }
+
+    // Gợi ý dịch vụ từ các danh mục dựa trên hành vi người dùng, giới hạn 3 dịch vụ / category
+    suggestedServicesByCategory.forEach((services, index) => {
+      response.suggestions.push({
+        category: topRecommendations[index].categoryName,
+        services: services // Giới hạn 3 dịch vụ cho mỗi danh mục
+      });
+    });
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error retrieving combined recommendations:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 //update multiple suggestion scores
