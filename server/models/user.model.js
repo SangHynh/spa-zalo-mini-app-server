@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
     suggestions: [
       {
         categoryId: { type: String },  // ID của sản phẩm
-        category: { type: String },  // Tên sản phẩm
+        categoryName: { type: String },  // Tên sản phẩm
         suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
       }
     ],

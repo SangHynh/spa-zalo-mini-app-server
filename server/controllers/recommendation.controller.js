@@ -510,7 +510,6 @@ exports.suggestProductsForUser = async (req, res) => {
           if (!categoryScores[suggestion.categoryId]) {
             categoryScores[suggestion.categoryId] = {
               categoryName: suggestion.categoryName,
-              categoryName: suggestion.categoryName,
               totalScore: 0,
               count: 0,
             };
@@ -680,11 +679,11 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
       await user.save();
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Multiple suggestions updated successfully",
     });
   } catch (error) {
     console.error("Error updating multiple suggestions:", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -1,14 +1,42 @@
 import { Box, Card, CardContent, Grid2, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import OverviewCard from "./dashboards/overviews/OverviewCard";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts";
+import { apiGetRevenue } from "../apis/statistics";
 
 const Dashboard = () => {
   const { t } = useTranslation();
+
+  const [revenueData, setRevenueData] = useState([]);
+  const [labels, setLabels] = useState([]);
+  const [period, setPeriod] = useState("year");
+
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      const response = await apiGetRevenue(period);
+      if (response.status === 200) {
+        if (period === "year") {
+          setLabels([
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+          ]);
+        } else if (period === "month") {
+          const daysInMonth = new Date(to).getDate();
+          setLabels(Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`));
+        } else if (period === "week") {
+          setLabels(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+        }
+  
+        setRevenueData(response.data.revenueData);
+      }
+    };
+
+    fetchRevenueData();
+  }, [period]);
 
   const cards = [
     {
@@ -41,35 +69,35 @@ const Dashboard = () => {
     },
   ];
 
-  const revenueData = [
-    20000000, // Doanh thu tháng 1
-    15000000, // Doanh thu tháng 2
-    30000000, // Doanh thu tháng 3
-    40000000, // Doanh thu tháng 4
-    25000000, // Doanh thu tháng 5
-    35000000, // Doanh thu tháng 6
-    45000000, // Doanh thu tháng 7
-    50000000, // Doanh thu tháng 8
-    48000000, // Doanh thu tháng 9
-    null, // Doanh thu tháng 10
-    null, // Doanh thu tháng 11
-    null, // Doanh thu tháng 12
-  ];
+  // const revenueData = [
+  //   20000000, // Doanh thu tháng 1
+  //   15000000, // Doanh thu tháng 2
+  //   30000000, // Doanh thu tháng 3
+  //   40000000, // Doanh thu tháng 4
+  //   25000000, // Doanh thu tháng 5
+  //   35000000, // Doanh thu tháng 6
+  //   45000000, // Doanh thu tháng 7
+  //   50000000, // Doanh thu tháng 8
+  //   48000000, // Doanh thu tháng 9
+  //   null, // Doanh thu tháng 10
+  //   null, // Doanh thu tháng 11
+  //   null, // Doanh thu tháng 12
+  // ];
 
-  const months = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-  ];
+  // const months = [
+  //   "1",
+  //   "2",
+  //   "3",
+  //   "4",
+  //   "5",
+  //   "6",
+  //   "7",
+  //   "8",
+  //   "9",
+  //   "10",
+  //   "11",
+  //   "12",
+  // ];
 
   return (
     <Box className="w-full flex flex-col gap-6">
@@ -91,8 +119,8 @@ const Dashboard = () => {
           </Typography>
 
           <LineChart
-            xAxis={[{ data: months, scaleType: "point" }]}
-            series={[{ data: revenueData }]}
+            xAxis={[{ data: labels, scaleType: "point" }]}
+            series={[{ data: revenueData, area: true, valueFormatter: (amount) => amount.toLocaleString("vi-VN") + " VNĐ" }]}
             height={400}
           />
         </Grid2>
