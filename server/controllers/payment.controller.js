@@ -5,6 +5,7 @@ const moment = require('moment');
 const User = require('../models/user.model');
 const Product = require('../models/product.model');
 const Voucher = require('../models/voucher.model');
+const AppConfig = require('../models/appconfig.model');
 
 class PaymentController {
     // GET ORDERS
@@ -159,11 +160,14 @@ class PaymentController {
                 return res.status(404).json({ message: 'Order not found' });
             }
 
+            const checkedStatus = order.paymentStatus;
+
             order.transactionId = transactionId;
             order.paymentStatus = paymentStatus;
 
             // Cập nhật thành completed và giảm só lượng sản phẩm
-            if (paymentStatus === "completed") {
+            if (paymentStatus === "completed" && checkedStatus !== "completed") {
+                // CẬP NHẬT SỐ LƯỢNG SẢN PHẨM
                 for (let productOrder of order.products) {
                     const product = await Product.findById(productOrder.productId);
                     if (!product) {
@@ -196,6 +200,27 @@ class PaymentController {
                     }
 
                     await product.save();
+                }
+
+                // CẬP NHẬT ĐIỂM CHO USER + CẬP NHẬT ĐIỂM CHO NGƯỜI GIỚI THIỆU (PLANNED)
+                const appConfig = await AppConfig.findOne()
+                if (appConfig) {
+                    const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
+                    for(let pointLevel of sortedOrderPoints) {
+                        console.log(pointLevel)
+                        if (order.finalAmount >= pointLevel.price) {
+                            const user = await User.findById(order.customerId);
+                            if (!user) return res.status(404).json({ message: "User not found" });
+
+                            user.points += pointLevel.minPoints;
+
+                            await user.save({ validateBeforeSave: false })
+
+                            // const referralInfo = user.referralInfo.paths
+
+                            break;
+                        }
+                    }
                 }
             }
 
