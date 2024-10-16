@@ -27,3 +27,9 @@ export const apiCreateStafffs = (formData) =>
     method: "POST",
     data: formData,
   });
+
+export const apiSearchAffiate = (referralCode) =>
+  axios({
+    url: `/api/users/referral-info/${referralCode}`,
+    method: "GET",
+  });

@@ -176,5 +176,9 @@
   "payment-status": "Trạng thái thanh toán",
   "transaction-id": "Mã giao dịch (Zalo OrderID)",
   "remarks": "Nhận xét",
-  "referral-id": "Id tiếp thị"
+  "referral-id": "Id tiếp thị",
+  "customer-avatar": "Ảnh đại diện",
+  "membership-tier": "Cấp hạng",
+  "referred-at": "Ngày giới thiệu",
+  "enter-referral-code": "Nhập mã giới thiệu"
 }

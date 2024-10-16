@@ -5,6 +5,7 @@ const Service = require("../models/service.model");
 const User = require("../models/user.model");
 const mongoose = require('mongoose');
 const moment = require('moment');
+const AppConfig = require("../models/appconfig.model");
 
 class BookingController {
 
@@ -113,7 +114,7 @@ class BookingController {
                 query.status = { $regex: status, $options: 'i' }; // Case-insensitive search
             }
 
-            const response = await BookngHistory.find({ customerId: user._id, ...query });
+            const response = await BookingHistory.find({ customerId: user._id, ...query });
 
             // console.log(response)
 
@@ -407,9 +408,72 @@ class BookingController {
 
             if (!existingOrder) return res.status(404).json({ message: 'Order not found for this booking' });
 
+            const checkedStatus = existingOrder.paymentStatus
+
             existingOrder.paymentStatus = req.body.status;
 
-            const updatedOrder = await existingOrder.save();
+            if (existingOrder.paymentStatus === "completed" && checkedStatus !== "completed") {
+                if (existingOrder.products && existingOrder.products.length > 0) {
+                    // CẬP NHẬT SỐ LƯỢNG SẢN PHẨM
+                    for (let productOrder of existingOrder.products) {
+                        const product = await Product.findById(productOrder.productId);
+                        if (!product) {
+                            return res.status(404).json({ message: `Product with ID ${productOrder.productId} not found` });
+                        }
+    
+                        // Nếu sản phẩm có variant, tìm và cập nhật stock của variant
+                        if (productOrder.variantId) {
+                            const variant = product.variants.id(productOrder.variantId);
+                            if (!variant) {
+                                return res.status(404).json({ message: `Variant with ID ${productOrder.variantId} not found` });
+                            }
+    
+                            if (variant.stock < productOrder.quantity) {
+                                return res.status(400).json({ message: `Insufficient stock for variant ${variant._id}` });
+                            }
+    
+                            variant.stock -= productOrder.quantity;
+    
+                            // Tính lại tổng stock của sản phẩm từ tất cả các variant còn lại
+                            const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
+    
+                            product.stock = totalStock;
+                        } else {
+                            if (product.stock < productOrder.quantity) {
+                                return res.status(400).json({ message: `Insufficient stock for product ${product._id}` });
+                            }
+    
+                            product.stock -= productOrder.quantity;
+                        }
+    
+                        await product.save({ validateBeforeSave: false });
+                    }
+
+                }
+
+                // CẬP NHẬT ĐIỂM CHO USER + CẬP NHẬT ĐIỂM CHO NGƯỜI GIỚI THIỆU (PLANNED)
+                const appConfig = await AppConfig.findOne()
+                if (appConfig) {
+                    const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
+                    for(let pointLevel of sortedOrderPoints) {
+                        console.log(pointLevel)
+                        if (existingOrder.finalAmount >= pointLevel.price) {
+                            const user = await User.findById(existingOrder.customerId);
+                            if (!user) return res.status(404).json({ message: "User not found" });
+
+                            user.points += pointLevel.minPoints;
+
+                            await user.save({ validateBeforeSave: false })
+
+                            // const referralInfo = user.referralInfo.paths
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            const updatedOrder = await existingOrder.save({ validateBeforeSave: false });
 
             if (!updatedOrder) return res.status(400).json({ message: 'Cannot update order' });
 
