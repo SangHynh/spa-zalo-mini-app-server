@@ -589,11 +589,15 @@ exports.getCombinedProductRecommendations = async (req, res) => {
   console.log('Customer ID:', customerId);
 
   try {
-    // Bước 1: Lấy recommendation cho sản phẩm chính
-    const recommendation = await Recommendation.findOne({
-      mainItemId: mainItemId,
-      itemType: 'Product'
-    });
+    let recommendation = null;
+
+    // Bước 1: Lấy recommendation cho sản phẩm chính nếu có mainItemId
+    if (mainItemId) {
+      recommendation = await Recommendation.findOne({
+        mainItemId: mainItemId,
+        itemType: 'Product'
+      });
+    }
 
     // Bước 2: Lấy thông tin khách hàng và gợi ý từ các category của họ
     const customer = await User.findById(customerId);
@@ -673,6 +677,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 exports.getCombinedServiceRecommendations = async (req, res) => {
   const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
   const customerId = req.body.id; // Lấy customerId từ body của yêu cầu
@@ -681,13 +686,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
   console.log('Customer ID:', customerId);
 
   try {
-    // Bước 1: Lấy recommendation cho sản phẩm chính
-    const recommendation = await Recommendation.findOne({
-      mainItemId: mainItemId,
-      itemType: 'Service'
-    });
-
-    // Bước 2: Lấy thông tin khách hàng và gợi ý từ các category của họ
+    // Bước 1: Lấy thông tin khách hàng và gợi ý từ các category của họ
     const customer = await User.findById(customerId);
     
     if (!customer) {
@@ -724,7 +723,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
 
     const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
     
-    // Bước 3: Tìm sản phẩm tương ứng với các category gợi ý, giới hạn 3 sản phẩm mỗi category
+    // Bước 2: Tìm dịch vụ tương ứng với các category gợi ý, giới hạn 3 dịch vụ mỗi category
     const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
     const suggestedServicesByCategory = await Promise.all(
       topCategoryIds.map(async (categoryId) => {
@@ -733,29 +732,36 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
       })
     );
 
-    // Bước 4: Trả về thông tin recommendation kết hợp
+    // Bước 3: Tạo phản hồi
     const response = {
       message: "Combined service recommendations retrieved successfully",
       suggestions: [],
       collection: "Recommendation"
     };
 
-    // Nếu có recommendation cho sản phẩm chính, ưu tiên hiển thị trước
-    if (recommendation) {
-      response.suggestions.push({
-        mainItem: {
-          id: recommendation.mainItemId,
-          name: recommendation.mainItemName,
-        },
-        services: recommendation.items // Gợi ý từ sản phẩm chính
+    // Nếu có mainItemId thì lấy recommendation cho sản phẩm chính
+    if (mainItemId) {
+      const recommendation = await Recommendation.findOne({
+        mainItemId: mainItemId,
+        itemType: 'Service'
       });
+
+      if (recommendation) {
+        response.suggestions.push({
+          mainItem: {
+            id: recommendation.mainItemId,
+            name: recommendation.mainItemName,
+          },
+          services: recommendation.items // Gợi ý từ sản phẩm chính
+        });
+      }
     }
 
-    // Gợi ý sản phẩm từ các danh mục dựa trên hành vi người dùng, giới hạn 3 sản phẩm / category
+    // Gợi ý dịch vụ từ các danh mục dựa trên hành vi người dùng, giới hạn 3 dịch vụ / category
     suggestedServicesByCategory.forEach((services, index) => {
       response.suggestions.push({
         category: topRecommendations[index].categoryName,
-        services: services // Giới hạn 3 sản phẩm cho mỗi danh mục
+        services: services // Giới hạn 3 dịch vụ cho mỗi danh mục
       });
     });
 
@@ -765,6 +771,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 //update multiple suggestion scores
