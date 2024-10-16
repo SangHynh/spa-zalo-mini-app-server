@@ -1,5 +1,4 @@
 const User = require("../models/user.model");
-const Admin = require("../models/admin.model");
 const { zaloPhoneService } = require("../services/zalo.service");
 const mongoose = require('mongoose');
 
@@ -137,7 +136,6 @@ const updateUserInfo = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     if (name) user.name = name;
-    if (phone) user.phone = phone;
     if (gender) user.gender = gender;
     await user.save();
     const userInfo = {
