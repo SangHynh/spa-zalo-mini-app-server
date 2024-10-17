@@ -15,7 +15,7 @@ const AffiliateMarketing = () => {
   const { t } = useTranslation();
   const [referralCode, setReferralCode] = useState("");
   const [foundCustomer, setFoundCustomer] = useState(null);
-  const [expandedNodes, setExpandedNodes] = useState({}); // Lưu các node con đã mở rộng
+  const [expandedNodes, setExpandedNodes] = useState({});
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -24,49 +24,50 @@ const AffiliateMarketing = () => {
         if (response.status === 200) {
           setFoundCustomer(response.data);
         } else {
-          setFoundCustomer(null); // Xóa customer nếu không tìm thấy
+          setFoundCustomer(null);
         }
       } else {
-        setFoundCustomer(null); // Xóa customer khi không có referral code
+        setFoundCustomer(null);
       }
     };
 
     fetchCustomer();
   }, [referralCode]);
 
-  // Hàm mở rộng để load descendants cho một node con
   const handleExpandNode = async (referralCode, nodeId) => {
     const response = await apiSearchAffiate(referralCode);
     if (response.status === 200) {
       setExpandedNodes((prev) => ({
         ...prev,
-        [nodeId]: response.data.descendants, // Lưu descendants của node con
+        [nodeId]: response.data.descendants,
       }));
     }
   };
 
-  // Hàm render cây liên kết
-  const renderNode = (user, descendants, nodeId) => (
-    <div key={nodeId || user.zaloId} className="flex flex-col gap-6 ml-4">
+  const renderNode = (user, descendants, nodeId, level = 1) => (
+    <div key={nodeId || user.referralCode} className="flex flex-col gap-4 ml-4">
       <div className="flex items-center gap-4">
         <Typography variant="body1" className="w-fit">
-          {user.name} ({user.referralCode})
+          {user.name} ({user.referralCode}) - {t("level")} {level}
         </Typography>
-        {/* Button để load descendants */}
         <IconButton
           onClick={() =>
-            handleExpandNode(user.referralCode, nodeId || user.zaloId)
+            handleExpandNode(user.referralCode, nodeId || user.referralCode)
           }
         >
           <AddIcon />
         </IconButton>
       </div>
 
-      {/* Nếu node đã mở rộng thì hiển thị descendants */}
-      {expandedNodes[nodeId || user.zaloId] && (
-        <div className="ml-8">
-          {expandedNodes[nodeId || user.zaloId].map((descendant) =>
-            renderNode(descendant, descendant.descendants, descendant.zaloId)
+      {expandedNodes[nodeId || user.referralCode] && (
+        <div className="ml-8 gap-4 flex flex-col">
+          {expandedNodes[nodeId || user.referralCode].map((descendant) =>
+            renderNode(
+              descendant,
+              descendant.descendants,
+              descendant.referralCode,
+              level + 1
+            )
           )}
         </div>
       )}
@@ -95,11 +96,9 @@ const AffiliateMarketing = () => {
         />
       </div>
 
-      {/* Hiển thị user đầu tiên và descendants của họ */}
       {foundCustomer && (
         <div className="flex flex-col gap-4">
-          {/* Hiển thị node cha (user) và các node con */}
-          {renderNode(foundCustomer.user, foundCustomer.descendants)}
+          {renderNode(foundCustomer.user, foundCustomer.descendants, null, 1)}
         </div>
       )}
     </Box>
