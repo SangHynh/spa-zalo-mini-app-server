@@ -139,7 +139,7 @@
   "edit-voucher": "Cập nhật phiếu giảm giá",
   "price-applied": "Giá đơn hàng",
   "give-voucher": "Tặng voucher",
-  "select-account": "Chọn tài khoản",
+  "select-accounts": "Chọn Tài khoản",
   "detail": "Chi tiết",
   "arrange": "Sắp xếp",
   "no.": "STT",
@@ -158,7 +158,7 @@
   "stay": "Ở lại",
   "size-error": "Lỗi kích thước",
   "title-size-err": "Các ảnh sau có kích thước không hợp lệ (>= 1000x500):",
-  "select-vouchers": "Chọn voucher",
+  "select-vouchers": "Chọn Voucher",
   "missing-users-vouchers": "Vui lòng chọn khách hàng và voucher",
   "warning": "Cảnh báo",
   "give-away-vouchers": "Tặng Voucher",
@@ -180,5 +180,10 @@
   "customer-avatar": "Ảnh đại diện",
   "membership-tier": "Cấp hạng",
   "referred-at": "Ngày giới thiệu",
-  "enter-referral-code": "Nhập mã giới thiệu"
+  "enter-referral-code": "Nhập mã giới thiệu",
+  "commission-percent": "Phần trăm hoa hồng",
+  "recommend-system": "Hệ thống gợi ý",
+  "user-cate": "Người dùng - Danh mục",
+  "select-cate": "Chọn Danh mục",
+  "suggestion-score": "Điểm gợi ý"
 }

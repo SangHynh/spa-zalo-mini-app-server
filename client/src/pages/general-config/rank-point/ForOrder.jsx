@@ -38,8 +38,26 @@ const ForOrder = () => {
   const [id, setId] = useState("");
   const [price, setPrice] = useState("");
   const [point, setPoint] = useState("");
-  const [benefits, setBenefits] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchOrderPoints = async () => {
+      try {
+        const response = await apiGetOrderPoints();
+
+        if (Array.isArray(response.data)) {
+          setRows(response.data);
+        } else {
+          setRows([]);
+        }
+      } catch (error) {
+        console.error("Error fetching oderPoints:", error);
+      }
+    };
+
+    fetchOrderPoints();
+  }, []);
 
   const handleEditBtn = (row) => {
     setIsEdit(true);
@@ -67,161 +85,134 @@ const ForOrder = () => {
     setIsCreate(false);
   };
 
-  // const handleUpdate = async () => {
-  //   try {
-  //     const formData = {
-  //       tier: rank,
-  //       minPoints: point,
-  //       benefits: benefits,
-  //     };
+  const handleUpdate = async () => {
+    try {
+      const orderPointData = {
+        price: price,
+        minPoints: point,
+      };
 
-  //     const response = await apiUpdateRank(id, formData);
+      const response = await apiUpdateOrderPoint(id, orderPointData);
 
-  //     if (
-  //       originalRow &&
-  //       formData.tier === originalRow.tier &&
-  //       formData.minPoints === originalRow.minPoints &&
-  //       formData.benefits === originalRow.benefits
-  //     ) {
-  //       toast.info(t("no-change"));
-  //       return;
-  //     }
+      if (
+        originalRow &&
+        orderPointData.price === originalRow.price &&
+        orderPointData.minPoints === originalRow.minPoints
+      ) {
+        toast.info(t("no-change"));
+        return;
+      }
 
-  //     if (response.status === 200) {
-  //       Swal.fire({
-  //         title: `${t("success")}!`,
-  //         text: `${t("update-success")}!`,
-  //         icon: "success",
-  //         confirmButtonText: "Ok",
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           window.location.reload();
-  //         }
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating rank:", error);
-  //     Swal.fire({
-  //       title: `${t("error")}!`,
-  //       icon: "error",
-  //       confirmButtonText: "Ok",
-  //     });
-  //   }
-  // };
+      if (response.status === 200) {
+        Swal.fire({
+          title: `${t("success")}!`,
+          text: `${t("update-success")}!`,
+          icon: "success",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error updating oderPoints:", error);
+      Swal.fire({
+        title: `${t("error")}!`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    }
+  };
 
-  // const handleCreate = async () => {
-  //   try {
-  //     const formData = {
-  //       tier: rank,
-  //       minPoints: point,
-  //       benefits: benefits,
-  //     };
+  const handleCreate = async () => {
+    try {
+      const orderPointData = {
+        price: price,
+        minPoints: point,
+      };
 
-  //     const response = await apiCreateRank(formData);
+      const response = await apiCreateOrderPoint(orderPointData);
 
-  //     if (response.status === 201) {
-  //       Swal.fire({
-  //         title: `${t("success")}!`,
-  //         text: `${t("create-success")}!`,
-  //         icon: "success",
-  //         confirmButtonText: "Ok",
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           window.location.reload();
-  //         }
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error create rank:", error);
-  //     Swal.fire({
-  //       title: `${t("error")}!`,
-  //       icon: "error",
-  //       confirmButtonText: "Ok",
-  //     });
-  //   }
-  // };
+      if (response.status === 201) {
+        Swal.fire({
+          title: `${t("success")}!`,
+          text: `${t("create-success")}!`,
+          icon: "success",
+          confirmButtonText: "Ok",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error create oderPoints:", error);
+      Swal.fire({
+        title: `${t("error")}!`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    }
+  };
 
-  // const handleDelete = async (rankId) => {
-  //   const confirmDelete = await Swal.fire({
-  //     title: `${t("confirm")}!`,
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: `${t("yes")}`,
-  //     cancelButtonText: `${t("no")}`,
-  //   });
+  const handleDelete = async (orderPointId) => {
+    const confirmDelete = await Swal.fire({
+      title: `${t("confirm")}!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `${t("yes")}`,
+      cancelButtonText: `${t("no")}`,
+    });
 
-  //   if (confirmDelete.isConfirmed) {
-  //     try {
-  //       const response = await apiDeleteRank(rankId);
-
-  //       if (response.status === 200) {
-  //         Swal.fire({
-  //           title: `${t("success")}!`,
-  //           text: `${t("delete-success")}!`,
-  //           icon: "success",
-  //           confirmButtonText: "Ok",
-  //         }).then((result) => {
-  //           if (result.isConfirmed) {
-  //             window.location.reload();
-  //           }
-  //         });
-  //       } else {
-  //         Swal.fire({
-  //           title: `${t("error")}!`,
-  //           text: `${t("delete-failed")}!`,
-  //           icon: "error",
-  //           confirmButtonText: "Ok",
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Error deleting rank:", error);
-  //       Swal.fire({
-  //         title: `${t("error")}!`,
-  //         icon: "error",
-  //         confirmButtonText: "Ok",
-  //       });
-  //     }
-  //   }
-  // };
-
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    const fetchOrderPoints = async () => {
+    if (confirmDelete.isConfirmed) {
       try {
-        const response = await apiGetOrderPoints();
+        const response = await apiDeleteOrderPoint(orderPointId);
 
-        if (Array.isArray(response.data)) {
-          setRows(response.data);
+        if (response.status === 200) {
+          Swal.fire({
+            title: `${t("success")}!`,
+            text: `${t("delete-success")}!`,
+            icon: "success",
+            confirmButtonText: "Ok",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          });
         } else {
-          setRows([]);
+          Swal.fire({
+            title: `${t("error")}!`,
+            text: `${t("delete-failed")}!`,
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
         }
       } catch (error) {
-        console.error("Error fetching oderPoints:", error);
+        console.error("Error deleting oderPoints:", error);
+        Swal.fire({
+          title: `${t("error")}!`,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
       }
-    };
-
-    fetchOrderPoints();
-  }, []);
+    }
+  };
 
   return (
-    <Box className="w-full flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <Typography variant="h6">{t("order")}</Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          className="w-fit flex items-center gap-2"
-          onClick={handleCreateBtn}
-        >
-          <FaPlus />
-          {t("create")}
-        </Button>
-        <div></div>
-      </div>
+    <Box className="w-full flex flex-col gap-4">
+      <Button
+        variant="contained"
+        color="secondary"
+        className="w-fit flex items-center gap-2"
+        onClick={handleCreateBtn}
+      >
+        <FaPlus />
+        {t("create")}
+      </Button>
       <Grid2 container spacing={4}>
         <Grid2 size={7}>
-          <TableContainer component={Paper} className="border">
+          <TableContainer component={Paper} className="border shadow-2xl">
             <Table sx={{ minWidth: 700 }} aria-label="simple table">
               <TableHead className="bg-gray-400 dark:bg-gray-100">
                 <TableRow>
@@ -235,7 +226,7 @@ const ForOrder = () => {
                     align="center"
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
-                    {t("price")}
+                    {t("price")} (VNĐ)
                   </TableCell>
                   <TableCell
                     align="center"
@@ -260,10 +251,15 @@ const ForOrder = () => {
                     <TableCell align="center" sx={{ width: "20%" }}>
                       {index + 1}
                     </TableCell>
-                    <TableCell component="th" scope="row" sx={{ width: "30%" }}>
-                      {row.price}
+                    <TableCell
+                      align="right"
+                      component="th"
+                      scope="row"
+                      sx={{ width: "30%" }}
+                    >
+                      {row.price.toLocaleString("vi-VN")}
                     </TableCell>
-                    <TableCell align="center" sx={{ width: "30%" }}>
+                    <TableCell align="right" sx={{ width: "30%" }}>
                       {row.minPoints}
                     </TableCell>
                     <TableCell>
@@ -391,18 +387,6 @@ const ForOrder = () => {
                     onChange={(e) => setPoint(e.target.value)}
                   />
                 </Grid2>
-                <Grid2 size={12}>
-                  <FormControl fullWidth margin="dense" variant="standard">
-                    <InputLabel>{t("benefits")}</InputLabel>
-                    <Input
-                      id="ingredientUsageInstructions"
-                      multiline
-                      rows={3}
-                      value={benefits}
-                      onChange={(e) => setBenefits(e.target.value)}
-                    />
-                  </FormControl>
-                </Grid2>
               </Grid2>
               <Grid2
                 container
@@ -414,7 +398,7 @@ const ForOrder = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    // onClick={handleCreate}
+                    onClick={handleCreate}
                   >
                     {t("create")}
                   </Button>

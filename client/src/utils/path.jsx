@@ -18,6 +18,7 @@ const path = {
   COMMISSION: "commission",
   RANK_POINT: "rank-point",
   IMAGES: "images",
+  RECOMMEND_SYSTEM: "recommend-system",
 
   // RECOMMENDED
   PROD_RECOMMEND_SYSTEM: "prod-recommend-system",

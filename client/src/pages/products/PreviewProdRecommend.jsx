@@ -38,7 +38,7 @@ const PreviewProdRecommend = ({ open, onClose, products }) => {
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>{t("selected-products")}</DialogTitle>
       <DialogContent>
-        <Paper className="border">
+        <Paper className="border shadow-2xl">
           <TableContainer>
             <Table>
               <TableHead className="bg-gray-400 dark:bg-gray-100">

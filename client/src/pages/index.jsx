@@ -11,6 +11,7 @@ export { default as AffiliateMarketing } from "./general-config/AffiliateMarketi
 export { default as VoucherManagement } from "./vouchers/VoucherManagement";
 export { default as Commission } from "./general-config/Commission";
 export { default as RanknPoint } from "./general-config/rank-point/RanknPoint";
+export { default as RecommendSystem } from "./general-config/recommend-system/RecommendSystem";
 export { default as Images } from "./general-config/Images";
 export { default as ProductTable } from "./products/ProductTable";
 export { default as ServiceTable } from "./services/ServiceTable";

@@ -357,7 +357,13 @@ function Row(props) {
   );
 }
 
-const ProductTable = ({ searchTerm, subCategoryId, stockSort, priceSort, expiryDateSort }) => {
+const ProductTable = ({
+  searchTerm,
+  subCategoryId,
+  stockSort,
+  priceSort,
+  expiryDateSort,
+}) => {
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -386,7 +392,15 @@ const ProductTable = ({ searchTerm, subCategoryId, stockSort, priceSort, expiryD
     };
 
     fetchProducts();
-  }, [currentPage, rowsPerPage, searchTerm, subCategoryId, stockSort, priceSort, expiryDateSort]);
+  }, [
+    currentPage,
+    rowsPerPage,
+    searchTerm,
+    subCategoryId,
+    stockSort,
+    priceSort,
+    expiryDateSort,
+  ]);
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -404,7 +418,7 @@ const ProductTable = ({ searchTerm, subCategoryId, stockSort, priceSort, expiryD
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
-        className="border"
+        className="border shadow-2xl"
       >
         <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">

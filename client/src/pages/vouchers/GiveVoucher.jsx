@@ -249,15 +249,19 @@ const GiveVoucher = ({ open, onClose }) => {
       fullScreen
       TransitionComponent={Transition}
     >
-      <DialogTitle>{t("give-away-vouchers")}</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h5" gutterBottom>
+          {t("give-away-vouchers")}
+        </Typography>
+      </DialogTitle>
       <DialogContent>
         <Grid2 container spacing={2}>
           {/* SELECT USERS */}
           <Grid2 size={6}>
-            <Typography variant="h5" gutterBottom>
-              {t("select-account")}
+            <Typography variant="h6" gutterBottom>
+              {t("select-accounts")}
             </Typography>
-            <div className="flex justify-between items-center space-x-3 mb-3">
+            <div className="flex justify-between items-center space-x-3 my-4">
               <div className="flex-1 w-64 relative">
                 <input
                   type="text"
@@ -269,9 +273,9 @@ const GiveVoucher = ({ open, onClose }) => {
                 <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
               </div>
             </div>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className="border shadow-2xl">
               <Table>
-                <TableHead>
+                <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
@@ -284,10 +288,27 @@ const GiveVoucher = ({ open, onClose }) => {
                           selectedUserIds.length === users.length
                         }
                         onChange={handleSelectAllUsers}
+                        sx={{ color: "black" }}
                       />
                     </TableCell>
-                    <TableCell>{t("name")}</TableCell>
-                    <TableCell>{t("phone")}</TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      Id
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("name")}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("phone")}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -338,10 +359,10 @@ const GiveVoucher = ({ open, onClose }) => {
 
           {/* SELECT VOUCHERS */}
           <Grid2 size={6}>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               {t("select-vouchers")}
             </Typography>
-            <div className="flex justify-between items-center space-x-3 mb-3">
+            <div className="flex justify-between items-center space-x-3 my-4">
               <div className="flex-1 w-64 relative">
                 <input
                   type="text"
@@ -353,9 +374,9 @@ const GiveVoucher = ({ open, onClose }) => {
                 <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
               </div>
             </div>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className="border shadow-2xl">
               <Table>
-                <TableHead>
+                <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
@@ -368,12 +389,33 @@ const GiveVoucher = ({ open, onClose }) => {
                           selectedVoucherIds.length === vouchers.length
                         }
                         onChange={handleSelectAllVouchers}
+                        sx={{ color: "black" }}
                       />
                     </TableCell>
-                    <TableCell>{t("code")}</TableCell>
-                    <TableCell>{t("discount-type")}</TableCell>
-                    <TableCell>{t("discount-value")}</TableCell>
-                    <TableCell>{t("usage-limit")}</TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("code")}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("discount-type")}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("discount-value")}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "black", fontWeight: "bold" }}
+                    >
+                      {t("usage-limit")}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -404,8 +446,7 @@ const GiveVoucher = ({ open, onClose }) => {
                           } else {
                             handleClickVoucher(event, voucher._id);
                           }
-                        }
-                        }
+                        }}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -446,11 +487,11 @@ const GiveVoucher = ({ open, onClose }) => {
         </Grid2>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="error">
-          {t("cancel")}
+        <Button onClick={handleSubmit} variant="contained" color="success">
+          {t("confirm")}
         </Button>
-        <Button onClick={handleSubmit} color="primary">
-          {t("submit")}
+        <Button variant="outlined" color="warning" onClick={onClose}>
+          {t("cancel")}
         </Button>
       </DialogActions>
     </Dialog>

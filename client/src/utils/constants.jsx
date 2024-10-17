@@ -95,11 +95,17 @@ export const getSidebar = (t) => [
       {
         id: 83,
         icon: <GoDash />,
+        path: `/${path.ADMIN_LAYOUT}/${path.RECOMMEND_SYSTEM}`,
+        name: t("recommend-system"),
+      },
+      {
+        id: 84,
+        icon: <GoDash />,
         path: `/${path.ADMIN_LAYOUT}/${path.RANK_POINT}`,
         name: t("rank-point"),
       },
       {
-        id: 84,
+        id: 85,
         icon: <GoDash />,
         path: `/${path.ADMIN_LAYOUT}/${path.IMAGES}`,
         name: t("nor-image"),

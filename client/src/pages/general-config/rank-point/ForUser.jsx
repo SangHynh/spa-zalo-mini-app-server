@@ -38,6 +38,7 @@ const ForUser = () => {
   const [id, setId] = useState("");
   const [rank, setRank] = useState("");
   const [point, setPoint] = useState("");
+  const [commissionPercent, setCommissionPercent] = useState("");
   const [benefits, setBenefits] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
 
@@ -47,6 +48,7 @@ const ForUser = () => {
     setId(row._id);
     setRank(row.tier);
     setPoint(row.minPoints);
+    setCommissionPercent(row.commissionPercent);
     setBenefits(row.benefits);
     setOriginalRow(row); // Save original row
   };
@@ -57,6 +59,7 @@ const ForUser = () => {
     setId(null);
     setRank("");
     setPoint(0);
+    setCommissionPercent(0);
     setBenefits([]);
     setOriginalRow(null);
   };
@@ -74,6 +77,7 @@ const ForUser = () => {
       const formData = {
         tier: rank,
         minPoints: point,
+        commissionPercent: commissionPercent,
         benefits: benefits,
       };
 
@@ -83,6 +87,7 @@ const ForUser = () => {
         originalRow &&
         formData.tier === originalRow.tier &&
         formData.minPoints === originalRow.minPoints &&
+        formData.commissionPercent === originalRow.commissionPercent &&
         formData.benefits === originalRow.benefits
       ) {
         toast.info(t("no-change"));
@@ -116,6 +121,7 @@ const ForUser = () => {
       const formData = {
         tier: rank,
         minPoints: point,
+        commissionPercent: commissionPercent,
         benefits: benefits,
       };
 
@@ -207,23 +213,19 @@ const ForUser = () => {
   }, []);
 
   return (
-    <Box className="w-full flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <Typography variant="h6">{t("user")}</Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          className="w-fit flex items-center gap-2"
-          onClick={handleCreateBtn}
-        >
-          <FaPlus />
-          {t("create")}
-        </Button>
-        <div></div>
-      </div>
+    <Box className="w-full flex flex-col gap-4">
+      <Button
+        variant="contained"
+        color="secondary"
+        className="w-fit flex items-center gap-2"
+        onClick={handleCreateBtn}
+      >
+        <FaPlus />
+        {t("create")}
+      </Button>
       <Grid2 container spacing={4}>
         <Grid2 size={7}>
-          <TableContainer component={Paper} className="border">
+          <TableContainer component={Paper} className="border shadow-2xl">
             <Table sx={{ minWidth: 700 }} aria-label="simple table">
               <TableHead className="bg-gray-400 dark:bg-gray-100">
                 <TableRow>
@@ -244,6 +246,12 @@ const ForUser = () => {
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
                     {t("point")}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ fontWeight: "bold", color: "black" }}
+                  >
+                    {t("commission-percent")} (%)
                   </TableCell>
                   <TableCell
                     align="center"
@@ -271,10 +279,13 @@ const ForUser = () => {
                     <TableCell component="th" scope="row" sx={{ width: "20%" }}>
                       {row.tier}
                     </TableCell>
-                    <TableCell align="right" sx={{ width: "20%" }}>
+                    <TableCell align="right" sx={{ width: "15%" }}>
                       {row.minPoints}
                     </TableCell>
-                    <TableCell align="left" sx={{ width: "30%" }}>
+                    <TableCell align="right" sx={{ width: "15%" }}>
+                      {row.commissionPercent}
+                    </TableCell>
+                    <TableCell align="left" sx={{ width: "20%" }}>
                       {row.benefits}
                     </TableCell>
                     <TableCell>
@@ -345,6 +356,17 @@ const ForUser = () => {
                   />
                 </Grid2>
                 <Grid2 size={12}>
+                  <TextField
+                    id="commissionPercent"
+                    label={t("commission-percent")}
+                    variant="standard"
+                    fullWidth
+                    margin="dense"
+                    value={commissionPercent}
+                    onChange={(e) => setCommissionPercent(e.target.value)}
+                  />
+                </Grid2>
+                <Grid2 size={12}>
                   <FormControl fullWidth margin="dense" variant="standard">
                     <InputLabel>{t("benefits")}</InputLabel>
                     <Input
@@ -412,6 +434,17 @@ const ForUser = () => {
                     margin="dense"
                     value={point}
                     onChange={(e) => setPoint(e.target.value)}
+                  />
+                </Grid2>
+                <Grid2 size={12}>
+                  <TextField
+                    id="commissionPercent"
+                    label={t("commission-percent")}
+                    variant="standard"
+                    fullWidth
+                    margin="commissionPercent"
+                    value={commissionPercent}
+                    onChange={(e) => setCommissionPercent(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={12}>
