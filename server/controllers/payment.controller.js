@@ -233,7 +233,7 @@ class PaymentController {
                     const userRank = await Rank.findOne({ tier: user.membershipTier });
                     let commissionAmount = order.finalAmount * (userRank.commissionPercent / 100);
 
-                    for (let i = referralPaths.length - 1; i >= 0; i--) {
+                    for (let i = referralPaths.length - 2; i >= 0; i--) {
                         const refCode = referralPaths[i];
                         const refUser = await User.findOne({ referralCode: refCode });
 
