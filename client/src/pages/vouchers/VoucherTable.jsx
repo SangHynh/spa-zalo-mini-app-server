@@ -214,6 +214,18 @@ function Row(props) {
           </TableCell>
 
           <TableCell
+            align="left"
+            sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.exchangePoints}
+          </TableCell>
+
+          <TableCell
             align="right"
             sx={{
               minWidth: "150px",
@@ -378,6 +390,13 @@ const VoucherTable = ({ searchTerm, validFrom, validTo }) => {
                 className="relative dark:text-black"
               >
                 {t("usage-limit")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="relative dark:text-black"
+              >
+                {t("exchange-points")}
               </TableCell>
               <TableCell
                 align="center"

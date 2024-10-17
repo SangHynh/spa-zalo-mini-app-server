@@ -59,6 +59,7 @@ const EditVoucher = () => {
   const [voucherValidFrom, setVoucherValidFrom] = useState(dayjs());
   const [voucherValidTo, setVoucherValidTo] = useState(dayjs());
   const [voucherUsageLimit, setVoucherUsageLimit] = useState(1);
+  const [voucherExchangePoints, setVoucherExchangePoints] = useState(100);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -84,6 +85,7 @@ const EditVoucher = () => {
           setVoucherValidFrom(dayjs(voucher.validFrom));
           setVoucherValidTo(dayjs(voucher.validTo));
           setVoucherUsageLimit(voucher.usageLimit);
+          setVoucherExchangePoints(voucher.exchangePoints);
         }
       }
     };
@@ -131,6 +133,7 @@ const EditVoucher = () => {
       validTo: voucherValidTo.format("DD/MM/YYYY"),
       priceApplied: voucherPriceApplied,
       usageLimit: voucherUsageLimit,
+      exchangePoints: voucherExchangePoints
     };
 
     try {
@@ -201,7 +204,7 @@ const EditVoucher = () => {
         />
 
         <Grid2 container fullWidth spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid2 size={6}>
             <FormControl fullWidth margin="dense" variant="standard">
               <InputLabel htmlFor="voucherPriceApplied">
                 {t("price-applied")}
@@ -216,6 +219,19 @@ const EditVoucher = () => {
                 }
                 value={voucherPriceApplied}
                 onChange={(e) => setVoucherPriceApplied(e.target.value)}
+              />
+            </FormControl>
+          </Grid2>
+
+          <Grid2 size={6}>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <InputLabel htmlFor="voucherExchangePoints">
+                {t("exchange-points")}
+              </InputLabel>
+              <Input
+                id="voucherExchangePoints"
+                value={voucherExchangePoints}
+                onChange={(e) => setVoucherExchangePoints(e.target.value)}
               />
             </FormControl>
           </Grid2>
@@ -325,6 +341,7 @@ const EditVoucher = () => {
           voucherValidTo={voucherValidTo}
           voucherUsageLimit={voucherUsageLimit}
           voucherPriceApplied={voucherPriceApplied}
+          voucherExchangePoints={voucherExchangePoints}
         />
       </form>
     </Container>

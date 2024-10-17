@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const User = require("../models/user.model");
-const Admin = require("../models/admin.model");
+const { Admin } = require("../models/admin.model");
 const generateReferralCode = require("../utils/genRefCode");
 require("dotenv").config();
 

@@ -12,7 +12,8 @@ const voucherSchema = new mongoose.Schema({
   usedBy: [{
     userId: { type: mongoose.Schema.Types.ObjectId },
     usedAt: { type: Date, required: true },
-  }]
+  }],
+  exchangePoints: { type: Number, default: 0 }
 },{
     timestamps: true
 });

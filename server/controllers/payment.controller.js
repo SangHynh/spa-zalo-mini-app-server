@@ -17,7 +17,7 @@ class PaymentController {
             const skip = (page - 1) * limit;
 
             const { keyword } = req.query;
-            
+
             // Tạo điều kiện tìm kiếm
             const query = {};
 
@@ -28,9 +28,9 @@ class PaymentController {
                         { phone: { $regex: keyword, $options: 'i' } }
                     ]
                 }).select('_id');
-    
+
                 const userIds = users.map(user => user._id);
-    
+
                 if (userIds.length > 0) {
                     query.customerId = { $in: userIds };
                 } else {
@@ -103,20 +103,20 @@ class PaymentController {
             if (data.voucherId) {
                 const voucher = await Voucher.findById(data.voucherId);
                 if (!voucher) return res.status(404).json({ message: "Voucher not found" });
-    
+
                 const now = new Date();
                 if (now < voucher.validFrom || now > voucher.validTo) {
                     return res.status(400).json({ message: "Voucher is not valid" });
                 }
-    
+
                 discountApplied = true;
-    
+
                 discountAmount = (data.totalAmount * voucher.discountValue) / 100;
-    
+
                 if (discountAmount > data.totalAmount) {
                     discountAmount = data.totalAmount;
                 }
-    
+
                 finalAmount = data.totalAmount - discountAmount;
             }
 
@@ -186,6 +186,7 @@ class PaymentController {
                         }
 
                         variant.stock -= productOrder.quantity;
+                        product.salesQuantity += productOrder.quantity;
 
                         // Tính lại tổng stock của sản phẩm từ tất cả các variant còn lại
                         const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
@@ -197,6 +198,7 @@ class PaymentController {
                         }
 
                         product.stock -= productOrder.quantity;
+                        product.salesQuantity += productOrder.quantity;
                     }
 
                     await product.save();
@@ -206,17 +208,34 @@ class PaymentController {
                 const appConfig = await AppConfig.findOne()
                 if (appConfig) {
                     const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
-                    for(let pointLevel of sortedOrderPoints) {
+                    for (let pointLevel of sortedOrderPoints) {
                         console.log(pointLevel)
                         if (order.finalAmount >= pointLevel.price) {
                             const user = await User.findById(order.customerId);
                             if (!user) return res.status(404).json({ message: "User not found" });
 
                             user.points += pointLevel.minPoints;
+                            user.rankPoints += pointLevel.minPoints;
 
                             await user.save({ validateBeforeSave: false })
 
-                            // const referralInfo = user.referralInfo.paths
+                            // TÍNH TIỀN HOA HỒNG
+                            // if (user.referralInfo && user.referralInfo.paths) {
+                            //     const referralPaths = user.referralInfo.paths.split(',').filter(Boolean);
+                            //     let commissionAmount = order.finalAmount * 0.10; // 10% mặc định
+
+                            //     for (let i = referralPaths.length - 1; i >= 0; i--) {
+                            //         const refCode = referralPaths[i];
+                            //         const refUser = await User.findOne({ referralCode: refCode });
+
+                            //         if (refUser) {
+                            //             refUser.amounts += commissionAmount; // Cộng tiền hoa hồng vào amounts
+                            //             await refUser.save();
+                            //             // Giảm dần hoa hồng ở các cấp cao hơn nếu cần
+                            //             commissionAmount *= 0.10; // Giảm 10% cho mỗi cấp cha
+                            //         }
+                            //     }
+                            // }
 
                             break;
                         }

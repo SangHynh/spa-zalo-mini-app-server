@@ -1,5 +1,4 @@
 const createError = require("http-errors");
-const Admin = require("../models/admin.model");
 const User = require("../models/user.model");
 const {
   signAccessToken,
@@ -13,6 +12,7 @@ const {
 } = require("../services/zalo.service");
 const generateReferralCode = require("../utils/genRefCode");
 const { getUserInfo } = require("../controllers/user.controller");
+const { Admin } = require("../models/admin.model");
 
 //ĐĂNG KÝ BÌNH THƯỜNG
 const register = async (req, res, next) => {

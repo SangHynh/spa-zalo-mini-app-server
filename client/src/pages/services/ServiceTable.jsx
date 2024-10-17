@@ -169,6 +169,17 @@ function Row(props) {
             }).format(row.price)}
           </TableCell>
           <TableCell
+            align="right"
+            sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.timesUsed}
+          </TableCell>
+          <TableCell
             align="center"
             className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
           >
@@ -321,6 +332,13 @@ const ServiceTable = ({ searchTerm, subCategoryId, priceSort }) => {
                 className="relative dark:text-black"
               >
                 {t("price")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                {t("times-used")}
               </TableCell>
               <TableCell
                 align="center"

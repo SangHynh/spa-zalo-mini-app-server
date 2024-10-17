@@ -30,10 +30,10 @@ class BookingController {
                         { name: { $regex: keyword, $options: 'i' } }  // Case-insensitive search by name
                     ]
                 };
-    
+
                 const users = await User.find(userSearchCriteria).select('_id');
                 userIds = users.map(user => user._id); // Extract user IDs
-    
+
                 const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
                 if (isObjectId) {
                     query.$or = [
@@ -41,7 +41,7 @@ class BookingController {
                         { customerId: new mongoose.Types.ObjectId(keyword) } // Also search by customerId
                     ];
                 }
-    
+
                 // If users were found, include their IDs in the query
                 if (userIds.length > 0) {
                     query.$or = query.$or || [];
@@ -165,6 +165,16 @@ class BookingController {
 
             if (req.body.date) {
                 req.body.date = moment(req.body.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
+            }
+
+            // Check are there any booking exist at this time
+            const existingBooking = await BookingHistory.findOne({
+                customerId: user._id,
+                date: { $eq: req.body.date }
+            });
+
+            if (existingBooking) {
+                return res.status(409).json({ message: 'A booking already exists at this date and time.' });
             }
 
             // Handle services
@@ -398,6 +408,9 @@ class BookingController {
 
             // console.log(req.body.status)
 
+            // Booking đã completed thì không cập nhật nữa
+            // if (booking.status === "completed") return res.status(400).json({ message: 'Booking is already completed' })
+
             booking.status = req.body.status;
 
             const savedBooking = await booking.save()
@@ -420,48 +433,64 @@ class BookingController {
                         if (!product) {
                             return res.status(404).json({ message: `Product with ID ${productOrder.productId} not found` });
                         }
-    
+
                         // Nếu sản phẩm có variant, tìm và cập nhật stock của variant
                         if (productOrder.variantId) {
                             const variant = product.variants.id(productOrder.variantId);
                             if (!variant) {
                                 return res.status(404).json({ message: `Variant with ID ${productOrder.variantId} not found` });
                             }
-    
+
                             if (variant.stock < productOrder.quantity) {
                                 return res.status(400).json({ message: `Insufficient stock for variant ${variant._id}` });
                             }
-    
+
                             variant.stock -= productOrder.quantity;
-    
+                            product.salesQuantity += productOrder.quantity;
+
                             // Tính lại tổng stock của sản phẩm từ tất cả các variant còn lại
                             const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
-    
+
                             product.stock = totalStock;
                         } else {
                             if (product.stock < productOrder.quantity) {
                                 return res.status(400).json({ message: `Insufficient stock for product ${product._id}` });
                             }
-    
+
                             product.stock -= productOrder.quantity;
+                            product.salesQuantity += productOrder.quantity;
                         }
-    
+
                         await product.save({ validateBeforeSave: false });
                     }
 
+                }
+
+                // CẬP NHẬT SỐ LẦN SỬ DỤNG DỊCH VỤ
+                if (existingOrder.services && existingOrder.services.length > 0) {
+                    for (let serviceOrder of existingOrder.services) {
+                        const service = await Service.findById(serviceOrder.serviceId);
+                        if (!service) {
+                            return res.status(404).json({ message: `Service with ID ${serviceOrder.serviceId} not found` });
+                        }
+
+                        service.timesUsed += 1;
+                        await service.save({ validateBeforeSave: false });
+                    }
                 }
 
                 // CẬP NHẬT ĐIỂM CHO USER + CẬP NHẬT ĐIỂM CHO NGƯỜI GIỚI THIỆU (PLANNED)
                 const appConfig = await AppConfig.findOne()
                 if (appConfig) {
                     const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
-                    for(let pointLevel of sortedOrderPoints) {
+                    for (let pointLevel of sortedOrderPoints) {
                         console.log(pointLevel)
                         if (existingOrder.finalAmount >= pointLevel.price) {
                             const user = await User.findById(existingOrder.customerId);
                             if (!user) return res.status(404).json({ message: "User not found" });
 
                             user.points += pointLevel.minPoints;
+                            user.rankPoints += pointLevel.minPoints;
 
                             await user.save({ validateBeforeSave: false })
 

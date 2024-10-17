@@ -12,6 +12,7 @@ const path = {
   BOOKING_MANAGEMENT: "booking-management",
   CATEGORY_MANAGEMENT: "category-management",
   VOUCHER_MANAGEMENT: "voucher-management",
+  STAFF_MANAGEMENT: "staff-management",
 
   // GENERAL-CONFIG
   AFFILIATE_MARKETING: "affiliate-marketing",
@@ -29,6 +30,7 @@ const path = {
   CREATE_CUSTOMER: "create-customer",
   CREATE_CATEGORY: "create-category",
   CREATE_VOUCHER: "create-voucher",
+  CREATE_STAFF: "create-staff",
   EDIT_SERVICE: "edit-service",
   EDIT_PRODUCT: "edit-product",
   EDIT_CATEGORY: "edit-category",

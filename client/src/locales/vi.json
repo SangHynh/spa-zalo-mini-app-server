@@ -180,5 +180,10 @@
   "customer-avatar": "Ảnh đại diện",
   "membership-tier": "Cấp hạng",
   "referred-at": "Ngày giới thiệu",
-  "enter-referral-code": "Nhập mã giới thiệu"
+  "enter-referral-code": "Nhập mã giới thiệu",
+  "staff-email": "Email nhân viên",
+  "permissions": "Các quyền",
+  "sales-quantity": "Số lượng bán ra",
+  "times-used": "Lượt sử dụng",
+  "exchange-points": "Điểm để đổi"
 }

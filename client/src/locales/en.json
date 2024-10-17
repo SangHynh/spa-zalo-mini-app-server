@@ -180,5 +180,10 @@
   "customer-avatar": "Avatar",
   "membership-tier": "Membership tier",
   "referred-at": "Referred date",
-  "enter-referral-code": "Enter Referral Code"
+  "enter-referral-code": "Enter Referral Code",
+  "staff-email": "Staff email",
+  "permissions": "Permissions",
+  "sales-quantity": "Sales quantity",
+  "times-used": "Times used",
+  "exchange-points": "Exchange points"
 }

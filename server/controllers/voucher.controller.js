@@ -226,6 +226,44 @@ class VoucherController {
             });
         }
     }
+
+    // EXCHANGE VOUCHER BY USER POINTS
+    async exchangeVoucher(req, res) {
+        try {
+            const userId = req.payload.aud;
+            const voucherId = req.params.id;
+
+            const user = await User.findById(userId);
+
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const voucher = await Voucher.findById(voucherId);
+
+            if (!voucher) return res.status(404).json({ message: "Voucher not found" });
+
+            if (user.points < voucher.exchangePoints) return res.status(400).json({ message: "Insufficient points to exchange for this voucher" });
+
+            if (voucher.usageLimit <= 0) return res.status(400).json({ message: "Voucher usage limit reached" });
+
+            user.points -= voucher.exchangePoints
+            user.vouchers.push({
+                code: voucher.code,
+                voucherId: voucher._id
+            });
+
+            voucher.usageLimit -= 1;
+
+            await user.save({ validateBeforeSave: false });
+            await voucher.save({ validateBeforeSave: false });
+
+            return res.status(200).json({ message: 'Voucher successfully exchanged' });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message,
+                message: 'An error occurred'
+            });
+        }
+    }
 }
 
 module.exports = new VoucherController()

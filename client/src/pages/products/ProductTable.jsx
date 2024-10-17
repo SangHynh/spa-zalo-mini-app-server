@@ -197,6 +197,17 @@ function Row(props) {
           <TableCell
             align="right"
             sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.salesQuantity}
+          </TableCell>
+          <TableCell
+            align="right"
+            sx={{
               minWidth: "200px",
               overflowX: "auto",
               whiteSpace: "nowrap",
@@ -465,6 +476,13 @@ const ProductTable = ({ searchTerm, subCategoryId, stockSort, priceSort, expiryD
                 className="relative dark:text-black"
               >
                 {t("stock")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                {t("sales-quantity")}
               </TableCell>
               <TableCell
                 align="center"

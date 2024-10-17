@@ -84,4 +84,4 @@ AdminSchema.methods.isValidPassword = async function (password) {
 };
 
 const Admin = mongoose.model("Admin", AdminSchema);
-module.exports = Admin;
+module.exports = { Admin, PERMISSIONS };

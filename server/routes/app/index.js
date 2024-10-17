@@ -3,6 +3,7 @@ const router = express.Router();
 const appConfigController = require("../../controllers/appconfig.controller");
 const { upload } = require("../../middlewares/upload.middlewares");
 const { verifyAccessToken } = require("../../configs/jwt.config");
+const { PERMISSIONS } = require("../../models/admin.model");
 const MAX_FILES = 50;
 
 // GET
@@ -20,6 +21,8 @@ const MAX_FILES = 50;
 }
 */
 router.get("/slider", appConfigController.getConfig);
+
+router.get("/permission", (req, res) => { res.json(PERMISSIONS); });
 
 // PUT SLIDER
 router.put(

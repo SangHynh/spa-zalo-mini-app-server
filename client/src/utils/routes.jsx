@@ -27,6 +27,8 @@ import ProdRecommendSystem from "../pages/products/ProdRecommendSystem";
 import CreateVoucher from "../pages/vouchers/CreateVoucher";
 import EditVoucher from "../pages/vouchers/EditVoucher";
 import SvcRecommendSystem from "../pages/services/SvcRecommendSystem";
+import StaffManagement from "../pages/staffs/StaffManagement";
+import CreateStaff from "../pages/staffs/CreateStaff";
 
 const routes = [
   {
@@ -76,6 +78,10 @@ const routes = [
           {
             path: path.VOUCHER_MANAGEMENT,
             element: <VoucherManagement />,
+          },
+          {
+            path: path.STAFF_MANAGEMENT,
+            element: <StaffManagement />,
           },
           {
             path: path.COMMISSION,
@@ -132,6 +138,10 @@ const routes = [
           {
             path: path.EDIT_VOUCHER + "/:id",
             element: <EditVoucher />,
+          },
+          {
+            path: path.CREATE_STAFF,
+            element: <CreateStaff />,
           },
         ],
       },
