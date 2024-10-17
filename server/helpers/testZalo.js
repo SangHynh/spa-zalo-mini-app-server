@@ -1,8 +1,9 @@
-/* npm run checkZaloToken */
+/* npm run testZalo */
 
 const axios = require("axios");
 const crypto = require("crypto");
 require("dotenv").config();
+const client = require("../configs/zalo.config");
 
 const calculateHMacSHA256 = (data, secretKey) => {
   const hmac = crypto.createHmac("sha256", secretKey);
@@ -58,6 +59,7 @@ const testZalo = async () => {
     };
 
     console.log("Combined Response:", JSON.stringify(userInfo, null, 2));
+    console.log("========================================================");
     return userInfo; 
 
   } catch (error) {
@@ -65,4 +67,24 @@ const testZalo = async () => {
   }
 };
 
-testZalo();
+
+
+
+// Hàm tạo QR Code Short Link
+const testQrCode = async () => {  
+  const createQrCodeRequest = {
+    miniAppId: process.env.ZALO_MINI_APP_ID, // lưu ý là mini app chứ ko phải app lớn
+    originUrl: `https://zalo.me/s/${process.env.ZALO_MINI_APP_ID}/?utm_source=zalo-qr&utm_medium=qr_code&utm_campaign=qr_code_short_link`,
+  };
+  try {
+    const response = await client.createQrCodeShortUrl(createQrCodeRequest);
+    console.log(response);
+  } catch (error) {
+    console.error("Create QR Code Error:", error.message);
+  }
+}; 
+
+testQrCode();
+// testZalo();
+
+
