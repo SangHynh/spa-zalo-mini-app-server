@@ -6,6 +6,7 @@ const User = require("../models/user.model");
 const mongoose = require('mongoose');
 const moment = require('moment');
 const AppConfig = require("../models/appconfig.model");
+const Rank = require("../models/rank.model");
 
 class BookingController {
 
@@ -481,25 +482,46 @@ class BookingController {
 
                 // CẬP NHẬT ĐIỂM CHO USER + CẬP NHẬT ĐIỂM CHO NGƯỜI GIỚI THIỆU (PLANNED)
                 const appConfig = await AppConfig.findOne()
+                const user = await User.findById(existingOrder.customerId);
+                if (!user) return res.status(404).json({ message: "User not found" });
                 if (appConfig) {
                     const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
                     for (let pointLevel of sortedOrderPoints) {
                         console.log(pointLevel)
                         if (existingOrder.finalAmount >= pointLevel.price) {
-                            const user = await User.findById(existingOrder.customerId);
-                            if (!user) return res.status(404).json({ message: "User not found" });
 
                             user.points += pointLevel.minPoints;
                             user.rankPoints += pointLevel.minPoints;
 
-                            await user.save({ validateBeforeSave: false })
-
-                            // const referralInfo = user.referralInfo.paths
+                            await user.save({ validateBeforeSave: false }) 
 
                             break;
                         }
                     }
                 }
+                // TÍNH TIỀN HOA HỒNG
+                if (user.referralInfo && user.referralInfo.paths) {
+                    const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
+
+                    // Get commission percentage for the user based on their rank
+                    const userRank = await Rank.findOne({ tier: user.membershipTier });
+                    let commissionAmount = existingOrder.finalAmount * (userRank.commissionPercent / 100);
+
+                    for (let i = referralPaths.length - 1; i >= 0; i--) {
+                        const refCode = referralPaths[i];
+                        const refUser = await User.findOne({ referralCode: refCode });
+
+                        if (refUser) {
+                            const refUserRank = await Rank.findOne({ tier: refUser.membershipTier });
+                            if (refUserRank) {
+                                refUser.amounts += commissionAmount;
+                                await refUser.save();
+
+                                commissionAmount *= (refUserRank.commissionPercent / 100);
+                            }
+                        }
+                    }
+                }   
             }
 
             const updatedOrder = await existingOrder.save({ validateBeforeSave: false });

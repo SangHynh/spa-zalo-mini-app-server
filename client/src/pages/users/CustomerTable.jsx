@@ -199,6 +199,20 @@ function Row(props) {
             }}
             className="relative"
           >
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(row.amounts)}
+          </TableCell>
+          <TableCell
+            align="right"
+            sx={{
+              minWidth: "200px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
             {new Date(row.referralInfo?.referredAt).toLocaleString("vi-VN", {
               timeZone: "Asia/Ho_Chi_Minh",
               year: "numeric",
@@ -557,6 +571,13 @@ const CustomerTable = ({ searchTerm }) => {
                 className="relative dark:text-black"
               >
                 {t("referred-by")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("amounts")}
               </TableCell>
               <TableCell
                 align="center"
