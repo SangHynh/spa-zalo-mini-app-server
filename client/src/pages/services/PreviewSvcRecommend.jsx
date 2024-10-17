@@ -38,7 +38,7 @@ const PreviewSvcRecommend = ({ open, onClose, services }) => {
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>{t("selected-services")}</DialogTitle>
       <DialogContent>
-        <Paper className="border">
+        <Paper className="border shadow-2xl">
           <TableContainer>
             <Table>
               <TableHead className="bg-gray-400 dark:bg-gray-100">

@@ -16,7 +16,7 @@ class RankController {
   // UPDATE
   async updateRank(req, res) {
     const { rankId } = req.params;
-    const { tier, minPoints, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits } = req.body;
 
     try {
       const rank = await Rank.findById(rankId);
@@ -28,6 +28,10 @@ class RankController {
       // Cập nhật các trường
       rank.tier = tier || rank.tier;
       rank.minPoints = minPoints !== undefined ? minPoints : rank.minPoints;
+      rank.commissionPercent =
+        commissionPercent !== undefined
+          ? commissionPercent
+          : rank.commissionPercent;
       rank.benefits = Array.isArray(benefits)
         ? benefits.join(", ")
         : benefits || rank.benefits;
@@ -59,7 +63,7 @@ class RankController {
 
   // CREATE
   async createRank(req, res) {
-    const { tier, minPoints, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits } = req.body;
 
     try {
       // Kiểm tra các bản ghi hiện có
@@ -74,7 +78,12 @@ class RankController {
         }
       }
 
-      const newRank = new Rank({ tier, minPoints, benefits });
+      const newRank = new Rank({
+        tier,
+        minPoints,
+        commissionPercent,
+        benefits,
+      });
 
       await newRank.save();
       return res

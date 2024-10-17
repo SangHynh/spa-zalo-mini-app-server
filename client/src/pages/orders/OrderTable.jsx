@@ -476,7 +476,7 @@ const OrderTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
-        className="border"
+        className="border shadow-2xl"
       >
         <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">

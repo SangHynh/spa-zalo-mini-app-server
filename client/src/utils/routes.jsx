@@ -15,6 +15,7 @@ import {
   ServiceManagement,
   Images,
   VoucherManagement,
+  RecommendSystem,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
@@ -72,12 +73,12 @@ const routes = [
             element: <CategoryManagement />,
           },
           {
-            path: path.AFFILIATE_MARKETING,
-            element: <AffiliateMarketing />,
-          },
-          {
             path: path.VOUCHER_MANAGEMENT,
             element: <VoucherManagement />,
+          },
+          {
+            path: path.AFFILIATE_MARKETING,
+            element: <AffiliateMarketing />,
           },
           {
             path: path.STAFF_MANAGEMENT,
@@ -86,6 +87,10 @@ const routes = [
           {
             path: path.COMMISSION,
             element: <Commission />,
+          },
+          {
+            path: path.RECOMMEND_SYSTEM,
+            element: <RecommendSystem />,
           },
           {
             path: path.RANK_POINT,

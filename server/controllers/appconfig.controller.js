@@ -79,12 +79,16 @@ class AppConfigController {
   // GET ORDER-POINT
   async getOrderPoints(req, res) {
     try {
-      const appConfig = await AppConfig.findOne().sort({ createdAt: -1 });
+      const appConfig = await AppConfig.findOne().sort({ minPoints: 1 });
       const orderPoints = appConfig ? appConfig.orderPoints : [];
+
+      // Sắp xếp orderPoints theo minPoints
+      orderPoints.sort((a, b) => a.minPoints - b.minPoints);
+
       return res.status(200).json(orderPoints);
     } catch (error) {
       console.error("Error fetching order points:", error);
-      res
+      return res
         .status(500)
         .json({ error: "An error occurred while fetching order points" });
     }

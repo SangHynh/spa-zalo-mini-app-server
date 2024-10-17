@@ -40,13 +40,13 @@ router.put(
 router.get("/", verifyAccessToken, appConfigController.getOrderPoints);
 
 // CREATE ORDER-POINT
-router.post("/", verifyAccessToken, appConfigController.updateOrderPoint);
+router.post("/", verifyAccessToken, appConfigController.createOrderPoint);
 
 // UPDATE ORDER-POINT
 router.put(
   "/:orderPointId",
   verifyAccessToken,
-  appConfigController.createOrderPoint
+  appConfigController.updateOrderPoint
 );
 
 // DELETE ORDER-POINT
