@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiGetCustomers } from "../../../apis/users";
 import { apiGetCategories } from "../../../apis/categories";
+import Swal from "sweetalert2";
+import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
 
 const UserCate = () => {
   const { t } = useTranslation();
@@ -181,6 +183,48 @@ const UserCate = () => {
   const isUserSelected = (id) => selectedUserIds.indexOf(id) !== -1;
   const isCategorySelected = (id) => selectedCategoryIds.indexOf(id) !== -1;
 
+  const handleUpdate = async () => {
+    // console.log("Selected User IDs:", selectedUserIds);
+    // console.log("Selected Category IDs:", selectedCategoryIds);
+
+    if (selectedUserIds.length === 0 || selectedCategoryIds.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: `${t("warning")}!`,
+        text: `${t("select user-cate pls")}`,
+        target: "",
+      });
+      return;
+    }
+
+    const suggestionsToUpdate = selectedCategoryIds.map((categoryId) => ({
+      categoryId,
+      suggestedScore: scores[categoryId] || 0, // Sử dụng giá trị score từ ô input, mặc định là 0 nếu không có
+    }));
+
+    // console.log(selectedUserIds, suggestionsToUpdate);
+
+    try {
+      const response = await apiUpdateMultipleSuggestionScores(
+        selectedUserIds,
+        suggestionsToUpdate
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("update-success")}!`,
+          showConfirmButton: true,
+        }).then(() => {
+          window.location.reload();
+        });
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating suggestions:", error);
+    }
+  };
+
   return (
     <Box className="w-full flex flex-col gap-4">
       <Grid2 container spacing={4}>
@@ -341,7 +385,6 @@ const UserCate = () => {
                 {displayedCategories.map((category, index) => {
                   const isItemSelected = isCategorySelected(category._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
                       hover
@@ -400,7 +443,7 @@ const UserCate = () => {
           type="submit"
           variant="contained"
           color="success"
-          //   onClick={handleUpdate}
+          onClick={handleUpdate}
         >
           {t("update")}
         </Button>

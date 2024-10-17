@@ -191,5 +191,7 @@
   "sales-quantity": "Số lượng bán ra",
   "times-used": "Lượt sử dụng",
   "exchange-points": "Điểm để đổi",
-  "amounts": "Tiền tiếp thị"
+  "amounts": "Tiền tiếp thị",
+  "select user-voucher pls": "Vui lòng chọn khách hàng và voucher",
+  "select user-cate pls": "Vui lòng chọn khách hàng và danh mục"
 }

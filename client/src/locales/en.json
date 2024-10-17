@@ -191,5 +191,7 @@
   "sales-quantity": "Sales quantity",
   "times-used": "Times used",
   "exchange-points": "Exchange points",
-  "amounts": "Amounts"
+  "amounts": "Amounts",
+  "select user-voucher pls": "Please select customer and voucher",
+  "select user-cate pls": "Please select customer and category"
 }

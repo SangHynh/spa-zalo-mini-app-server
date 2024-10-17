@@ -203,14 +203,15 @@ const GiveVoucher = ({ open, onClose }) => {
     console.log("Selected User IDs:", selectedUserIds);
     console.log("Selected Voucher IDs:", selectedVoucherIds);
 
-    if (selectedUserIds.length <= 0 || selectedVoucherIds.length <= 0) {
+    if (selectedUserIds.length === 0 || selectedVoucherIds.length === 0) {
       // console.log("HAHA")
       Swal.fire({
         icon: "warning",
         title: `${t("warning")}!`,
-        text: "Vui lòng chọn khách hàng và voucher",
+        text: `${t("select user-voucher pls")}`,
         target: "",
       });
+      return;
     }
 
     const formData = {

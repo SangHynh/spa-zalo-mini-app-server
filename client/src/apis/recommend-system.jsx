@@ -31,3 +31,17 @@ export const apiGetServiceRecommendations = (id) =>
     url: `/api/recommendations/get-service-recommendations/` + id,
     method: "GET",
   });
+
+// USERS - CATEGORIES
+export const apiUpdateMultipleSuggestionScores = (
+  userIds,
+  suggestionsToUpdate
+) =>
+  axios({
+    url: "/api/recommendations/update-multiple-suggestion-scores",
+    method: "PUT",
+    data: {
+      userIds,
+      suggestionsToUpdate,
+    },
+  });
