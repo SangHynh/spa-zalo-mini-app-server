@@ -3,6 +3,7 @@ const router = express.Router();
 const appConfigController = require("../../controllers/appconfig.controller");
 const { upload } = require("../../middlewares/upload.middlewares");
 const { verifyAccessToken } = require("../../configs/jwt.config");
+const { PERMISSIONS } = require("../../models/admin.model");
 const MAX_FILES = 50;
 
 // GET
@@ -21,6 +22,8 @@ const MAX_FILES = 50;
 */
 router.get("/slider", appConfigController.getConfig);
 
+router.get("/permission", (req, res) => { res.json(PERMISSIONS); });
+
 // PUT SLIDER
 router.put(
   "/",
@@ -37,13 +40,13 @@ router.put(
 router.get("/", verifyAccessToken, appConfigController.getOrderPoints);
 
 // CREATE ORDER-POINT
-router.post("/", verifyAccessToken, appConfigController.updateOrderPoint);
+router.post("/", verifyAccessToken, appConfigController.createOrderPoint);
 
 // UPDATE ORDER-POINT
 router.put(
   "/:orderPointId",
   verifyAccessToken,
-  appConfigController.createOrderPoint
+  appConfigController.updateOrderPoint
 );
 
 // DELETE ORDER-POINT

@@ -15,6 +15,7 @@ import {
   ServiceManagement,
   Images,
   VoucherManagement,
+  RecommendSystem,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import CreateCustomer from "../pages/users/CreateCustomer";
@@ -27,6 +28,8 @@ import ProdRecommendSystem from "../pages/products/ProdRecommendSystem";
 import CreateVoucher from "../pages/vouchers/CreateVoucher";
 import EditVoucher from "../pages/vouchers/EditVoucher";
 import SvcRecommendSystem from "../pages/services/SvcRecommendSystem";
+import StaffManagement from "../pages/staffs/StaffManagement";
+import CreateStaff from "../pages/staffs/CreateStaff";
 
 const routes = [
   {
@@ -70,16 +73,24 @@ const routes = [
             element: <CategoryManagement />,
           },
           {
-            path: path.AFFILIATE_MARKETING,
-            element: <AffiliateMarketing />,
-          },
-          {
             path: path.VOUCHER_MANAGEMENT,
             element: <VoucherManagement />,
           },
           {
+            path: path.AFFILIATE_MARKETING,
+            element: <AffiliateMarketing />,
+          },
+          {
+            path: path.STAFF_MANAGEMENT,
+            element: <StaffManagement />,
+          },
+          {
             path: path.COMMISSION,
             element: <Commission />,
+          },
+          {
+            path: path.RECOMMEND_SYSTEM,
+            element: <RecommendSystem />,
           },
           {
             path: path.RANK_POINT,
@@ -132,6 +143,10 @@ const routes = [
           {
             path: path.EDIT_VOUCHER + "/:id",
             element: <EditVoucher />,
+          },
+          {
+            path: path.CREATE_STAFF,
+            element: <CreateStaff />,
           },
         ],
       },

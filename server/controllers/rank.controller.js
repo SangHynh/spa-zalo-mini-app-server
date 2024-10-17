@@ -1,4 +1,5 @@
 const Rank = require("../models/rank.model");
+const User = require("../models/user.model");
 
 class RankController {
   // GET
@@ -15,7 +16,7 @@ class RankController {
   // UPDATE
   async updateRank(req, res) {
     const { rankId } = req.params;
-    const { tier, minPoints, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits } = req.body;
 
     try {
       const rank = await Rank.findById(rankId);
@@ -27,6 +28,10 @@ class RankController {
       // Cập nhật các trường
       rank.tier = tier || rank.tier;
       rank.minPoints = minPoints !== undefined ? minPoints : rank.minPoints;
+      rank.commissionPercent =
+        commissionPercent !== undefined
+          ? commissionPercent
+          : rank.commissionPercent;
       rank.benefits = Array.isArray(benefits)
         ? benefits.join(", ")
         : benefits || rank.benefits;
@@ -58,7 +63,7 @@ class RankController {
 
   // CREATE
   async createRank(req, res) {
-    const { tier, minPoints, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits } = req.body;
 
     try {
       // Kiểm tra các bản ghi hiện có
@@ -73,7 +78,12 @@ class RankController {
         }
       }
 
-      const newRank = new Rank({ tier, minPoints, benefits });
+      const newRank = new Rank({
+        tier,
+        minPoints,
+        commissionPercent,
+        benefits,
+      });
 
       await newRank.save();
       return res
@@ -98,6 +108,42 @@ class RankController {
     } catch (error) {
       console.error("Error deleting rank:", error);
       res.status(500).json({ error: "An error occurred while deleting rank" });
+    }
+  }
+
+  // CHECK USER'S RANK
+  async getCurrentUserRank(req, res) {
+    try {
+      const userId = req.payload.aud
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const ranks = await Rank.find().sort({ minPoints: -1 });
+
+      let updatedTier = user.membershipTier;
+      for (const rank of ranks) {
+        if (user.rankPoints >= rank.minPoints) {
+          updatedTier = rank.tier;
+          break;
+        }
+      }
+
+      if (user.membershipTier !== updatedTier) {
+        user.membershipTier = updatedTier;
+        await user.save();
+      }
+
+      return res.status(200).json({
+        message: `User's rank checked and updated`,
+        userId: user._id,
+        membershipTier: user.membershipTier,
+        rankPoints: user.rankPoints,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "An error occurred: " + error.message });
     }
   }
 }

@@ -6,7 +6,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import OverviewCard from "./dashboards/overviews/OverviewCard";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts";
-import { apiGetRevenue } from "../apis/statistics";
+import { apiGetRevenue, apiGetTopProductsAndServices } from "../apis/statistics";
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -21,7 +21,7 @@ const Dashboard = () => {
       if (response.status === 200) {
         if (period === "year") {
           setLabels([
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
           ]);
         } else if (period === "month") {
@@ -30,13 +30,41 @@ const Dashboard = () => {
         } else if (period === "week") {
           setLabels(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
         }
-  
+
         setRevenueData(response.data.revenueData);
       }
     };
 
     fetchRevenueData();
   }, [period]);
+
+  const [limit, setLimit] = useState(10);
+  const [topProducts, setTopProducts] = useState([])
+  const [topServices, setTopServices] = useState([])
+
+  useEffect(() => {
+    const fetchTopProductsAndServices = async () => {
+      const response = await apiGetTopProductsAndServices(limit);
+      if (response.status === 200) {
+        const formattedProducts = response.data.topProducts.map(product => ({
+          id: product.name,
+          value: product.salesQuantity,
+          label: product.name
+        }));
+
+        const formattedServices = response.data.topServices.map(service => ({
+          id: service.name,
+          value: service.timesUsed,
+          label: service.name
+        }));
+
+        setTopProducts(formattedProducts);
+        setTopServices(formattedServices);
+      }
+    };
+
+    fetchTopProductsAndServices();
+  }, [limit])
 
   const cards = [
     {
@@ -69,36 +97,6 @@ const Dashboard = () => {
     },
   ];
 
-  // const revenueData = [
-  //   20000000, // Doanh thu tháng 1
-  //   15000000, // Doanh thu tháng 2
-  //   30000000, // Doanh thu tháng 3
-  //   40000000, // Doanh thu tháng 4
-  //   25000000, // Doanh thu tháng 5
-  //   35000000, // Doanh thu tháng 6
-  //   45000000, // Doanh thu tháng 7
-  //   50000000, // Doanh thu tháng 8
-  //   48000000, // Doanh thu tháng 9
-  //   null, // Doanh thu tháng 10
-  //   null, // Doanh thu tháng 11
-  //   null, // Doanh thu tháng 12
-  // ];
-
-  // const months = [
-  //   "1",
-  //   "2",
-  //   "3",
-  //   "4",
-  //   "5",
-  //   "6",
-  //   "7",
-  //   "8",
-  //   "9",
-  //   "10",
-  //   "11",
-  //   "12",
-  // ];
-
   return (
     <Box className="w-full flex flex-col gap-6">
       {/* <Typography variant="h5" gutterBottom>
@@ -113,7 +111,7 @@ const Dashboard = () => {
           </Grid2>
         ))}
 
-        <Grid2 size={8}>
+        <Grid2 size={12}>
           <Typography variant="h6" align="center" gutterBottom>
             Biểu đồ doanh thu theo năm 2025
           </Typography>
@@ -125,22 +123,34 @@ const Dashboard = () => {
           />
         </Grid2>
 
-        <Grid2 size={4}>
-          <Typography variant="h6" align="center" gutterBottom>
-            Biểu đồ các sản phẩm được quan tâm nhất
-          </Typography>
-          <PieChart
-            series={[
-              {
-                data: [
-                  { id: 0, value: 10, label: "series A" },
-                  { id: 1, value: 15, label: "series B" },
-                  { id: 2, value: 20, label: "series C" },
-                ],
-              },
-            ]}
-            height={200}
-          />
+        <Grid2 container size={12} spacing={3}>
+          <Grid2 size={6}>
+            <Typography variant="h6" align="center" gutterBottom>
+              Biểu đồ các sản phẩm được quan tâm nhất
+            </Typography>
+            <PieChart
+              series={[
+                {
+                  data: topProducts,
+                },
+              ]}
+              height={200}
+            />
+          </Grid2>
+          
+          <Grid2 size={6}>
+            <Typography variant="h6" align="center" gutterBottom>
+              Biểu đồ các dịch vụ được quan tâm nhất
+            </Typography>
+            <PieChart
+              series={[
+                {
+                  data: topServices,
+                },
+              ]}
+              height={200}
+            />
+          </Grid2>
         </Grid2>
       </Grid2>
     </Box>

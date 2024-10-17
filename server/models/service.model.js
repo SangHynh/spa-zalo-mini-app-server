@@ -9,6 +9,7 @@ const serviceSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     description: { type: String, required: true },
     images: { type: [String], default: [] }, // Bổ sung
+    timesUsed: { type: Number, default: 0 } // Số lượt sử dụng dịch vụ
 }, {
     timestamps: true
 });

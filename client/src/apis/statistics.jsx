@@ -7,3 +7,11 @@ export const apiGetRevenue = (period) => axios(
         method: "GET",
     }
 )
+
+// GET TOP PRODUCTS & SERVICE
+export const apiGetTopProductsAndServices = (limit) => axios(
+    {
+        url: "/api/statistics/top-products-services?limit=" + limit,
+        method: "GET",
+    }
+)

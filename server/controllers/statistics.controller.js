@@ -1,4 +1,6 @@
 const Order = require("../models/order.model");
+const Product = require("../models/product.model");
+const Service = require("../models/service.model");
 
 class StatisticsController {
     async getRevenueStatistics(req, res) {
@@ -57,6 +59,33 @@ class StatisticsController {
                 error: error.message,
                 message: 'An error occurred'
             })
+        }
+    }
+
+    async getTopProductsAndServices(req, res) {
+        try {
+            const limit = parseInt(req.query.limit) || 10;
+
+            // Top products
+            const topProducts = await Product.find({ salesQuantity: { $gt: 0 } })
+                .sort({ salesQuantity: -1 })
+                .limit(limit)
+                .select('name price salesQuantity');
+
+            // Top Service
+            const topServices = await Service.find({ timesUsed: { $gt: 0 } })
+                .sort({ timesUsed: -1 })
+                .limit(limit)
+                .select('name price timesUsed');
+
+            return res.status(200).json({
+                topProducts,
+                topServices
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+            });
         }
     }
 }

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, enum: ["male", "female"], default: "male" },
     membershipTier: {
       type: String,
-      enum: ["Member", "Silver", "Gold", "Diamond"],
+      // enum: ["Member", "Silver", "Gold", "Diamond"],
       default: "Member",
     },
     points: { type: Number, default: 0 },
@@ -51,7 +51,9 @@ const userSchema = new mongoose.Schema(
     vouchers: [{
       code: { type: String, required: true },
       voucherId: { type: mongoose.Schema.Types.ObjectId },
-    }]
+    }],
+    rankPoints: { type: Number, default: 0 },
+    amounts: { type: Number, default: 0 },
   }, {
   timestamps: true
 });

@@ -1,6 +1,9 @@
+const { signAccessToken, signRefreshToken } = require("../configs/jwt.config");
+const { Admin } = require("../models/admin.model");
 const User = require("../models/user.model");
 const { zaloPhoneService } = require("../services/zalo.service");
 const mongoose = require('mongoose');
+const createError = require("http-errors");
 
 // Controller để tạo người dùng mới
 const createUser = async (req, res) => {
@@ -35,6 +38,98 @@ const createUser = async (req, res) => {
   }
 };
 
+const createStaff = async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      name,
+      permissions,
+      role
+    } = req.body;
+
+    // Kiểm tra role không khớp
+    if (!role || !["admin"].includes(role)) {
+      throw createError.BadRequest("Invalid role");
+    }
+
+    if (!email || !password) {
+      throw createError.BadRequest("Email and password are required");
+    }
+
+    const doesExist = await Admin.findOne({ email });
+    if (doesExist) {
+      throw createError.Conflict(`Admin is already registered`);
+    }
+
+    const imageUrls = req.files ? req.files.map(file => file.path) : [];
+
+    const avatar = imageUrls.length > 0 ? imageUrls[0] : '';
+
+    // Tạo tài khoản admin mới
+    const newAdmin = new Admin({ email, password, zaloId: email, name, permissions, avatar });
+    const savedAdmin = await newAdmin.save();
+
+    // Chuyển đối tượng Mongoose thành object và loại bỏ thuộc tính password
+    const adminData = savedAdmin.toObject();
+    delete adminData.password;
+
+    // Tạo access token và refresh token
+    const accessToken = await signAccessToken(savedAdmin.id);
+    const refreshToken = await signRefreshToken(savedAdmin.id);
+
+    // Trả về kết quả đăng ký thành công
+    return res.status(201).json({ admin: adminData, accessToken, refreshToken });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Controller để lấy tất cả nhân viên
+const getAllStaffs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const { keyword, sortBy, sortOrder } = req.query;
+
+    // Tạo điều kiện tìm kiếm
+    const query = {};
+
+    if (keyword) {
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
+
+      query.$or = [
+        { name: { $regex: keyword, $options: 'i' } },
+      ];
+
+      if (isObjectId) {
+        query.$or.push({ _id: new mongoose.Types.ObjectId(keyword) });
+      }
+    }
+
+    const staffs = await Admin.find(query)
+      .skip(skip)
+      .limit(limit)
+      .select('-password');
+    // .sort(sortCriteria)
+
+    const totalStaffs = await Admin.countDocuments(query);
+
+    return res.status(200).json({
+      totalStaffs,
+      currentPage: page,
+      totalPages: Math.ceil(totalStaffs / limit),
+      staffs
+    });
+  } catch (error) {
+    console.error("Error fetching staffs:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Controller để lấy tất cả người dùng
 const getAllUsers = async (req, res) => {
   try {
@@ -49,7 +144,7 @@ const getAllUsers = async (req, res) => {
     const query = {};
 
     if (keyword) {
-      const isObjectId = mongoose.Types.ObjectId.isValid(keyword); 
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
 
       query.$or = [
         { name: { $regex: keyword, $options: 'i' } },
@@ -64,7 +159,7 @@ const getAllUsers = async (req, res) => {
     const users = await User.find(query)
       .skip(skip)
       .limit(limit)
-      // .sort(sortCriteria)
+    // .sort(sortCriteria)
 
     const totalUsers = await User.countDocuments(query);
 
@@ -180,7 +275,7 @@ const updateUserPhone = async (req, res) => {
       res
         .status(200)
         .json({ message: "User info updated successfully", userInfo });
-    }else{
+    } else {
       return res.status(204).send();
     }
   } catch (error) {
@@ -274,7 +369,7 @@ const getUserInfo = async (req, res) => {
       phone: user.phone,
       membershipTier: user.membershipTier,
       points: user.points,
-      zaloId: account.zaloId, 
+      zaloId: account.zaloId,
     };
     res.status(200).json(userInfo);
   } catch (error) {
@@ -293,4 +388,6 @@ module.exports = {
   updateUserInfo,
   suggestProductsForUser,
   getUserInfo,
+  createStaff,
+  getAllStaffs,
 };

@@ -243,7 +243,7 @@ const Images = () => {
           <Grid2 size={6}>
             {/* Table for Existing Images */}
             <Typography variant="h6">{t("existing-images")}</Typography>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto border">
               <table className="min-w-full">
                 <thead>
                   <tr className="bg-gray-400 dark:bg-gray-100 text-black">
@@ -300,7 +300,7 @@ const Images = () => {
           <Grid2 size={6}>
             {/* Table for Uploaded Images */}
             <Typography variant="h6">{t("uploaded-images")}</Typography>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto border">
               <table className="min-w-full">
                 <thead>
                   <tr className="bg-gray-400 dark:bg-gray-100 text-black">

@@ -199,6 +199,20 @@ function Row(props) {
             }}
             className="relative"
           >
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(row.amounts)}
+          </TableCell>
+          <TableCell
+            align="right"
+            sx={{
+              minWidth: "200px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
             {new Date(row.referralInfo?.referredAt).toLocaleString("vi-VN", {
               timeZone: "Asia/Ho_Chi_Minh",
               year: "numeric",
@@ -468,7 +482,7 @@ const CustomerTable = ({ searchTerm }) => {
       <TableContainer
         component={Paper}
         style={{ maxHeight: "600px", overflowY: "auto", overflowX: "auto" }}
-        className="border"
+        className="border shadow-2xl"
       >
         <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
@@ -557,6 +571,13 @@ const CustomerTable = ({ searchTerm }) => {
                 className="relative dark:text-black"
               >
                 {t("referred-by")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("amounts")}
               </TableCell>
               <TableCell
                 align="center"

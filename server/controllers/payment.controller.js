@@ -6,6 +6,7 @@ const User = require('../models/user.model');
 const Product = require('../models/product.model');
 const Voucher = require('../models/voucher.model');
 const AppConfig = require('../models/appconfig.model');
+const Rank = require('../models/rank.model');
 
 class PaymentController {
     // GET ORDERS
@@ -17,7 +18,7 @@ class PaymentController {
             const skip = (page - 1) * limit;
 
             const { keyword } = req.query;
-            
+
             // Tạo điều kiện tìm kiếm
             const query = {};
 
@@ -28,9 +29,9 @@ class PaymentController {
                         { phone: { $regex: keyword, $options: 'i' } }
                     ]
                 }).select('_id');
-    
+
                 const userIds = users.map(user => user._id);
-    
+
                 if (userIds.length > 0) {
                     query.customerId = { $in: userIds };
                 } else {
@@ -103,20 +104,20 @@ class PaymentController {
             if (data.voucherId) {
                 const voucher = await Voucher.findById(data.voucherId);
                 if (!voucher) return res.status(404).json({ message: "Voucher not found" });
-    
+
                 const now = new Date();
                 if (now < voucher.validFrom || now > voucher.validTo) {
                     return res.status(400).json({ message: "Voucher is not valid" });
                 }
-    
+
                 discountApplied = true;
-    
+
                 discountAmount = (data.totalAmount * voucher.discountValue) / 100;
-    
+
                 if (discountAmount > data.totalAmount) {
                     discountAmount = data.totalAmount;
                 }
-    
+
                 finalAmount = data.totalAmount - discountAmount;
             }
 
@@ -186,6 +187,7 @@ class PaymentController {
                         }
 
                         variant.stock -= productOrder.quantity;
+                        product.salesQuantity += productOrder.quantity;
 
                         // Tính lại tổng stock của sản phẩm từ tất cả các variant còn lại
                         const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
@@ -197,6 +199,7 @@ class PaymentController {
                         }
 
                         product.stock -= productOrder.quantity;
+                        product.salesQuantity += productOrder.quantity;
                     }
 
                     await product.save();
@@ -204,24 +207,47 @@ class PaymentController {
 
                 // CẬP NHẬT ĐIỂM CHO USER + CẬP NHẬT ĐIỂM CHO NGƯỜI GIỚI THIỆU (PLANNED)
                 const appConfig = await AppConfig.findOne()
+                const user = await User.findById(order.customerId);
+                if (!user) return res.status(404).json({ message: "User not found" });
                 if (appConfig) {
                     const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
-                    for(let pointLevel of sortedOrderPoints) {
+                    for (let pointLevel of sortedOrderPoints) {
                         console.log(pointLevel)
                         if (order.finalAmount >= pointLevel.price) {
-                            const user = await User.findById(order.customerId);
-                            if (!user) return res.status(404).json({ message: "User not found" });
 
                             user.points += pointLevel.minPoints;
+                            user.rankPoints += pointLevel.minPoints;
 
                             await user.save({ validateBeforeSave: false })
-
-                            // const referralInfo = user.referralInfo.paths
 
                             break;
                         }
                     }
                 }
+
+                // TÍNH TIỀN HOA HỒNG
+                if (user.referralInfo && user.referralInfo.paths) {
+                    const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
+
+                    // Get commission percentage for the user based on their rank
+                    const userRank = await Rank.findOne({ tier: user.membershipTier });
+                    let commissionAmount = order.finalAmount * (userRank.commissionPercent / 100);
+
+                    for (let i = referralPaths.length - 2; i >= 0; i--) {
+                        const refCode = referralPaths[i];
+                        const refUser = await User.findOne({ referralCode: refCode });
+
+                        if (refUser) {
+                            const refUserRank = await Rank.findOne({ tier: refUser.membershipTier });
+                            if (refUserRank) {
+                                refUser.amounts += commissionAmount;
+                                await refUser.save();
+
+                                commissionAmount *= (refUserRank.commissionPercent / 100);
+                            }
+                        }
+                    }
+                }    
             }
 
             const updatedOrder = await order.save();

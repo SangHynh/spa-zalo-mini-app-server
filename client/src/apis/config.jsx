@@ -7,6 +7,13 @@ export const apiGetSlider = () =>
     method: "GET",
   });
 
+// GET PERMISSIONS
+export const apiGetPermission = () =>
+  axios({
+    url: "/api/configs/permission",
+    method: "GET",
+  });
+
 // PUT SLIDER
 export const apiUpdateSlider = (formData) =>
   axios({

@@ -14,6 +14,9 @@ router.post('/giveAway', verifyAccessToken, voucherController.giveAwayVouchers)
 // PUT
 router.put('/:id', verifyAccessToken, voucherController.updateVoucher);
 
+// DÙNG ĐIỂM ĐỔI VOUCHER
+router.put('/exchange/:id', verifyAccessToken, voucherController.exchangeVoucher);
+
 // DELETE
 router.delete('/:id', verifyAccessToken, voucherController.deleteVoucher);
 
