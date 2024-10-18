@@ -69,6 +69,7 @@
   "booking-id": "Booking Id",
   "order-id": "Order Id",
   "sub-category-id": "Sub-category Id",
+  "category-id": "Category Id",
   "category-name": "Category name",
   "sub-category": "Sub-category",
   "sub-category-name": "Sub-category Name",
@@ -194,5 +195,6 @@
   "amounts": "Amounts",
   "select user-voucher pls": "Please select customer and voucher",
   "select user-cate pls": "Please select customer and category",
-  "level": "Level"
+  "level": "Level",
+  "cate-suggest": "Suggested Categories"
 }

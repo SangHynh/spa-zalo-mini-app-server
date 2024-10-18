@@ -20,6 +20,7 @@ import { apiGetCustomers } from "../../../apis/users";
 import { apiGetCategories } from "../../../apis/categories";
 import Swal from "sweetalert2";
 import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
+import { FaEye } from "react-icons/fa";
 
 const UserCate = () => {
   const { t } = useTranslation();
@@ -280,6 +281,10 @@ const UserCate = () => {
                   >
                     {t("phone")}
                   </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ color: "black", fontWeight: "bold" }}
+                  ></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -310,6 +315,9 @@ const UserCate = () => {
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.phone}</TableCell>
+                      <TableCell className="cursor-pointer">
+                        <FaEye size={16} />
+                      </TableCell>
                     </TableRow>
                   );
                 })}

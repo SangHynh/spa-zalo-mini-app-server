@@ -434,6 +434,44 @@ function Row(props) {
             </Collapse>
           </TableCell>
         </TableRow>
+        <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div">
+                  {t("cate-suggest")}
+                </Typography>
+                <Table
+                  size="small"
+                  aria-label="related-products"
+                  sx={{ tableLayout: "fixed", width: "100%" }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">{t("category-id")}</TableCell>
+                      <TableCell align="center">
+                        {t("suggestion-score")}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {row.suggestions &&
+                      row.suggestions.map((suggestion) => (
+                        <TableRow key={suggestion._id}>
+                          <TableCell component="th" scope="row" align="center">
+                            {suggestion.categoryId}
+                          </TableCell>
+                          <TableCell align="center">
+                            {suggestion.suggestedScore}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
       </React.Fragment>
     </>
   );
