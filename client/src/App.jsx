@@ -4,7 +4,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DarkModeProvider } from "./context/DarkModeContext"; // Import Provider
 import { LoadingProvider } from "./context/LoadingProvider";
-import BackdropLoader from "./components/loading/BackdropLoader";
+import BackdropLoader from "./components/loadings/BackdropLoader";
 import PrivateRoute from "./context/PrivateRoute";
 
 function App() {

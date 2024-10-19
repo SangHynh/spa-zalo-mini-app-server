@@ -1,2 +1,2 @@
 export { default as Topheader } from "./banners/Topheader";
-export { default as Loading } from "./loading/Loading";
+export { default as BackdropLoader } from "./loadings/BackdropLoader";

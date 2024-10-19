@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiSearchAffiate } from "../../apis/users";
 import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const AffiliateMarketing = () => {
   const { t } = useTranslation();
@@ -34,13 +35,24 @@ const AffiliateMarketing = () => {
     fetchCustomer();
   }, [referralCode]);
 
-  const handleExpandNode = async (referralCode, nodeId) => {
-    const response = await apiSearchAffiate(referralCode);
-    if (response.status === 200) {
+  const handleToggleNode = async (referralCode, nodeId) => {
+    const isExpanded = expandedNodes[nodeId || referralCode];
+
+    if (isExpanded) {
+      // Collapse the node
       setExpandedNodes((prev) => ({
         ...prev,
-        [nodeId]: response.data.descendants,
+        [nodeId || referralCode]: null,
       }));
+    } else {
+      // Expand the node and fetch descendants
+      const response = await apiSearchAffiate(referralCode);
+      if (response.status === 200) {
+        setExpandedNodes((prev) => ({
+          ...prev,
+          [nodeId || referralCode]: response.data.descendants,
+        }));
+      }
     }
   };
 
@@ -52,10 +64,14 @@ const AffiliateMarketing = () => {
         </Typography>
         <IconButton
           onClick={() =>
-            handleExpandNode(user.referralCode, nodeId || user.referralCode)
+            handleToggleNode(user.referralCode, nodeId || user.referralCode)
           }
         >
-          <AddIcon />
+          {expandedNodes[nodeId || user.referralCode] ? (
+            <RemoveIcon />
+          ) : (
+            <AddIcon />
+          )}
         </IconButton>
       </div>
 
