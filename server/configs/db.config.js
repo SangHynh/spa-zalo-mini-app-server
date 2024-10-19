@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 const Product = require("../models/product.model");
 const Recommendation = require("../models/recommendation.model");
 const Review = require("../models/review.model");
+const Configuration = require("../models/configuration.model");
 const generateRandomPhoneNumber = require("../utils/genData.util");
 const createTestData = require("../utils/generateTestData");
 const AppConfig = require("../models/appconfig.model");
@@ -32,48 +33,48 @@ async function connect() {
 }
 
 // TEST ADD DATA
-async function testAdd() {
-  try {
-    const productNames = [
-      "Product A",
-      "Product B",
-      "Product C",
-      "Product D",
-      "Product E",
-      "Product F",
-    ];
-    const productIds = ["12345", "67890", "54321", "11223", "33445", "55667"];
+// async function testAdd() {
+//   try {
+//     const productNames = [
+//       "Product A",
+//       "Product B",
+//       "Product C",
+//       "Product D",
+//       "Product E",
+//       "Product F",
+//     ];
+//     const productIds = ["12345", "67890", "54321", "11223", "33445", "55667"];
 
-    for (let i = 1; i <= 6; i++) {
-      // Tạo 6 người dùng
-      const user = new User({
-        name: `John Doe ${i}`, // Tên thay đổi theo từng người dùng
-        phone: generateRandomPhoneNumber(),
-        role: "User",
-        membershipTier: i % 2 === 0 ? "Gold" : "Silver", // Thay đổi theo từng người
-        points: 100 + i * 10, // Tăng dần số điểm theo người dùng
-        referralCode: `ABC123${i}`, // Mã giới thiệu thay đổi theo người dùng
-        productSuggestions: [
-          {
-            productId: productIds[0], // Sản phẩm giống nhau
-            productName: productNames[0], // Tên sản phẩm giống nhau
-            suggestedScore: 8.5 + i * 0.1, // Điểm gợi ý thay đổi nhẹ
-          },
-          {
-            productId: productIds[i % productIds.length], // Thay đổi sản phẩm cho mỗi người
-            productName: productNames[i % productNames.length], // Tên sản phẩm thay đổi
-            suggestedScore: 9.0 + i * 0.2, // Điểm gợi ý thay đổi
-          },
-        ],
-      });
+//     for (let i = 1; i <= 6; i++) {
+//       // Tạo 6 người dùng
+//       const user = new User({
+//         name: `John Doe ${i}`, // Tên thay đổi theo từng người dùng
+//         phone: generateRandomPhoneNumber(),
+//         role: "User",
+//         membershipTier: i % 2 === 0 ? "Gold" : "Silver", // Thay đổi theo từng người
+//         points: 100 + i * 10, // Tăng dần số điểm theo người dùng
+//         referralCode: `ABC123${i}`, // Mã giới thiệu thay đổi theo người dùng
+//         productSuggestions: [
+//           {
+//             productId: productIds[0], // Sản phẩm giống nhau
+//             productName: productNames[0], // Tên sản phẩm giống nhau
+//             suggestedScore: 8.5 + i * 0.1, // Điểm gợi ý thay đổi nhẹ
+//           },
+//           {
+//             productId: productIds[i % productIds.length], // Thay đổi sản phẩm cho mỗi người
+//             productName: productNames[i % productNames.length], // Tên sản phẩm thay đổi
+//             suggestedScore: 9.0 + i * 0.2, // Điểm gợi ý thay đổi
+//           },
+//         ],
+//       });
 
-      const userResult = await user.save();
-      console.log(`User ${i} created successfully:`, userResult);
-    }
-  } catch (error) {
-    console.error("Error creating user:", error);
-  }
-}
+//       const userResult = await user.save();
+//       console.log(`User ${i} created successfully:`, userResult);
+//     }
+//   } catch (error) {
+//     console.error("Error creating user:", error);
+//   }
+// }
 
 // Gọi hàm để test
 // testAdd();

@@ -6,6 +6,7 @@ const moment = require("moment");
 const Review = require("../models/review.model");
 const User = require("../models/user.model");
 const Recommendation = require("../models/recommendation.model");
+const Configuration = require("../models/configuration.model");
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id; // Lấy user ID từ body
   const productName = req.params.productName; // Lấy product name từ params
@@ -846,5 +847,96 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
   } catch (error) {
     console.error("Error updating multiple suggestions:", error.message);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.configureProductToUser = async (req, res) => {
+  const { userIds, productIds } = req.body; // Lấy userIds và productIds từ body
+
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 || 
+      !productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    return res.status(400).json({ message: "Invalid user IDs or product IDs" });
+  }
+
+  try {
+    // Tìm kiếm người dùng dựa trên userIds
+    const users = await User.find({ _id: { $in: userIds } });
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    // Tìm các sản phẩm dựa trên danh sách productIds
+    const products = await Product.find({ _id: { $in: productIds } });
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    // Lặp qua từng người dùng để cập nhật configSuggestions
+    for (const user of users) {
+      // Tìm kiếm cấu hình hiện tại của người dùng với type là "product"
+      let configuration = await Configuration.findOne({ userId: user._id, type: "product" });
+
+      // Nếu không tìm thấy cấu hình, khởi tạo mới
+      if (!configuration) {
+        configuration = new Configuration({
+          userId: user._id,
+          type: "product",  // Gán giá trị type là "product"
+          configSuggestions: [],
+        });
+      }
+
+      // Lặp qua các sản phẩm để thêm vào configSuggestions
+      for (const product of products) {
+        const { _id: productId, name: productName } = product;
+
+        // Kiểm tra xem sản phẩm đã tồn tại trong configSuggestions chưa
+        const existingSuggestion = configuration.configSuggestions.find(
+          (suggestion) => suggestion.id.toString() === productId.toString()
+        );
+
+        if (!existingSuggestion) {
+          // Nếu chưa tồn tại, thêm sản phẩm mới vào configSuggestions
+          configuration.configSuggestions.push({
+            id: productId,
+            name: productName,
+          });
+        }
+      }
+
+      // Lưu cập nhật vào cơ sở dữ liệu
+      await configuration.save();
+    }
+
+    // Trả về thông tin cập nhật
+    res.status(200).json({
+      message: "Products configured successfully",
+    });
+  } catch (error) {
+    console.error("Error configuring products to user:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.getUserConfiguration = async (req, res) => {
+  const { userId } = req.body; // Lấy userId từ body của yêu cầu
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    // Khởi tạo ObjectId từ userId
+    const objectId = new mongoose.Types.ObjectId(userId);
+    const configuration = await Configuration.findOne({ userId: objectId });
+
+    if (!configuration) {
+      return res.status(404).json({ message: "Configuration not found for this user" });
+    }
+
+    res.status(200).json({
+      message: "Configuration retrieved successfully",
+      data: configuration,
+    });
+  } catch (error) {
+    console.error("Error retrieving user configuration:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
