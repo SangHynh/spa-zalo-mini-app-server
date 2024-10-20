@@ -17,12 +17,12 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiGetCustomers } from "../../../apis/users";
-import { apiGetCategories } from "../../../apis/categories";
 import Swal from "sweetalert2";
 import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
 import { FaEye } from "react-icons/fa";
+import { apiGetProducts } from "../../../apis/products";
 
-const UserCate = () => {
+const UserProd = () => {
   const { t } = useTranslation();
 
   // USERS
@@ -34,48 +34,14 @@ const UserCate = () => {
   const [searchTermUser, setSearchTermUser] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState([]);
 
-  //CATEGORIES
-  const [categories, setCategories] = useState([]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
-  const [searchTermCategory, setSearchTermCategory] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [scores, setScores] = useState({});
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSearchChangeCategory = (event) => {
-    setSearchTermCategory(event.target.value);
-  };
-
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchTermCategory.toLowerCase()) ||
-      category._id.toLowerCase().includes(searchTermCategory.toLowerCase())
-  );
-
-  const displayedCategories = filteredCategories.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
-  // Hàm xử lý thay đổi số lượng
-  const handleScoreChange = (id, value) => {
-    // Chỉ cho phép số hoặc chuỗi rỗng
-    if (value === "" || /^[0-9]*$/.test(value)) {
-      setScores({
-        ...scores,
-        [id]: value,
-      });
-    }
-  };
+  // PRODUCTS
+  const [currentPageProduct, setCurrentPageProduct] = useState(1);
+  const [rowsPerPageProduct, setRowsPerPageProduct] = useState(5);
+  const [totalPagesProduct, setTotalPagesProduct] = useState(0);
+  const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [searchTermProduct, setSearchTermProduct] = useState("");
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
 
   // GET USERS
   useEffect(() => {
@@ -95,19 +61,32 @@ const UserCate = () => {
     fetchUsers();
   }, [currentPageUser, rowsPerPageUser, searchTermUser]);
 
-  // GET CATEGORIES
+  // GET PRODUCTS
   useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await apiGetCategories();
-      if (response.status === 200) setCategories(response.data);
+    const fetchProducts = async () => {
+      const response = await apiGetProducts(
+        currentPageProduct,
+        rowsPerPageProduct,
+        searchTermProduct
+      );
+      if (response.status === 200) {
+        setProducts(response.data.products || []);
+        setTotalProducts(response.data.totalProducts);
+        setTotalPagesProduct(response.data.totalPages);
+      }
     };
 
-    fetchCategories();
-  }, [searchTermCategory]);
+    fetchProducts();
+  }, [currentPageProduct, rowsPerPageProduct, searchTermProduct]);
 
   // Handle user page change
   const handleChangePageUser = (event, newPage) => {
     setCurrentPageUser(newPage + 1);
+  };
+
+  // Handle product page change
+  const handleChangePageProduct = (event, newPage) => {
+    setCurrentPageProduct(newPage + 1);
   };
 
   // Handle user rows per page change
@@ -116,10 +95,22 @@ const UserCate = () => {
     setCurrentPageUser(1); // Reset to the first page
   };
 
+  // Handle product rows per page change
+  const handleChangeRowsPerPageProduct = (event) => {
+    setRowsPerPageProduct(parseInt(event.target.value, 10));
+    setCurrentPageProduct(1); // Reset to the first page
+  };
+
   // Handle search for users
   const handleSearchChangeUser = (e) => {
     setSearchTermUser(e.target.value);
     setCurrentPageUser(1); // Reset to the first page on search
+  };
+
+  // Handle search for products
+  const handleSearchChangeProduct = (e) => {
+    setSearchTermProduct(e.target.value);
+    setCurrentPageProduct(1); // Reset to the first page on search
   };
 
   // Handle selection of users
@@ -132,15 +123,14 @@ const UserCate = () => {
     setSelectedUserIds([]);
   };
 
-  // Handle selection of categories
-  const handleSelectAllCategories = (event) => {
+  // Handle selection of products
+  const handleSelectAllProducts = (event) => {
     if (event.target.checked) {
-      const newSelectedCategories = categories.map((category) => category._id);
-
-      setSelectedCategoryIds(newSelectedCategories);
-    } else {
-      setSelectedCategoryIds([]);
+      const newSelectedProducts = products.map((product) => product._id);
+      setSelectedProductIds(newSelectedProducts);
+      return;
     }
+    setSelectedProductIds([]);
   };
 
   // Handle individual user selection
@@ -164,66 +154,34 @@ const UserCate = () => {
     setSelectedUserIds(newSelected);
   };
 
-  // Handle individual category selection
-  const handleClickCategory = (event, id) => {
-    const selectedIndex = selectedCategoryIds.indexOf(id);
+  // Handle individual product selection
+  const handleClickProduct = (event, id) => {
+    const selectedIndex = selectedProductIds.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selectedCategoryIds, id);
-    } else {
+      newSelected = newSelected.concat(selectedProductIds, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedProductIds.slice(1));
+    } else if (selectedIndex === selectedProductIds.length - 1) {
+      newSelected = newSelected.concat(selectedProductIds.slice(0, -1));
+    } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
-        selectedCategoryIds.slice(0, selectedIndex),
-        selectedCategoryIds.slice(selectedIndex + 1)
+        selectedProductIds.slice(0, selectedIndex),
+        selectedProductIds.slice(selectedIndex + 1)
       );
     }
 
-    setSelectedCategoryIds(newSelected);
+    setSelectedProductIds(newSelected);
   };
 
   const isUserSelected = (id) => selectedUserIds.indexOf(id) !== -1;
-  const isCategorySelected = (id) => selectedCategoryIds.indexOf(id) !== -1;
+
+  const isProductSelected = (id) => selectedProductIds.indexOf(id) !== -1;
 
   const handleUpdate = async () => {
-    // console.log("Selected User IDs:", selectedUserIds);
-    // console.log("Selected Category IDs:", selectedCategoryIds);
-
-    if (selectedUserIds.length === 0 || selectedCategoryIds.length === 0) {
-      Swal.fire({
-        icon: "warning",
-        title: `${t("warning")}!`,
-        text: `${t("select user-cate pls")}`,
-        target: "",
-      });
-      return;
-    }
-
-    const suggestionsToUpdate = selectedCategoryIds.map((categoryId) => ({
-      categoryId,
-      suggestedScore: scores[categoryId] || 0, // Sử dụng giá trị score từ ô input, mặc định là 0 nếu không có
-    }));
-
-    // console.log(selectedUserIds, suggestionsToUpdate);
-
-    try {
-      const response = await apiUpdateMultipleSuggestionScores(
-        selectedUserIds,
-        suggestionsToUpdate
-      );
-      if (response.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: `${t("update-success")}!`,
-          showConfirmButton: true,
-        }).then(() => {
-          window.location.reload();
-        });
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error updating suggestions:", error);
-    }
+    console.log("Selected User IDs:", selectedUserIds);
+    console.log("Selected Category IDs:", selectedProductIds);
   };
 
   return (
@@ -330,15 +288,15 @@ const UserCate = () => {
         </Grid2>
         <Grid2 size={6}>
           <Typography variant="h6" gutterBottom>
-            {t("select-cate")}
+            {t("select-prod")}
           </Typography>
           <div className="flex justify-between items-center space-x-3 my-4">
             <div className="flex-1 w-64 relative">
               <input
                 type="text"
                 placeholder={t("search...")}
-                value={searchTermCategory}
-                onChange={handleSearchChangeCategory}
+                value={searchTermProduct}
+                onChange={handleSearchChangeProduct}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
               <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
@@ -351,14 +309,14 @@ const UserCate = () => {
                   <TableCell padding="checkbox">
                     <Checkbox
                       indeterminate={
-                        selectedCategoryIds.length > 0 &&
-                        selectedCategoryIds.length < categories.length
+                        selectedProductIds.length > 0 &&
+                        selectedProductIds.length < products.length
                       }
                       checked={
-                        categories.length > 0 &&
-                        selectedCategoryIds.length === categories.length
+                        products.length > 0 &&
+                        selectedProductIds.length === products.length
                       }
-                      onChange={handleSelectAllCategories}
+                      onChange={handleSelectAllProducts}
                       sx={{ color: "black" }}
                     />
                   </TableCell>
@@ -372,30 +330,25 @@ const UserCate = () => {
                     align="center"
                     sx={{ color: "black", fontWeight: "bold" }}
                   >
-                    {t("category-name")}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{ color: "black", fontWeight: "bold" }}
-                  >
-                    {t("suggestion-score")}
+                    {t("name")}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {displayedCategories.map((category, index) => {
-                  const isItemSelected = isCategorySelected(category._id);
+                {products.map((product, index) => {
+                  const isItemSelected = isProductSelected(product._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
+
                   return (
                     <TableRow
                       hover
                       onClick={(event) =>
-                        handleClickCategory(event, category._id)
+                        handleClickProduct(event, product._id)
                       }
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={category._id}
+                      key={product._id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -407,21 +360,9 @@ const UserCate = () => {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row">
-                        {category._id}
+                        {product._id}
                       </TableCell>
-                      <TableCell>{category.name}</TableCell>
-                      <TableCell align="center">
-                        <input
-                          type="text"
-                          value={scores[category._id] || ""}
-                          onChange={(e) =>
-                            handleScoreChange(category._id, e.target.value)
-                          }
-                          onClick={(e) => e.stopPropagation()}
-                          className="border-b border-gray-300 bg-transparent focus:outline-none py-1 px-2 w-10 text-center"
-                          min="0"
-                        />
-                      </TableCell>
+                      <TableCell>{product.name}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -429,13 +370,13 @@ const UserCate = () => {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[5, 10, 20]}
             component="div"
-            count={filteredCategories.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            count={totalProducts}
+            rowsPerPage={rowsPerPageProduct}
+            page={currentPageProduct - 1}
+            onPageChange={handleChangePageProduct}
+            onRowsPerPageChange={handleChangeRowsPerPageProduct}
             labelRowsPerPage={t("rows-per-page")}
           />
         </Grid2>
@@ -454,4 +395,4 @@ const UserCate = () => {
   );
 };
 
-export default UserCate;
+export default UserProd;

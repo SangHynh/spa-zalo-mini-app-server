@@ -195,5 +195,7 @@
   "select user-voucher pls": "Vui lòng chọn khách hàng và voucher",
   "select user-cate pls": "Vui lòng chọn khách hàng và danh mục",
   "level": "Cấp",
-  "cate-suggest": "Danh mục được gợi ý"
+  "cate-suggest": "Danh mục được gợi ý",
+  "user-prod": "Người dùng - Sản phẩm",
+  "select-prod": "Chọn sản phẩm"
 }
