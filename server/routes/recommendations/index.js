@@ -38,7 +38,13 @@ router.put('/update-multiple-suggestion-scores', recommendationController.update
 router.post('/get-combined-product-recommendations', recommendationController.getCombinedProductRecommendations);
 //lấy danh sách dịch vụ gợi ý cho khách hàng gồm từ top sản phẩm config và từ phân tích gợi ý từ các khách hàng khác
 router.post('/get-combined-service-recommendations', recommendationController.getCombinedServiceRecommendations);
+//cập nhật danh sách sản phẩm gợi ý cho khách hàng khi khách hàng mua 1 sản phẩm (có thể cập nhật cho nhiều sản phẩm)
 router.post('/configure-product-to-user', recommendationController.configureProductToUser);
-router.post('/get-product-configuration', recommendationController.getUserConfiguration);
+//cập nhật danh sách dịch vụ gợi ý cho khách hàng khi khách hàng mua 1 dịch vụ (có thể cập nhật cho nhiều dịch vụ)
+router.post('/configure-service-to-user', recommendationController.configureServiceToUser);
+//Lấy danh sách sản phẩm đã được cấu hình cho khách hàng
+router.post('/get-product-configuration', recommendationController.getProductConfiguration);
+//Lấy danh sách dịch vụ đã được cấu hình cho khách hàng
+router.post('/get-service-configuration', recommendationController.getServiceConfiguration);
 
 module.exports = router;
