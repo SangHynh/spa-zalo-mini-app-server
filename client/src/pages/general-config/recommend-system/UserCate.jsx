@@ -416,6 +416,7 @@ const UserCate = () => {
                           onChange={(e) =>
                             handleScoreChange(category._id, e.target.value)
                           }
+                          onClick={(e) => e.stopPropagation()}
                           className="border-b border-gray-300 bg-transparent focus:outline-none py-1 px-2 w-10 text-center"
                           min="0"
                         />
@@ -438,7 +439,7 @@ const UserCate = () => {
           />
         </Grid2>
       </Grid2>
-      <Box className="mt-2 flex justify-end gap-2">
+      <Box className="flex justify-end">
         <Button
           type="submit"
           variant="contained"
@@ -446,13 +447,6 @@ const UserCate = () => {
           onClick={handleUpdate}
         >
           {t("update")}
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          // onClick={handleRefresh}
-        >
-          {t("refresh")}
         </Button>
       </Box>
     </Box>

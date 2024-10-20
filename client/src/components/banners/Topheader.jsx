@@ -66,7 +66,7 @@ const Topheader = () => {
   };
 
   return (
-    <div className="flex justify-end items-center fixed z-50 w-full top-0 left-0 border-none dark:bg-[#1E1E1E] border-b pr-8 gap-4 py-2">
+    <div className="flex justify-end items-center fixed z-50 w-full top-0 left-0 border-none dark:bg-[#1E1E1E] border-b pr-8 gap-10 py-2">
       <button
         onClick={toggleDarkMode}
         className={
@@ -86,27 +86,25 @@ const Topheader = () => {
         formatOptionLabel={formatOptionLabel}
         className="w-fit text-black"
       />
-      <Button
+      <Avatar
         onClick={handleClick}
-        variant="contained"
-        className="flex border gap-4 items-center"
-        sx={{ backgroundColor: "white", color: "black" }}
-      >
-        <Avatar alt="Remy Sharp" src="" sx={{ width: 40, height: 40 }} />
-        <span className="font-bold">Admin.name</span>
-        <ArrowDropDownIcon />
-      </Button>
+        alt="Remy Sharp"
+        src=""
+        sx={{ width: 40, height: 40 }}
+      />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
         PaperProps={{
           style: {
-            width: anchorEl ? anchorEl.offsetWidth : "auto",
+            transform: "translateX(-10%) translateY(10%)",
+            minWidth: 150,
           },
         }}
       >
-        <MenuItem onClick={handleClose}>{t("setting")}</MenuItem>
+        <span className="flex justify-center border-b-2 py-1">AdminName</span>
+        <MenuItem>{t("setting")}</MenuItem>
         <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
       </Menu>
     </div>
