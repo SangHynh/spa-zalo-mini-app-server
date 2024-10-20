@@ -35,6 +35,7 @@ router.post('/callback', paymentController.callback);
     "referralId": ,
     "products": , hoặc "items": ,
     "voucherId": ,
+    "address": , // THÊM ĐỊA CHỈ
 }
 
 Trong đó:
