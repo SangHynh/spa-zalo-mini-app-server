@@ -68,6 +68,6 @@ router.post('/createOrder', verifyAccessToken, paymentController.createOrder);
 
 // PUT
 // API này dùng để thêm OrderId của zalo vào Order trên server này (lưu vào transactionId)
-router.put('/:id', paymentController.updateOrderWithZaloOrderId)
+router.put('/:id', verifyAccessToken, paymentController.updateOrderWithZaloOrderId)
 
 module.exports = router;

@@ -46,8 +46,8 @@ const Images = () => {
 
       img.onload = () => {
         // Kiểm tra xem kích thước có lớn hơn hoặc bằng 1000x500 không
-        if (img.width >= 1000 || img.height >= 500) {
-          invalidFiles.push(file.name); // Nếu lớn hơn hoặc bằng, thêm vào danh sách lỗi
+        if (img.width < 1000 || img.height < 500) {
+          invalidFiles.push(file.name); // Nếu nhỏ, thêm vào danh sách lỗi
         } else {
           newImages.push({
             index: existingImages.length + newImages.length,

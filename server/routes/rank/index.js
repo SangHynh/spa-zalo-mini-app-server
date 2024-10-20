@@ -7,7 +7,7 @@ const { verifyAccessToken } = require("../../configs/jwt.config");
 router.get("/", verifyAccessToken, RankController.getRanks);
 
 // GET CURRENT USER RANK
-router.get("/current", verifyAccessToken, RankController.getCurrentUserRank)
+// router.get("/current", verifyAccessToken, RankController.getCurrentUserRank) // REMOVE
 
 // CREATE
 router.post("/", verifyAccessToken, RankController.createRank);

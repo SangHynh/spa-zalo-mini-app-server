@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       paths: { type: String, required: true }, // ",ABC,DEF,GHI,JKL,..."
       // tierLevel: { type: Number, required: true },
       // commissionPercentage: { type: Number, default: 0 },
-      referredAt: { type: Date},
+      referredAt: { type: Date },
     },
     // Danh sách giảm giá
     discountsUsed: { type: [String], default: [] },
@@ -56,6 +56,30 @@ const userSchema = new mongoose.Schema(
     amounts: { type: Number, default: 0 },
   }, {
   timestamps: true
+});
+
+userSchema.pre('save', async function (next) {
+  try {
+    const user = this;
+
+    const ranks = await mongoose.model('Rank').find().sort({ minPoints: -1 });
+
+    let newTier = 'Member'; // Default tier
+    for (let rank of ranks) {
+      if (user.rankPoints >= rank.minPoints) {
+        newTier = rank.tier;
+        break;
+      }
+    }
+
+    if (user.membershipTier !== newTier) {
+      user.membershipTier = newTier;
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const User = mongoose.model("User", userSchema);
