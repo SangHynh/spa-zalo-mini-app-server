@@ -15,6 +15,7 @@ router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUs
 
 {
     "date": "05/10/2024 05:00",
+    "voucherId": ""
     "services": [
         "66ffc8e9eb8a35fcbaffa9aa",
         "66ffc8e9eb8a35fcbaffa9ab"

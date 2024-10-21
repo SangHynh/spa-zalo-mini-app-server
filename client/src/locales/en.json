@@ -199,5 +199,15 @@
   "level": "Level",
   "cate-suggest": "Suggested Categories",
   "user-prod": "Users - Products",
-  "select-prod": "Select Products"
+  "select-prod": "Select Products",
+  "print": "Print",
+  "toast-selected": "Please select order",
+  "addresses": "Addresses",
+  "city": "City",
+  "district": "District",
+  "ward": "Ward",
+  "house-number": "House Number",
+  "invoice-number": "Invoice Number",
+  "services": "Services",
+  "receipt": "Receipt"
 }

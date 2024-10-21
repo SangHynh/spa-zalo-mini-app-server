@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const addressSchema = new mongoose.Schema({
+  city: { type: String, required: true },
+  district: { type: String, required: true },
+  ward: { type: String, required: true },
+  number: { type: String, required: true },
+});
+
 const userSchema = new mongoose.Schema(
   {
     //Thông tin người dùng
@@ -32,7 +39,7 @@ const userSchema = new mongoose.Schema(
     discountsUsed: { type: [String], default: [] },
     //Lịch sử dịch vụ
     serviceHistory: { type: [String], default: [] },
-    address: { type: String, default: "" },
+    addresses: { type: [addressSchema], default: [] },
     suggestions: [
       {
         categoryId: { type: String },  // ID của sản phẩm

@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { toPng } from 'html-to-image';
+import React, { Fragment, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import {
     Dialog,
@@ -15,98 +15,99 @@ import {
     Divider,
     Box,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const InvoiceModal = ({
     isOpen,
     setIsOpen,
-    invoiceInfo,
-    items,
+    order
 }) => {
+    const { t } = useTranslation();
+    const printRef = useRef();
+
     const closeModal = () => {
         setIsOpen(false);
     };
 
     const SaveAsPDFHandler = () => {
-        const dom = document.getElementById('print');
-        toPng(dom)
-            .then((dataUrl) => {
-                const img = new Image();
-                img.crossOrigin = 'annoymous';
-                img.src = dataUrl;
-                img.onload = () => {
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'in',
-                        format: [5.5, 8.5],
-                    });
-
-                    const imgProps = pdf.getImageProperties(img);
-                    const imageType = imgProps.fileType;
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pxFullHeight = imgProps.height;
-                    const pxPageHeight = Math.floor((imgProps.width * 8.5) / 5.5);
-                    const nPages = Math.ceil(pxFullHeight / pxPageHeight);
-                    let pageHeight = pdf.internal.pageSize.getHeight();
-
-                    const pageCanvas = document.createElement('canvas');
-                    const pageCtx = pageCanvas.getContext('2d');
-                    pageCanvas.width = imgProps.width;
-                    pageCanvas.height = pxPageHeight;
-
-                    for (let page = 0; page < nPages; page++) {
-                        if (page === nPages - 1 && pxFullHeight % pxPageHeight !== 0) {
-                            pageCanvas.height = pxFullHeight % pxPageHeight;
-                            pageHeight = (pageCanvas.height * pdfWidth) / pageCanvas.width;
-                        }
-                        const w = pageCanvas.width;
-                        const h = pageCanvas.height;
-                        pageCtx.fillStyle = 'white';
-                        pageCtx.fillRect(0, 0, w, h);
-                        pageCtx.drawImage(img, 0, page * pxPageHeight, w, h, 0, 0, w, h);
-
-                        if (page) pdf.addPage();
-
-                        const imgData = pageCanvas.toDataURL(`image/${imageType}`, 1);
-                        pdf.addImage(imgData, imageType, 0, 0, pdfWidth, pageHeight);
-                    }
-                    pdf.save(`invoice-${invoiceInfo.invoiceNumber}.pdf`);
-                };
-            })
-            .catch((error) => {
-                console.error('oops, something went wrong!', error);
-            });
+        
     };
 
     return (
-        <Dialog open={isOpen} onClose={closeModal} maxWidth="md" fullWidth>
+        <Dialog open={isOpen} onClose={closeModal} maxWidth="md">
             <DialogContent>
-                <Box id="print" p={4}>
-                    <Typography variant="h6" align="center" gutterBottom>
-                        INVOICE
+                <Box id="print" p={4} ref={printRef}>
+                    <Typography variant="h4" align="center" gutterBottom>
+                        * {t('receipt')} *
                     </Typography>
-                    <Box mt={6}>
+                    <Box mt={4}>
                         <Box mb={4}>
-                            <Typography><strong>Invoice Number:</strong> {invoiceInfo.invoiceNumber}</Typography>
-                            <Typography><strong>Cashier:</strong> {invoiceInfo.cashierName}</Typography>
-                            <Typography><strong>Customer:</strong> {invoiceInfo.customerName}</Typography>
+                            <Typography><strong>{t('invoice-number')}:</strong> {order?._id}</Typography>
+                            <Typography><strong>{t('order-date')}: </strong>
+                                {new Date(order?.orderDate).toLocaleString("vi-VN", {
+                                    timeZone: "Asia/Ho_Chi_Minh",
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false, // 24-hour format
+                                })}
+                            </Typography>
+                            <Typography><strong>{t('customer')}:</strong> {order?.customerId?.name}</Typography>
+                            <Typography><strong>{t('phone')}:</strong> {order?.customerId?.phone}</Typography>
                         </Box>
 
+                        <Typography><strong>{t('products')}:</strong></Typography>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>ITEM</TableCell>
+                                    <TableCell>{t('product')}</TableCell>
                                     <TableCell align="center">QTY</TableCell>
                                     <TableCell align="right">PRICE</TableCell>
                                     <TableCell align="right">AMOUNT</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {items.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.name}</TableCell>
-                                        <TableCell align="center">{item.qty}</TableCell>
-                                        <TableCell align="right">${Number(item.price).toFixed(2)}</TableCell>
-                                        <TableCell align="right">${Number(item.price * item.qty).toFixed(2)}</TableCell>
+                                {order?.products?.map((item) => (
+                                    <TableRow key={item?.productId}>
+                                        <TableCell>{item?.productName}</TableCell>
+                                        <TableCell align="center">{item?.quantity}</TableCell>
+                                        <TableCell align="right">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(item?.price)}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(item?.price * item?.quantity)}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+
+                        <Typography><strong>{t('services')}:</strong></Typography>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>{t('service')}</TableCell>
+                                    <TableCell align="right">AMOUNT</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {order?.services?.map((item) => (
+                                    <TableRow key={item?.serviceId}>
+                                        <TableCell>{item?.serviceName}</TableCell>
+                                        <TableCell align="right">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(item?.price)}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -116,20 +117,33 @@ const InvoiceModal = ({
                             <Divider />
                             <Box display="flex" justifyContent="space-between" pt={2}>
                                 <Typography><strong>Subtotal:</strong></Typography>
-                                <Typography>${invoiceInfo.subtotal.toFixed(2)}</Typography>
+                                <Typography>
+                                    {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    }).format(order?.totalAmount)}
+                                </Typography>
                             </Box>
                             <Box display="flex" justifyContent="space-between">
                                 <Typography><strong>Discount:</strong></Typography>
-                                <Typography>${invoiceInfo.discountRate.toFixed(2)}</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between">
-                                <Typography><strong>Tax:</strong></Typography>
-                                <Typography>${invoiceInfo.taxRate.toFixed(2)}</Typography>
+                                <Typography>
+                                    {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    }).format(order?.discountAmount)}
+                                </Typography>
                             </Box>
                             <Divider />
                             <Box display="flex" justifyContent="space-between" py={2}>
                                 <Typography variant="h6"><strong>Total:</strong></Typography>
-                                <Typography variant="h6"><strong>${invoiceInfo.total.toFixed(2)}</strong></Typography>
+                                <Typography variant="h6">
+                                    <strong>
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(order?.finalAmount)}
+                                    </strong>
+                                </Typography>
                             </Box>
                         </Box>
                     </Box>
@@ -137,7 +151,7 @@ const InvoiceModal = ({
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" color="primary" onClick={SaveAsPDFHandler}>
-                    Download
+                    {t('print')}
                 </Button>
             </DialogActions>
         </Dialog>

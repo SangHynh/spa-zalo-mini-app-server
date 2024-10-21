@@ -71,4 +71,8 @@ router.post('/createOrder', verifyAccessToken, paymentController.createOrder);
 // API này dùng để thêm OrderId của zalo vào Order trên server này (lưu vào transactionId)
 router.put('/:id', verifyAccessToken, paymentController.updateOrderWithZaloOrderId)
 
+// DELETE
+router.delete('/single/:id', verifyAccessToken, paymentController.deleteOrder);
+router.delete('/mass', verifyAccessToken, paymentController.deleteOrders);
+
 module.exports = router;

@@ -7,6 +7,7 @@ const Product = require('../models/product.model');
 const Voucher = require('../models/voucher.model');
 const AppConfig = require('../models/appconfig.model');
 const Rank = require('../models/rank.model');
+const BookingHistory = require('../models/bookinghistory.model');
 
 class PaymentController {
     // GET ORDERS
@@ -51,6 +52,7 @@ class PaymentController {
                 })
                 .skip(skip)
                 .limit(limit)
+                .sort({ createdAt: -1 })
 
             const totalOrders = await Order.countDocuments(query);
 
@@ -498,6 +500,59 @@ class PaymentController {
             });
         }
     }
+
+    async deleteOrder(req, res) {
+        try {
+            const order = await Order.findById(req.params.id)
+
+            if (!order) return res.status(404).json({ message: 'Order not found' });
+
+            if (order.bookingId) {
+                const booking = await BookingHistory.findById(order.bookingId)
+
+                if (!booking) return res.status(404).json({ message: 'Booking not found' });
+                
+                await BookingHistory.findByIdAndDelete(order.bookingId);
+            }
+
+            await Order.findByIdAndDelete(req.params.id);
+
+            return res.status(200).json({ message: 'Order and related booking (if any) deleted successfully' });
+        } catch (e) {
+            return res.status(500).json(e.message);
+        }
+    }
+
+    async deleteOrders(req, res) {
+        try {
+            const { orderIds } = req.body;
+    
+            if (!orderIds || !Array.isArray(orderIds)) {
+                return res.status(400).json({ message: 'Invalid orderIds array' });
+            }
+    
+            await Promise.all(orderIds.map(async (orderId) => {
+                const order = await Order.findById(orderId);
+                
+                if (order) {
+                    // Nếu order có bookingId, tiến hành xóa booking trước
+                    if (order.bookingId) {
+                        const booking = await BookingHistory.findById(order.bookingId);
+                        if (booking) {
+                            await BookingHistory.findByIdAndDelete(order.bookingId);
+                        }
+                    }
+    
+                    await Order.findByIdAndDelete(orderId);
+                }
+            }));
+    
+            return res.status(200).json({ message: 'All orders and related bookings (if any) deleted successfully' });
+        } catch (e) {
+            return res.status(500).json(e.message);
+        }
+    }
+    
 }
 
 module.exports = new PaymentController();

@@ -198,5 +198,15 @@
   "level": "Cấp",
   "cate-suggest": "Danh mục được gợi ý",
   "user-prod": "Người dùng - Sản phẩm",
-  "select-prod": "Chọn sản phẩm"
+  "select-prod": "Chọn sản phẩm",
+  "print": "In",
+  "toast-selected": "Vui lòng chọn hóa đơn",
+  "addresses": "Danh sách địa chỉ",
+  "city": "Thành phố",
+  "district": "Quận/Huyện",
+  "ward": "Phường/Xã",
+  "house-number": "Số nhà",
+  "invoice-number": "Mã hóa đơn",
+  "services": "Các dịch vụ",
+  "receipt": "Hóa đơn"
 }

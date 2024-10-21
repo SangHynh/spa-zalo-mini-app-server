@@ -247,6 +247,54 @@ function Row(props) {
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
+                  {t("addresses")}
+                </Typography>
+                <Table
+                  size="small"
+                  aria-label="purchases"
+                  sx={{ tableLayout: "fixed", width: "100%" }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">{t("Id")}</TableCell>
+                      <TableCell align="center">{t("house-number")}</TableCell>
+                      <TableCell align="center">{t("ward")}</TableCell>
+                      <TableCell align="center">{t("district")}</TableCell>
+                      <TableCell align="center">{t("city")}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {row.addresses &&
+                      row.addresses.map((address) => (
+                        <TableRow key={address._id}>
+                          <TableCell component="th" scope="row" align="center">
+                            {address._id}
+                          </TableCell>
+                          <TableCell align="center">
+                            {address.number}
+                          </TableCell>
+                          <TableCell align="center">
+                            {address.ward}
+                          </TableCell>
+                          <TableCell align="center">
+                            {address.district}
+                          </TableCell>
+                          <TableCell align="center">
+                            {address.city}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+        <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div">
                   {t("favorite-services")}
                 </Typography>
                 <Table

@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Chip, ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Button, Checkbox, Chip, ImageList, ImageListItem, Stack, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import WidgetsIcon from "@mui/icons-material/Widgets";
@@ -28,13 +28,14 @@ import PendingIcon from "@mui/icons-material/Pending";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { blue, green, red } from "@mui/material/colors";
-import { apiGetOrders } from "../../apis/payments";
+import { apiDeleteOrder, apiDeleteOrders, apiGetOrders } from "../../apis/payments";
 import PrintIcon from '@mui/icons-material/Print';
+import InvoiceModal from "./InvoiceModal";
 
 function Row(props) {
   const { showLoading, hideLoading } = useLoading();
 
-  const { row, searchTerm } = props;
+  const { row, isSelected, handleClick, openInvoiceModal } = props;
 
   // // Chuyển đổi searchTerm và các trường thành chữ thường để việc so sánh không phân biệt chữ hoa chữ thường
   // const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -62,31 +63,28 @@ function Row(props) {
   };
   const theme = useTheme();
 
-  // const handleUpdateStatus = (id, status) => {
-  //     Swal.fire({
-  //         icon: "warning",
-  //         title: `${t("confirm")}` ,
-  //         showCancelButton: true,
-  //         confirmButtonText: `${t("yes")}`,
-  //     }).then(async (result) => {
-  //         if (result.isConfirmed) {
-  //             showLoading();
-  //             const data = {
-  //                 status: status
-  //             }
-  //             console.log(data)
-  //             const res = await apiUpdateOrderStatus(id, data);
-  //             if (res.status === 200) {
-  //                 Swal.fire(`${t("update-success")}!`, "", "success").then(() => {
-  //                     window.location.reload();
-  //                 });
-  //             } else {
-  //                 Swal.fire(`${t("update-failed")}!`, "", "error");
-  //             }
-  //             hideLoading();
-  //         }
-  //     });
-  // };
+  const handleDeleteOrder = (id, status) => {
+    Swal.fire({
+      icon: "warning",
+      title: `${t("confirm")}`,
+      showCancelButton: true,
+      confirmButtonText: `${t("yes")}`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        showLoading();
+
+        const res = await apiDeleteOrder(id);
+        if (res.status === 200) {
+          Swal.fire(`${t("delete-success")}!`, "", "success").then(() => {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire(`${t("delete-failed")}!`, "", "error");
+        }
+        hideLoading();
+      }
+    });
+  };
 
   return (
     <>
@@ -100,13 +98,27 @@ function Row(props) {
           }}
         >
           <TableCell className="relative">
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
+              <Checkbox
+                color="primary"
+                checked={isSelected}
+                onClick={(event) => handleClick(event, row._id)}
+              />
+              <IconButton
+                aria-label="expand row"
+                size="small"
+                onClick={() => setOpen(!open)}
+              >
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+
+            </Stack>
           </TableCell>
           <TableCell
             component="th"
@@ -258,10 +270,10 @@ function Row(props) {
                 row.paymentStatus === "pending"
                   ? "primary"
                   : row.paymentStatus === "cancelled"
-                  ? "error"
-                  : row.paymentStatus === "completed"
-                  ? "success"
-                  : "default"
+                    ? "error"
+                    : row.paymentStatus === "completed"
+                      ? "success"
+                      : "default"
               }
             />
           </TableCell>
@@ -331,10 +343,20 @@ function Row(props) {
               <Tooltip title={t("print")}>
                 <IconButton
                   color="primary"
-                  // onClick={() => handleUpdateStatus(row._id, "completed")}
-                  // disabled={row.paymentStatus === "completed"}
+                  onClick={() => openInvoiceModal(row)}
+                // disabled={row.paymentStatus === "completed"}
                 >
                   <PrintIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title={t("delete")}>
+                <IconButton
+                  color="error"
+                  onClick={() => handleDeleteOrder(row._id)}
+                // disabled={row.paymentStatus === "completed"}
+                >
+                  <CancelIcon />
                 </IconButton>
               </Tooltip>
             </div>
@@ -404,11 +426,76 @@ function Row(props) {
 const OrderTable = ({ searchTerm }) => {
   const { t } = useTranslation();
 
+  const { showLoading, hideLoading } = useLoading();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
   const [orders, setOrders] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [isInvoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const openInvoiceModal = (order) => {
+    setSelectedOrder(order);
+    setInvoiceModalOpen(true);
+  };
+
+  const closeInvoiceModal = () => {
+    setInvoiceModalOpen(false);
+  };
+
+  const handleClick = (event, id) => {
+    event.stopPropagation();
+
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+    setSelected(newSelected);
+  };
+
+  // Hàm kiểm tra xem row có được chọn hay không
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
+  const handleDeleteSelectedOrders = () => {
+    if (selected.length <= 0) {
+      toast.warning(`${t("toast-selected")}!`)
+    } else {
+      Swal.fire({
+        title: `${t("confirm")}`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: `${t("yes")}`,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Gọi API để xóa các đơn hàng đã chọn
+          showLoading();
+  
+          const res = await apiDeleteOrders({ orderIds: selected }); // Truyền danh sách orderIds
+          if (res.status === 200) {
+            Swal.fire(`${t("delete-success")}!`, "", "success").then(() => {
+              window.location.reload();
+            });
+          } else {
+            Swal.fire(`${t("delete-failed")}!`, "", "error");
+          }
+          hideLoading();
+        }
+      });
+    }
+  };
 
   // GET PRODUCTS
   useEffect(() => {
@@ -445,7 +532,16 @@ const OrderTable = ({ searchTerm }) => {
         <Table aria-label="collapsible table">
           <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
             <TableRow>
-              <TableCell className="relative" />
+              <TableCell className="relative dark:text-black">
+                <Button
+                  variant="contained"
+                  color="error"
+                  className="flex-none gap-2"
+                  onClick={handleDeleteSelectedOrders}
+                >
+                  {t("delete")} {selected.length}
+                </Button>
+              </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", maxWidth: "120px" }}
@@ -566,8 +662,10 @@ const OrderTable = ({ searchTerm }) => {
                 <Row
                   key={row?._id}
                   row={row}
-                  searchTerm={searchTerm}
+                  isSelected={isSelected(row._id)}
+                  handleClick={handleClick}
                   className="bg-[343541]"
+                  openInvoiceModal={openInvoiceModal}
                 />
               ))
             ) : (
@@ -589,6 +687,12 @@ const OrderTable = ({ searchTerm }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage={t("rows-per-page")}
+      />
+
+      <InvoiceModal
+        isOpen={isInvoiceModalOpen}
+        setIsOpen={closeInvoiceModal}
+        order={selectedOrder}
       />
     </>
   );
