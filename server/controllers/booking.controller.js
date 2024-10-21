@@ -168,16 +168,6 @@ class BookingController {
                 req.body.date = moment(req.body.date, 'DD/MM/YYYY HH:mm').format('YYYY-MM-DD HH:mm:ss');
             }
 
-            // Check are there any booking exist at this time
-            const existingBooking = await BookingHistory.findOne({
-                customerId: user._id,
-                date: { $eq: req.body.date }
-            });
-
-            if (existingBooking) {
-                return res.status(409).json({ message: 'A booking already exists at this date and time.' });
-            }
-
             // Handle services
             let serviceDetails = [];
             let totalServicePrice = 0;

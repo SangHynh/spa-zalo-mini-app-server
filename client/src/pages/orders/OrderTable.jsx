@@ -29,6 +29,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { blue, green, red } from "@mui/material/colors";
 import { apiGetOrders } from "../../apis/payments";
+import PrintIcon from '@mui/icons-material/Print';
 
 function Row(props) {
   const { showLoading, hideLoading } = useLoading();
@@ -327,50 +328,13 @@ function Row(props) {
             className="sticky right-0 z-10 bg-white dark:bg-[#2F2F2F]"
           >
             <div className="flex gap-2">
-              <Tooltip title={t("complete")}>
+              <Tooltip title={t("print")}>
                 <IconButton
                   color="primary"
                   // onClick={() => handleUpdateStatus(row._id, "completed")}
-                  disabled={row.paymentStatus === "completed"}
+                  // disabled={row.paymentStatus === "completed"}
                 >
-                  <CheckCircleIcon
-                    sx={{
-                      color:
-                        row.paymentStatus === "completed"
-                          ? "gray.400"
-                          : green[500],
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t("pending")}>
-                <IconButton
-                  // onClick={() => handleUpdateStatus(row._id, "pending")}
-                  disabled={row.paymentStatus === "pending"}
-                >
-                  <PendingIcon
-                    sx={{
-                      color:
-                        row.paymentStatus === "pending"
-                          ? "gray.400"
-                          : blue[500],
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t("cancel")}>
-                <IconButton
-                  // onClick={() => handleUpdateStatus(row._id, "cancelled")}
-                  disabled={row.paymentStatus === "cancelled"}
-                >
-                  <CancelIcon
-                    sx={{
-                      color:
-                        row.paymentStatus === "cancelled"
-                          ? "gray.400"
-                          : red[500],
-                    }}
-                  />
+                  <PrintIcon />
                 </IconButton>
               </Tooltip>
             </div>
