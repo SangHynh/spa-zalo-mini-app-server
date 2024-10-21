@@ -1,4 +1,11 @@
-import { Box, Button, Grid2, InputAdornment, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid2,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import path from "../../utils/path";
@@ -17,34 +24,23 @@ const CustomerManagement = () => {
   return (
     <Box className="w-full flex flex-col gap-6">
       <Typography variant="h5">{t("customer-mgmt")}</Typography>
-      <div className="flex justify-between items-center">
-        <Grid2 container spacing={2}>
-          <TextField
-            size="small"
-            id="searchTerm"
-            placeholder={t("search...")}
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaSearch />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid2>
-        <Button
-          variant="contained"
-          color="secondary"
-          href={path.CREATE_CUSTOMER}
-          className="w-fit flex items-center gap-2"
-        >
-          <FaPlus />
-          {t("create")}
-        </Button>
-      </div>
+      <Grid2 container spacing={2}>
+        <TextField
+          size="small"
+          id="searchTerm"
+          placeholder={t("search...")}
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearch}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FaSearch />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Grid2>
       <CustomerTable searchTerm={searchTerm} />
     </Box>
   );

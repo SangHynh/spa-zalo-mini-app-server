@@ -45,10 +45,10 @@ import path from "../../utils/path";
 import { apiGetCategories } from "../../apis/categories";
 import { useLoading } from "../../context/LoadingProvider";
 import { useTranslation } from "react-i18next";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { apiGetPermission } from "../../apis/config";
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid } from "@mui/x-data-grid";
 
 const CreateStaff = () => {
   const { t } = useTranslation();
@@ -73,11 +73,13 @@ const CreateStaff = () => {
       const response = await apiGetPermission();
       if (response.status === 200) {
         const permissionData = response.data;
-        const permissionRows = Object.entries(permissionData).map(([key, value], index) => ({
-          id: index + 1,
-          key,
-          value
-        }));
+        const permissionRows = Object.entries(permissionData).map(
+          ([key, value], index) => ({
+            id: index + 1,
+            key,
+            value,
+          })
+        );
         setPermissions(permissionRows);
       }
     };
@@ -103,7 +105,7 @@ const CreateStaff = () => {
     formData.append("name", staffName);
     formData.append("email", staffEmail);
     formData.append("password", staffPassword);
-    formData.append("role", "admin")
+    formData.append("role", "admin");
 
     if (Array.isArray(selectedPermissions) && selectedPermissions.length > 0) {
       selectedPermissions.forEach((permission) => {
@@ -116,7 +118,6 @@ const CreateStaff = () => {
         text: "Please select at least one permission.",
       });
     }
-
 
     // Append image
     // Chuyển đổi blob URL thành Blob
@@ -175,7 +176,7 @@ const CreateStaff = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/${path.ADMIN_LAYOUT}/${path.SERVICE_MANAGEMENT}`);
+    navigate(`/${path.ADMIN_LAYOUT}/${path.STAFF_MANAGEMENT}`);
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -226,12 +227,14 @@ const CreateStaff = () => {
           <Grid2 size={4}>
             {/* Password */}
             <FormControl variant="standard" margin="dense" fullWidth>
-              <InputLabel htmlFor="standard-adornment-password">{t("password")}</InputLabel>
+              <InputLabel htmlFor="standard-adornment-password">
+                {t("password")}
+              </InputLabel>
               <Input
                 id="standard-adornment-password"
                 value={staffPassword}
                 onChange={(e) => setStaffPassword(e.target.value)}
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -249,18 +252,26 @@ const CreateStaff = () => {
           </Grid2>
 
           <Grid2 size={8}>
-            <Paper sx={{ width: '100%' }}>
+            <Paper sx={{ width: "100%" }}>
               <DataGrid
                 rows={permissions}
                 columns={[
-                  { field: 'key', headerName: 'Permission Name', width: 250 },
-                  { field: 'value', headerName: 'Permission Value', width: 250 }
+                  { field: "key", headerName: "Permission Name", width: 250 },
+                  {
+                    field: "value",
+                    headerName: "Permission Value",
+                    width: 250,
+                  },
                 ]}
-                initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
+                initialState={{
+                  pagination: { paginationModel: { pageSize: 5, page: 0 } },
+                }}
                 pageSizeOptions={[5, 10]}
                 checkboxSelection
                 onRowSelectionModelChange={(newSelection) => {
-                  const selectedPerms = newSelection.map((id) => permissions.find((p) => p.id === id)?.value);
+                  const selectedPerms = newSelection.map(
+                    (id) => permissions.find((p) => p.id === id)?.value
+                  );
                   setSelectedPermissions(selectedPerms);
                 }}
                 sx={{ border: 0 }}
@@ -313,7 +324,7 @@ const CreateStaff = () => {
           </Grid2>
         </Grid2>
       </form>
-    </Container >
+    </Container>
   );
 };
 

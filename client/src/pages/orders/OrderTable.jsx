@@ -29,7 +29,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { blue, green, red } from "@mui/material/colors";
 import { apiGetOrders } from "../../apis/payments";
-import PrintIcon from '@mui/icons-material/Print';
+import PrintIcon from "@mui/icons-material/Print";
 
 function Row(props) {
   const { showLoading, hideLoading } = useLoading();
@@ -341,7 +341,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={17}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">

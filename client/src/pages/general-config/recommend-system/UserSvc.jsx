@@ -20,9 +20,9 @@ import { apiGetCustomers } from "../../../apis/users";
 import Swal from "sweetalert2";
 import { apiConfigProductToUser } from "../../../apis/recommend-system";
 import { FaEye } from "react-icons/fa";
-import { apiGetProducts } from "../../../apis/products";
+import { apiGetServices } from "../../../apis/services";
 
-const UserProd = () => {
+const UserSvc = () => {
   const { t } = useTranslation();
 
   // USERS
@@ -34,14 +34,14 @@ const UserProd = () => {
   const [searchTermUser, setSearchTermUser] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState([]);
 
-  // PRODUCTS
-  const [currentPageProduct, setCurrentPageProduct] = useState(1);
-  const [rowsPerPageProduct, setRowsPerPageProduct] = useState(5);
-  const [totalPagesProduct, setTotalPagesProduct] = useState(0);
-  const [products, setProducts] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [searchTermProduct, setSearchTermProduct] = useState("");
-  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  // SERVICES
+  const [currentPageService, setCurrentPageService] = useState(1);
+  const [rowsPerPageService, setRowsPerPageService] = useState(5);
+  const [totalPagesService, setTotalPagesService] = useState(0);
+  const [services, setServices] = useState([]);
+  const [totalServices, setTotalServices] = useState(0);
+  const [searchTermService, setSearchTermService] = useState("");
+  const [selectedServiceIds, setSelectedServiceIds] = useState([]);
 
   // GET USERS
   useEffect(() => {
@@ -61,32 +61,32 @@ const UserProd = () => {
     fetchUsers();
   }, [currentPageUser, rowsPerPageUser, searchTermUser]);
 
-  // GET PRODUCTS
+  // GET SERVICES
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await apiGetProducts(
-        currentPageProduct,
-        rowsPerPageProduct,
-        searchTermProduct
+    const fetchServices = async () => {
+      const response = await apiGetServices(
+        currentPageService,
+        rowsPerPageService,
+        searchTermService
       );
       if (response.status === 200) {
-        setProducts(response.data.products || []);
-        setTotalProducts(response.data.totalProducts);
-        setTotalPagesProduct(response.data.totalPages);
+        setServices(response.data.services || []);
+        setTotalServices(response.data.totalServices);
+        setTotalPagesService(response.data.totalPages);
       }
     };
 
-    fetchProducts();
-  }, [currentPageProduct, rowsPerPageProduct, searchTermProduct]);
+    fetchServices();
+  }, [currentPageService, rowsPerPageService, searchTermService]);
 
   // Handle user page change
   const handleChangePageUser = (event, newPage) => {
     setCurrentPageUser(newPage + 1);
   };
 
-  // Handle product page change
-  const handleChangePageProduct = (event, newPage) => {
-    setCurrentPageProduct(newPage + 1);
+  // Handle service page change
+  const handleChangePageService = (event, newPage) => {
+    setCurrentPageService(newPage + 1);
   };
 
   // Handle user rows per page change
@@ -95,10 +95,10 @@ const UserProd = () => {
     setCurrentPageUser(1); // Reset to the first page
   };
 
-  // Handle product rows per page change
-  const handleChangeRowsPerPageProduct = (event) => {
-    setRowsPerPageProduct(parseInt(event.target.value, 10));
-    setCurrentPageProduct(1); // Reset to the first page
+  // Handle service rows per page change
+  const handleChangeRowsPerPageService = (event) => {
+    setRowsPerPageService(parseInt(event.target.value, 10));
+    setCurrentPageService(1); // Reset to the first page
   };
 
   // Handle search for users
@@ -107,10 +107,10 @@ const UserProd = () => {
     setCurrentPageUser(1); // Reset to the first page on search
   };
 
-  // Handle search for products
-  const handleSearchChangeProduct = (e) => {
-    setSearchTermProduct(e.target.value);
-    setCurrentPageProduct(1); // Reset to the first page on search
+  // Handle search for services
+  const handleSearchChangeService = (e) => {
+    setSearchTermService(e.target.value);
+    setCurrentPageService(1); // Reset to the first page on search
   };
 
   // Handle selection of users
@@ -123,14 +123,14 @@ const UserProd = () => {
     setSelectedUserIds([]);
   };
 
-  // Handle selection of products
-  const handleSelectAllProducts = (event) => {
+  // Handle selection of services
+  const handleSelectAllServices = (event) => {
     if (event.target.checked) {
-      const newSelectedProducts = products.map((product) => product._id);
-      setSelectedProductIds(newSelectedProducts);
+      const newSelectedServices = services.map((service) => service._id);
+      setSelectedServiceIds(newSelectedServices);
       return;
     }
-    setSelectedProductIds([]);
+    setSelectedServiceIds([]);
   };
 
   // Handle individual user selection
@@ -154,54 +154,54 @@ const UserProd = () => {
     setSelectedUserIds(newSelected);
   };
 
-  // Handle individual product selection
-  const handleClickProduct = (event, id) => {
-    const selectedIndex = selectedProductIds.indexOf(id);
+  // Handle individual service selection
+  const handleClickService = (event, id) => {
+    const selectedIndex = selectedServiceIds.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selectedProductIds, id);
+      newSelected = newSelected.concat(selectedServiceIds, id);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selectedProductIds.slice(1));
-    } else if (selectedIndex === selectedProductIds.length - 1) {
-      newSelected = newSelected.concat(selectedProductIds.slice(0, -1));
+      newSelected = newSelected.concat(selectedServiceIds.slice(1));
+    } else if (selectedIndex === selectedServiceIds.length - 1) {
+      newSelected = newSelected.concat(selectedServiceIds.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
-        selectedProductIds.slice(0, selectedIndex),
-        selectedProductIds.slice(selectedIndex + 1)
+        selectedServiceIds.slice(0, selectedIndex),
+        selectedServiceIds.slice(selectedIndex + 1)
       );
     }
 
-    setSelectedProductIds(newSelected);
+    setSelectedServiceIds(newSelected);
   };
 
   const isUserSelected = (id) => selectedUserIds.indexOf(id) !== -1;
 
-  const isProductSelected = (id) => selectedProductIds.indexOf(id) !== -1;
+  const isServiceSelected = (id) => selectedServiceIds.indexOf(id) !== -1;
 
   const handleUpdate = async () => {
     console.log("Selected User IDs:", selectedUserIds);
-    console.log("Selected Category IDs:", selectedProductIds);
+    console.log("Selected Category IDs:", selectedServiceIds);
 
-    try {
-      const response = await apiConfigProductToUser(
-        selectedUserIds,
-        selectedProductIds
-      );
-      if (response.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: `${t("update-success")}!`,
-          showConfirmButton: true,
-        }).then(() => {
-          window.location.reload();
-        });
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error updating suggestions:", error);
-    }
+    // try {
+    //   const response = await apiConfigProductToUser(
+    //     selectedUserIds,
+    //     selectedServiceIds
+    //   );
+    //   if (response.status === 200) {
+    //     Swal.fire({
+    //       icon: "success",
+    //       title: `${t("update-success")}!`,
+    //       showConfirmButton: true,
+    //     }).then(() => {
+    //       window.location.reload();
+    //     });
+    //   } else {
+    //     console.error("Unexpected response status:", response.status);
+    //   }
+    // } catch (error) {
+    //   console.error("Error updating suggestions:", error);
+    // }
   };
 
   return (
@@ -308,20 +308,21 @@ const UserProd = () => {
         </Grid2>
         <Grid2 size={6}>
           <Typography variant="h6" gutterBottom>
-            {t("select-prod")}
+            {t("select-svc")}
           </Typography>
           <div className="flex justify-between items-center space-x-3 my-4">
             <div className="flex-1 w-64 relative">
               <input
                 type="text"
                 placeholder={t("search...")}
-                value={searchTermProduct}
-                onChange={handleSearchChangeProduct}
+                value={searchTermService}
+                onChange={handleSearchChangeService}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
               <FaSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-300" />
             </div>
           </div>
+
           <TableContainer component={Paper} className="border shadow-2xl">
             <Table>
               <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
@@ -329,14 +330,14 @@ const UserProd = () => {
                   <TableCell padding="checkbox">
                     <Checkbox
                       indeterminate={
-                        selectedProductIds.length > 0 &&
-                        selectedProductIds.length < products.length
+                        selectedServiceIds.length > 0 &&
+                        selectedServiceIds.length < services.length
                       }
                       checked={
-                        products.length > 0 &&
-                        selectedProductIds.length === products.length
+                        services.length > 0 &&
+                        selectedServiceIds.length === services.length
                       }
-                      onChange={handleSelectAllProducts}
+                      onChange={handleSelectAllServices}
                       sx={{ color: "black" }}
                     />
                   </TableCell>
@@ -355,20 +356,20 @@ const UserProd = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {products.map((product, index) => {
-                  const isItemSelected = isProductSelected(product._id);
+                {services.map((service, index) => {
+                  const isItemSelected = isServiceSelected(service._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
                       onClick={(event) =>
-                        handleClickProduct(event, product._id)
+                        handleClickService(event, service._id)
                       }
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={product._id}
+                      key={service._id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -380,23 +381,24 @@ const UserProd = () => {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row">
-                        {product._id}
+                        {service._id}
                       </TableCell>
-                      <TableCell>{product.name}</TableCell>
+                      <TableCell>{service.name}</TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
           </TableContainer>
+
           <TablePagination
             rowsPerPageOptions={[5, 10, 20]}
             component="div"
-            count={totalProducts}
-            rowsPerPage={rowsPerPageProduct}
-            page={currentPageProduct - 1}
-            onPageChange={handleChangePageProduct}
-            onRowsPerPageChange={handleChangeRowsPerPageProduct}
+            count={totalServices}
+            rowsPerPage={rowsPerPageService}
+            page={currentPageService - 1}
+            onPageChange={handleChangePageService}
+            onRowsPerPageChange={handleChangeRowsPerPageService}
             labelRowsPerPage={t("rows-per-page")}
           />
         </Grid2>
@@ -415,4 +417,4 @@ const UserProd = () => {
   );
 };
 
-export default UserProd;
+export default UserSvc;

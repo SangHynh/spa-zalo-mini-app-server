@@ -139,7 +139,7 @@
   "edit-voucher": "Cập nhật phiếu giảm giá",
   "price-applied": "Giá đơn hàng",
   "give-voucher": "Tặng voucher",
-  "select-accounts": "Chọn Tài khoản",
+  "select-accounts": "Chọn Người dùng",
   "detail": "Chi tiết",
   "arrange": "Sắp xếp",
   "no.": "STT",
@@ -198,5 +198,8 @@
   "level": "Cấp",
   "cate-suggest": "Danh mục được gợi ý",
   "user-prod": "Người dùng - Sản phẩm",
-  "select-prod": "Chọn sản phẩm"
+  "select-prod": "Chọn Sản phẩm",
+  "select-option": "Tùy chọn",
+  "user-svc": "Người dùng - Dịch vụ",
+  "select-svc": "Chọn Dịch vụ"
 }
