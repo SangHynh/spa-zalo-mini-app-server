@@ -45,3 +45,14 @@ export const apiUpdateMultipleSuggestionScores = (
       suggestionsToUpdate,
     },
   });
+
+// USERS - CATEGORIES
+export const apiConfigProductToUser = (userIds, productIds) =>
+  axios({
+    url: "/api/recommendations/configure-product-to-user",
+    method: "POST",
+    data: {
+      userIds,
+      productIds,
+    },
+  });

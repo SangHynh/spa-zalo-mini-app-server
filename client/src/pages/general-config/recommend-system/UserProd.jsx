@@ -18,7 +18,10 @@ import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiGetCustomers } from "../../../apis/users";
 import Swal from "sweetalert2";
-import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
+import {
+  apiConfigProductToUser,
+  apiUpdateMultipleSuggestionScores,
+} from "../../../apis/recommend-system";
 import { FaEye } from "react-icons/fa";
 import { apiGetProducts } from "../../../apis/products";
 
@@ -182,6 +185,26 @@ const UserProd = () => {
   const handleUpdate = async () => {
     console.log("Selected User IDs:", selectedUserIds);
     console.log("Selected Category IDs:", selectedProductIds);
+
+    try {
+      const response = await apiConfigProductToUser(
+        selectedUserIds,
+        selectedProductIds
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("update-success")}!`,
+          showConfirmButton: true,
+        }).then(() => {
+          window.location.reload();
+        });
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating suggestions:", error);
+    }
   };
 
   return (
