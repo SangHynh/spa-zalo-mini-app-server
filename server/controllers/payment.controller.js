@@ -13,15 +13,14 @@ class PaymentController {
     // GET ORDERS
     async getOrders(req, res) {
         try {
-            const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 10;
-
+            const page = Math.max(1, parseInt(req.query.page) || 1);
+            const limit = Math.max(1, parseInt(req.query.limit) || 10);
             const skip = (page - 1) * limit;
 
-            const { keyword } = req.query;
+            const { keyword, status } = req.query;
 
-            // Tạo điều kiện tìm kiếm
             const query = {};
+            let userMap = {};
 
             if (keyword) {
                 const users = await User.find({
@@ -29,13 +28,11 @@ class PaymentController {
                         { name: { $regex: keyword, $options: 'i' } },
                         { phone: { $regex: keyword, $options: 'i' } }
                     ]
-                }).select('_id');
+                }).select('_id name phone');
 
                 const userIds = users.map(user => user._id);
 
-                if (userIds.length > 0) {
-                    query.customerId = { $in: userIds };
-                } else {
+                if (userIds.length === 0) {
                     return res.status(200).json({
                         orders: [],
                         currentPage: page,
@@ -43,6 +40,16 @@ class PaymentController {
                         totalOrders: 0,
                     });
                 }
+
+                users.forEach(user => {
+                    userMap[user._id] = { name: user.name, phone: user.phone };
+                });
+
+                query.customerId = { $in: userIds };
+            }
+
+            if (status) {
+                query.paymentStatus = status
             }
 
             const orders = await Order.find(query)
@@ -52,17 +59,27 @@ class PaymentController {
                 })
                 .skip(skip)
                 .limit(limit)
-                .sort({ createdAt: -1 })
+                .sort({ createdAt: -1 });
 
             const totalOrders = await Order.countDocuments(query);
 
+            const enrichedOrders = orders.map(order => {
+                const customerInfo = userMap[order.customerId] || {};
+                return {
+                    ...order.toObject(),
+                    customerName: customerInfo.name || 'Unknown',
+                    customerPhone: customerInfo.phone || 'Unknown'
+                };
+            });
+
             return res.status(200).json({
-                orders,
+                orders: enrichedOrders,
                 currentPage: page,
                 totalPages: Math.ceil(totalOrders / limit),
                 totalOrders,
             });
         } catch (error) {
+            console.error(error);
             return res.status(500).json(error.message);
         }
     }
@@ -257,7 +274,7 @@ class PaymentController {
                 // TÍNH TIỀN HOA HỒNG
                 if (user.referralInfo && user.referralInfo.paths) {
                     const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
-                    
+
                     let commissionAmount = order.finalAmount;
 
                     for (let i = referralPaths.length - 2; i >= 0; i--) {
@@ -511,7 +528,7 @@ class PaymentController {
                 const booking = await BookingHistory.findById(order.bookingId)
 
                 if (!booking) return res.status(404).json({ message: 'Booking not found' });
-                
+
                 await BookingHistory.findByIdAndDelete(order.bookingId);
             }
 
@@ -526,14 +543,14 @@ class PaymentController {
     async deleteOrders(req, res) {
         try {
             const { orderIds } = req.body;
-    
+
             if (!orderIds || !Array.isArray(orderIds)) {
                 return res.status(400).json({ message: 'Invalid orderIds array' });
             }
-    
+
             await Promise.all(orderIds.map(async (orderId) => {
                 const order = await Order.findById(orderId);
-                
+
                 if (order) {
                     // Nếu order có bookingId, tiến hành xóa booking trước
                     if (order.bookingId) {
@@ -542,17 +559,55 @@ class PaymentController {
                             await BookingHistory.findByIdAndDelete(order.bookingId);
                         }
                     }
-    
+
                     await Order.findByIdAndDelete(orderId);
                 }
             }));
-    
+
             return res.status(200).json({ message: 'All orders and related bookings (if any) deleted successfully' });
         } catch (e) {
             return res.status(500).json(e.message);
         }
     }
-    
+
+    // GET USER HISTORY (PAYMENT WITHOUT BOOKING)
+    async getOrdersByUser(req, res) {
+        try {
+            const userId = req.payload.aud;
+
+            const user = await User.findById(userId);
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const page = Math.max(1, parseInt(req.query.page) || 1);
+            const limit = Math.max(1, parseInt(req.query.limit) || 10);
+            const skip = (page - 1) * limit;
+
+            const { status } = req.query;
+
+            const query = { customerId: userId, bookingId: { $exists: false } };
+
+            if (status) {
+                query.paymentStatus = status;
+            }
+
+            const orders = await Order.find(query)
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 });
+
+            const totalOrders = await Order.countDocuments(query);
+
+            return res.status(200).json({
+                orders,
+                currentPage: page,
+                totalPages: Math.ceil(totalOrders / limit),
+                totalOrders,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json(error.message);
+        }
+    }
 }
 
 module.exports = new PaymentController();

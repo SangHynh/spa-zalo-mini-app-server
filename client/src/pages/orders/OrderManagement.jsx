@@ -1,4 +1,4 @@
-import { Box, Grid2, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, FormControl, Grid2, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import OrderTable from "../orders/OrderTable";
@@ -12,6 +12,7 @@ const OrderManagement = () => {
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [status, setStatus] = useState("");
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -37,9 +38,26 @@ const OrderManagement = () => {
               ),
             }}
           />
+          <FormControl size="small" sx={{ minWidth: 200, maxWidth: 200 }}>
+            <InputLabel shrink id="status">{t("status")}</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={status}
+              label={t("status")}
+              onChange={(e) => setStatus(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value={''}>{t('every')}</MenuItem>
+              <MenuItem value={'pending'}>pending</MenuItem>
+              <MenuItem value={'completed'}>completed</MenuItem>
+              <MenuItem value={'approved'}>approved</MenuItem>
+              <MenuItem value={'cancelled'}>cancelled</MenuItem>
+            </Select>
+          </FormControl>
         </Grid2>
       </div>
-      <OrderTable searchTerm={searchTerm} />
+      <OrderTable searchTerm={searchTerm} status={status} />
     </Box>
   );
 };

@@ -1,9 +1,9 @@
 import axios from "../utils/axios";
 
 // GET ORDERS
-export const apiGetOrders = (page, limit, keyword) => axios(
+export const apiGetOrders = (page, limit, keyword, status) => axios(
     {
-        url: `/api/payments?page=${page}&limit=${limit}&keyword=${keyword}`,
+        url: `/api/payments?page=${page}&limit=${limit}&keyword=${keyword}&status=${status}`,
         method: "GET",
     }
 )

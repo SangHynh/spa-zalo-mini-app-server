@@ -423,7 +423,7 @@ function Row(props) {
   );
 }
 
-const OrderTable = ({ searchTerm }) => {
+const OrderTable = ({ searchTerm, status }) => {
   const { t } = useTranslation();
 
   const { showLoading, hideLoading } = useLoading();
@@ -500,7 +500,7 @@ const OrderTable = ({ searchTerm }) => {
   // GET PRODUCTS
   useEffect(() => {
     const fetchOrders = async () => {
-      const response = await apiGetOrders(currentPage, rowsPerPage, searchTerm);
+      const response = await apiGetOrders(currentPage, rowsPerPage, searchTerm, status);
       if (response.status === 200) {
         setOrders(response.data.orders);
         setTotalOrders(response.data.totalOrders);
@@ -509,7 +509,7 @@ const OrderTable = ({ searchTerm }) => {
     };
 
     fetchOrders();
-  }, [currentPage, rowsPerPage, searchTerm]);
+  }, [currentPage, rowsPerPage, searchTerm, status]);
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
