@@ -25,7 +25,7 @@ class CartController {
         try {
             const productId = req.params.id;
 
-            const { variantId, quantity } = req.body;
+            const { variantId, quantity, volume } = req.body;
 
             const userId = req.payload.aud
             // const { userId } = req.params.id;
@@ -50,6 +50,7 @@ class CartController {
                     price: product.price,
                     quantity: quantity,
                     images: product.images,
+                    volume: volume
                 })
             }
 
