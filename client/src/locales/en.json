@@ -195,6 +195,7 @@
   "amounts": "Amounts",
   "select user-voucher pls": "Please select customer and voucher",
   "select user-cate pls": "Please select customer and category",
+  "products": "Products",
   "level": "Level",
   "cate-suggest": "Suggested Categories",
   "user-prod": "Users - Products",

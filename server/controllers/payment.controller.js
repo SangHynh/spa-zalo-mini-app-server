@@ -97,11 +97,36 @@ class PaymentController {
 
             if (!user) return res.status(404).json({ message: "User not found" })
 
+            // Check product stock availability
+            for (let productOrder of data.products) {
+                const product = await Product.findById(productOrder.productId);
+                if (!product) {
+                    return res.status(404).json({ message: `Product with ID ${productOrder.productId} not found` });
+                }
+
+                // Nếu sản phẩm có variant, kiểm tra số lượng của variant
+                if (productOrder.variantId) {
+                    const variant = product.variants.id(productOrder.variantId);
+                    if (!variant) {
+                        return res.status(404).json({ message: `Variant with ID ${productOrder.variantId} not found` });
+                    }
+
+                    if (variant.stock < productOrder.quantity) {
+                        return res.status(400).json({ message: `Insufficient stock for variant ${variant._id}` });
+                    }
+                } else {
+                    // Nếu không có variant, kiểm tra stock của sản phẩm chính
+                    if (product.stock < productOrder.quantity) {
+                        return res.status(400).json({ message: `Insufficient stock for product ${product._id}` });
+                    }
+                }
+            }
+
             let discountAmount = 0;
             let discountApplied = false;
             let finalAmount = data.totalAmount;
 
-            if (data.voucherId) {
+            if (data.voucherId && data.voucherId !== "") {
                 const voucher = await Voucher.findById(data.voucherId);
                 if (!voucher) return res.status(404).json({ message: "Voucher not found" });
 
@@ -119,6 +144,8 @@ class PaymentController {
                 }
 
                 finalAmount = data.totalAmount - discountAmount;
+            } else {
+                data.voucherId = null
             }
 
             const order = new Order({
@@ -228,10 +255,8 @@ class PaymentController {
                 // TÍNH TIỀN HOA HỒNG
                 if (user.referralInfo && user.referralInfo.paths) {
                     const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
-
-                    // Get commission percentage for the user based on their rank
-                    const userRank = await Rank.findOne({ tier: user.membershipTier });
-                    let commissionAmount = order.finalAmount * (userRank.commissionPercent / 100);
+                    
+                    let commissionAmount = order.finalAmount;
 
                     for (let i = referralPaths.length - 2; i >= 0; i--) {
                         const refCode = referralPaths[i];
@@ -240,14 +265,13 @@ class PaymentController {
                         if (refUser) {
                             const refUserRank = await Rank.findOne({ tier: refUser.membershipTier });
                             if (refUserRank) {
+                                commissionAmount *= (refUserRank.commissionPercent / 100);
                                 refUser.amounts += commissionAmount;
                                 await refUser.save();
-
-                                commissionAmount *= (refUserRank.commissionPercent / 100);
                             }
                         }
                     }
-                }    
+                }
             }
 
             const updatedOrder = await order.save();
@@ -331,9 +355,9 @@ class PaymentController {
 
     async createMacForGetOrderStatus(req, res) {
         try {
-            const { appId, orderId, privateKey } = req.body;
+            const { appId, orderId } = req.body;
 
-            const dataMac = data = `appId=${appId}&orderId=${orderId}&privateKey=${privateKey}`;
+            const dataMac = `appId=${appId}&orderId=${orderId}&privateKey=${process.env.ZALO_CHECKOUT_SECRET_KEY}`;
 
             // console.log(dataMac)
 

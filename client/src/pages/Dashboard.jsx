@@ -118,13 +118,13 @@ const Dashboard = () => {
 
           <LineChart
             xAxis={[{ data: labels, scaleType: "point" }]}
-            series={[{ data: revenueData, area: true, valueFormatter: (amount) => amount.toLocaleString("vi-VN") + " VNĐ" }]}
+            series={[{ data: revenueData, area: true, valueFormatter: (amount) => amount?.toLocaleString("vi-VN") + " VNĐ" }]}
             height={400}
           />
         </Grid2>
 
         <Grid2 container size={12} spacing={3}>
-          <Grid2 size={6}>
+          <Grid2 size={12}>
             <Typography variant="h6" align="center" gutterBottom>
               Biểu đồ các sản phẩm được quan tâm nhất
             </Typography>
@@ -138,7 +138,7 @@ const Dashboard = () => {
             />
           </Grid2>
           
-          <Grid2 size={6}>
+          <Grid2 size={12}>
             <Typography variant="h6" align="center" gutterBottom>
               Biểu đồ các dịch vụ được quan tâm nhất
             </Typography>
