@@ -20,6 +20,20 @@ router.delete('/:id',verifyAccessToken, userController.deleteUser);
 router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserInfo);
 router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
+// USER ADDRESSES
+router.get('/address/all', verifyAccessToken, userController.getUserAddresses)
+/*
+Body:
+{
+    "number": "",
+    "ward": "",
+    "district": "",
+    "city": "Thành phố Hồ Chí Minh"
+}
+*/
+router.post('/address', verifyAccessToken, userController.addUserAddress)
+router.delete('/address/:addressId', verifyAccessToken, userController.removeUserAddress); 
+
 // REFERRAL ROUTES
 router.get('/referral-info/:referralCode', referralController.getReferralInfo);
 router.get('/register-page/:referralCode', referralController.getRegisterPage); // chuyển đến trang đăng ký

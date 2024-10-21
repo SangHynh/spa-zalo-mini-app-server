@@ -4,8 +4,9 @@ const paymentController = require('../../controllers/payment.controller');
 const { verifyAccessToken } = require('../../configs/jwt.config');
 
 // GET
-router.get('/:id', paymentController.getOrder)
+router.get('/order/:id', paymentController.getOrder)
 router.get('/', verifyAccessToken, paymentController.getOrders)
+router.get('/user-histories', verifyAccessToken, paymentController.getOrders)
 
 // POST
 // mac gồm 3 loại: 
@@ -70,5 +71,9 @@ router.post('/createOrder', verifyAccessToken, paymentController.createOrder);
 // PUT
 // API này dùng để thêm OrderId của zalo vào Order trên server này (lưu vào transactionId)
 router.put('/:id', verifyAccessToken, paymentController.updateOrderWithZaloOrderId)
+
+// DELETE
+router.delete('/single/:id', verifyAccessToken, paymentController.deleteOrder);
+router.delete('/mass', verifyAccessToken, paymentController.deleteOrders);
 
 module.exports = router;

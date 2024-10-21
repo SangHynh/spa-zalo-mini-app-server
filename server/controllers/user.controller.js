@@ -378,6 +378,65 @@ const getUserInfo = async (req, res) => {
   }
 };
 
+const addUserAddress = async (req, res) => {
+  try {
+    const userId = req.payload.aud
+    const { number, city, district, ward } = req.body
+
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" })
+
+    user.addresses.push({ number, city, district, ward });
+    await user.save();
+
+    return res.status(200).json(user.addresses);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const removeUserAddress = async (req, res) => {
+  try {
+    const userId = req.payload.aud;
+    const addressId = req.params.addressId;
+
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const addressIndex = user.addresses.findIndex(address => address._id.toString() === addressId);
+
+    if (addressIndex === -1) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    user.addresses.splice(addressIndex, 1);
+    await user.save();
+
+    return res.status(200).json(user.addresses);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserAddresses = async (req, res) => {
+  try {
+    const userId = req.payload.aud;
+
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json(user.addresses);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -390,4 +449,7 @@ module.exports = {
   getUserInfo,
   createStaff,
   getAllStaffs,
+  addUserAddress,
+  removeUserAddress,
+  getUserAddresses
 };

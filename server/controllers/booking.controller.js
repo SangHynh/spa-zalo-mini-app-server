@@ -56,7 +56,7 @@ class BookingController {
 
             const totalBookingHistories = await BookingHistory.countDocuments(query);
 
-            let sortCriteria = {};
+            let sortCriteria = { createdAt: -1 };
             if (sortBy) {
                 const validSortFields = ['date']; // Chỉ sắp xếp theo `date`
                 if (validSortFields.includes(sortBy)) {
@@ -216,6 +216,7 @@ class BookingController {
                         productName: product.name,
                         price: price,
                         quantity: quantity,
+                        volume: selectedVariant.volume
                     });
 
                     totalProductPrice += totalPrice;
@@ -237,6 +238,28 @@ class BookingController {
             }
 
             const totalAmount = totalServicePrice + totalProductPrice;
+            let discountApplied = false;
+            let discountAmount = 0;
+            let finalAmount = totalAmount;
+
+            if (req.body.voucherId) {
+                const voucher = await Voucher.findById(req.body.voucherId);
+                if (!voucher) {
+                    return res.status(404).json({ message: `Voucher not found: ${req.body.voucherId}` });
+                }
+    
+                const now = new Date();
+                if (voucher.validFrom <= now && voucher.validTo >= now && voucher.usageLimit > 0) {
+                    discountApplied = true;
+    
+                    discountAmount = totalAmount * (voucher.discountValue / 100);
+                    finalAmount = Math.max(0, totalAmount - discountAmount);
+    
+                    await voucher.save();
+                } else {
+                    return res.status(400).json({ message: 'Voucher is not valid or has reached usage limit.' });
+                }
+            }
 
             // Create order after booking
             const order = new Order({
@@ -244,13 +267,14 @@ class BookingController {
                 customerId: user._id,
                 orderDate: new Date(),
                 totalAmount: totalAmount,
-                discountApplied: false,
-                discountAmount: totalAmount,
-                finalAmount: totalAmount,
+                discountApplied: discountApplied,
+                discountAmount: discountAmount,
+                finalAmount: finalAmount,
                 paymentMethod: '',
                 paymentStatus: 'pending',
                 products: productDetails,
                 services: serviceDetails,
+                voucherId: req.body.voucherId ? req.body.voucherId : undefined
             });
 
             const newOrder = await order.save();
