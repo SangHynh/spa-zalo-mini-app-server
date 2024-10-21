@@ -818,22 +818,24 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
     const users = await User.find({ _id: { $in: userIds } }); // Tìm tất cả người dùng theo userIds
 
     if (users.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No users found for the provided IDs." });
+      return res.status(404).json({ message: 'No users found for the provided IDs.' });
     }
 
     // Duyệt qua từng user
     for (const user of users) {
       // Duyệt qua mảng các suggestions cần cập nhật
-      suggestionsToUpdate.forEach((update) => {
-        const suggestion = user.suggestions.find(
-          (sug) => sug.categoryId.toString() === update.categoryId
-        );
+      suggestionsToUpdate.forEach(update => {
+        let suggestion = user.suggestions.find(sug => sug.categoryId.toString() === update.categoryId);
 
         if (suggestion) {
           // Cập nhật suggestedScore cho từng mục dựa trên categoryId
           suggestion.suggestedScore = update.suggestedScore;
+        } else {
+          // Nếu không tìm thấy suggestion tương ứng, tạo mới suggestion
+          user.suggestions.push({
+            categoryId: update.categoryId,
+            suggestedScore: update.suggestedScore
+          });
         }
       });
 
@@ -841,14 +843,15 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
       await user.save();
     }
 
-    return res.status(200).json({
-      message: "Multiple suggestions updated successfully",
+    res.status(200).json({
+      message: 'Multiple suggestions updated successfully',
     });
   } catch (error) {
-    console.error("Error updating multiple suggestions:", error.message);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error('Error updating multiple suggestions:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 exports.configureProductToUser = async (req, res) => {
   const { userIds, productIds } = req.body; // Lấy userIds và productIds từ body
 
