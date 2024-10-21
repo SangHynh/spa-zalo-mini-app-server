@@ -11,6 +11,7 @@ const configs = require("./app");
 const rank = require("./rank");
 const statistics = require("./statistics")
 const staffs = require("./staffs")
+const minigame = require("./minigame")
 
 const initRoutes = (app) => {
   app.use("/api/products", product);
@@ -26,6 +27,7 @@ const initRoutes = (app) => {
   app.use("/api/ranks", rank);
   app.use("/api/statistics", statistics);
   app.use("/api/staffs", staffs)
+  app.use("/api/minigame", minigame);
 };
 
 module.exports = initRoutes;

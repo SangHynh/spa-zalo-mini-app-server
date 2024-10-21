@@ -1,0 +1,16 @@
+### PLAY MINIGAME
+POST http://localhost:8080/api/minigame/play
+Content-Type: application/json
+
+{
+    "userId": "objectId"
+}
+
+### UPDATE POINTS
+PUT http://localhost:8080/api/minigame/update-points
+Content-Type: application/json
+
+{
+    "userId": "objectId",
+    "points": 10
+}

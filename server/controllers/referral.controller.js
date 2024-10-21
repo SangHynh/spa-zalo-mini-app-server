@@ -9,11 +9,21 @@ const getReferralInfo = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Tìm thông tin của cha (parent)
     const userPath = user.referralInfo.paths;
-    let parent = null;
+
+    // Tìm thông tin của tổ tiên đầu tiên
+    let ancestor = null; // Khai báo biến cho tổ tiên
     if (userPath) {
       const pathSegments = userPath.split(",").filter(Boolean); // Tách các đoạn mã và lọc bỏ phần tử rỗng
+      if (pathSegments.length > 0) {
+        ancestor = pathSegments[0]; // Mã tổ tiên là phần tử đầu tiên
+      }
+    }
+
+    // Tìm thông tin của cha (parent)
+    let parent = null;
+    if (userPath) {
+      const pathSegments = userPath.split(",").filter(Boolean); 
       if (pathSegments.length > 1) {
         // Kiểm tra nếu có ít nhất 2 phần tử
         const parentReferralCode = pathSegments[pathSegments.length - 2]; // Mã cha là phần tử kế cuối
@@ -40,6 +50,7 @@ const getReferralInfo = async (req, res) => {
 
     // Trả về thông tin người dùng, tổng số con cháu và danh sách các con gần nhất
     return res.status(200).json({
+      ancestor: ancestor,
       parent: parent
         ? {
             // Nếu có cha, trả về thông tin của cha
