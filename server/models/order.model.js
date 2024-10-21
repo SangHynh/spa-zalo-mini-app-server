@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema({
         price: { type: Number, required: true },
     }],
     voucherId: { type: mongoose.Schema.Types.ObjectId, required: false },
-    address: { type: String, required: true, default: "" }
+    address: { type: String, required: false, default: "" }
 },{
     timestamps: true
 });

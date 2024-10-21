@@ -378,18 +378,26 @@ class BookingController {
 
             if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-            const deletedOrder = await Order.findOneAndDelete({ bookingId: booking._id });
-            if (deletedOrder) {
-                console.log(`Order deleted successfully`);
-            }
+            booking.status = "cancelled";
 
-            const deletedBooking = await BookingHistory.findByIdAndDelete(req.params.id);
-            if (!deletedBooking) return res.status(400).json({ message: 'Cannot delete booking' });
+            const savedBooking = await booking.save()
 
+            if (!savedBooking) return res.status(400).json({ message: 'Cannot update booking status' })
+
+            const existingOrder = await Order.findOne({ bookingId: savedBooking._id });
+
+            if (!existingOrder) return res.status(404).json({ message: 'Order not found for this booking' });
+
+            existingOrder.paymentStatus = "cancelled";
+
+            const savedOrder = await existingOrder.save()
+
+            if (!savedOrder) return res.status(400).json({ message: 'Cannot update order status' })
+            
             return res.status(200).json({
-                message: 'Booking deleted successfully',
-                deletedBooking,
-                deletedOrder: deletedOrder ? deletedOrder : 'No associated order'
+                message: 'Booking deleted ssavedOrderuccessfully',
+                booking,
+                order: savedOrder ? savedOrder : 'No associated order'
             });
         } catch (error) {
             return res.status(500).json({
