@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema(
         suggestedScore: { type: Number }  // Điểm gợi ý sản phẩm
       }
     ],
+  
     carts: [{
       productId: { type: mongoose.Schema.Types.ObjectId },
       variantId: { type: mongoose.Schema.Types.ObjectId },
