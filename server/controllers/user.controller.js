@@ -422,6 +422,21 @@ const removeUserAddress = async (req, res) => {
   }
 };
 
+const getUserAddresses = async (req, res) => {
+  try {
+    const userId = req.payload.aud;
+
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json(user.addresses);
+  } catch (error) {
+    console.error("Error fetching user:", error.message);
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -435,5 +450,6 @@ module.exports = {
   createStaff,
   getAllStaffs,
   addUserAddress,
-  removeUserAddress
+  removeUserAddress,
+  getUserAddresses
 };

@@ -216,6 +216,7 @@ class BookingController {
                         productName: product.name,
                         price: price,
                         quantity: quantity,
+                        volume: selectedVariant.volume
                     });
 
                     totalProductPrice += totalPrice;

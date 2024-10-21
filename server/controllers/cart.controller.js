@@ -79,11 +79,7 @@ class CartController {
                 return res.status(404).json({ message: 'Product not found in cart' });
             }
 
-            if (cartItem.quantity - quantity < 1) {
-                return res.status(400).json({ message: 'Cannot reduce quantity below 1 (Call removeCartItem)' });
-            }
-
-            cartItem.quantity -= quantity;
+            cartItem.quantity = quantity;
 
             await user.save();
 

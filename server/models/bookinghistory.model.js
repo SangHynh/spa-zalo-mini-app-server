@@ -15,6 +15,7 @@ const bookingHistorySchema = new mongoose.Schema({
         productName: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },
+        volume: { type: String, required: false }
     }]
 },{
     timestamps: true

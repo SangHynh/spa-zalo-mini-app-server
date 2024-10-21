@@ -21,6 +21,7 @@ router.put('/update-user-info/:zaloId',verifyAccessToken, validateUpdateUserInfo
 router.put('/update-user-phone/:zaloId',verifyAccessToken, validateUpdateUserInfo, userController.updateUserPhone);
 
 // USER ADDRESSES
+router.get('/address/all', verifyAccessToken, userController.getUserAddresses)
 /*
 Body:
 {
