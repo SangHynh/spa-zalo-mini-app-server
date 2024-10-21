@@ -1,3 +1,11 @@
+### GET PLAY COUNT
+GET http://localhost:8080/api/minigame/play-count
+Content-Type: application/json
+
+{
+    "userId": "objectId"
+}
+
 ### PLAY MINIGAME
 POST http://localhost:8080/api/minigame/play
 Content-Type: application/json

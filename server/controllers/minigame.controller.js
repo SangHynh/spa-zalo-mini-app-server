@@ -1,18 +1,38 @@
 const Minigame = require('../models/minigame.model'); 
 const User = require('../models/user.model'); 
 
-// Chơi minigame: Giảm lượt chơi
-const playMinigame = async (req, res) => {
-    const userId = req.body.userId; // Nhận từ request body client truyền theo param -> web minigame -> server
+// Lấy lượt chơi hiện tại của người dùng
+const getPlayCount = async (req, res) => {
+    const userId = req.body.userId; // Nhận từ request body
     try {
         let minigame = await Minigame.findOne({ userId });
-        // Người dùng chưa có minigame record thì tạo mới
+        // Nếu người dùng chưa có minigame record thì tạo mới
         if (!minigame) {
+            let user = await User.findOne({ _id: userId });
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
             minigame = new Minigame({
-                userId: userId,
+                userId: user._id,
                 playCount: 10, 
                 lastPlayed: Date.now(),
             });
+            await minigame.save(); 
+        }
+        res.status(200).json({ playCount: minigame });
+    } catch (err) {
+        res.status(500).json({ message: 'An error occurred!', error: err.message });
+    }
+};
+
+// Chơi minigame: Giảm lượt chơi
+const playMinigame = async (req, res) => {
+    const userId = req.body.userId; // Nhận từ request body
+    try {
+        let minigame = await Minigame.findOne({ userId });
+        // Kiểm tra xem người dùng có record minigame không
+        if (!minigame) {
+            return res.status(404).json({ message: 'Minigame record not found' });
         }
         // Kiểm tra xem lần cuối chơi là ngày hôm nay hay không
         const today = new Date();
@@ -22,7 +42,7 @@ const playMinigame = async (req, res) => {
             lastPlayed.getMonth() !== today.getMonth() ||
             lastPlayed.getFullYear() !== today.getFullYear()
         ) {
-            minigame.playCount = 10;
+            minigame.playCount = 10; // Reset lượt chơi về 10
         }
         // Kiểm tra lượt chơi người dùng
         if (minigame.playCount <= 0) {
@@ -63,6 +83,7 @@ const updatePoints = async (req, res) => {
 };
 
 module.exports = {
+    getPlayCount,
     playMinigame,
     updatePoints,
 };
