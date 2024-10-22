@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema(
       price: { type: Number, required: true },
       quantity: { type: Number, required: true, min: 1 },
       images: { type: [String], default: [] },
-      volume: { type: String, required: true }
+      volume: { type: String, required: false }
     }],
     vouchers: [{
       code: { type: String, required: true },

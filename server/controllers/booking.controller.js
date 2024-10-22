@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const AppConfig = require("../models/appconfig.model");
 const Rank = require("../models/rank.model");
+const { calculateReferralCommission } = require("../services/referral.service");
 
 class BookingController {
 
@@ -247,14 +248,14 @@ class BookingController {
                 if (!voucher) {
                     return res.status(404).json({ message: `Voucher not found: ${req.body.voucherId}` });
                 }
-    
+
                 const now = new Date();
                 if (voucher.validFrom <= now && voucher.validTo >= now && voucher.usageLimit > 0) {
                     discountApplied = true;
-    
+
                     discountAmount = totalAmount * (voucher.discountValue / 100);
                     finalAmount = Math.max(0, totalAmount - discountAmount);
-    
+
                     await voucher.save();
                 } else {
                     return res.status(400).json({ message: 'Voucher is not valid or has reached usage limit.' });
@@ -407,7 +408,7 @@ class BookingController {
             const savedOrder = await existingOrder.save()
 
             if (!savedOrder) return res.status(400).json({ message: 'Cannot update order status' })
-            
+
             return res.status(200).json({
                 message: 'Booking deleted ssavedOrderuccessfully',
                 booking,
@@ -515,35 +516,18 @@ class BookingController {
                             user.points += pointLevel.minPoints;
                             user.rankPoints += pointLevel.minPoints;
 
-                            await user.save({ validateBeforeSave: false }) 
+                            await user.save({ validateBeforeSave: false })
 
                             break;
                         }
                     }
                 }
+
                 // TÍNH TIỀN HOA HỒNG
-                if (user.referralInfo && user.referralInfo.paths) {
-                    const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
-
-                    // Get commission percentage for the user based on their rank
-                    const userRank = await Rank.findOne({ tier: user.membershipTier });
-                    let commissionAmount = existingOrder.finalAmount * (userRank.commissionPercent / 100);
-
-                    for (let i = referralPaths.length - 2; i >= 0; i--) {
-                        const refCode = referralPaths[i];
-                        const refUser = await User.findOne({ referralCode: refCode });
-
-                        if (refUser) {
-                            const refUserRank = await Rank.findOne({ tier: refUser.membershipTier });
-                            if (refUserRank) {
-                                refUser.amounts += commissionAmount;
-                                await refUser.save();
-
-                                commissionAmount *= (refUserRank.commissionPercent / 100);
-                            }
-                        }
-                    }
-                }   
+                const commissionResult = await calculateReferralCommission(existingOrder, existingOrder.customerId);
+                if (!commissionResult.success) {
+                    return res.status(500).json({ message: commissionResult.message });
+                }
             }
 
             const updatedOrder = await existingOrder.save({ validateBeforeSave: false });

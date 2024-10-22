@@ -137,6 +137,22 @@ async function initializeAndSaveOrderPoints() {
   }
 }
 
+async function initializeCommissionPercent() {
+  try {
+    const updatedConfig = await AppConfig.findOneAndUpdate(
+      {},
+      {
+        baseCommissionPercent: 10,
+        reductionPerLevelPercent: 20
+      },
+      { new: true, upsert: true }
+    );
+    console.log("Commission updated:", updatedConfig);
+  } catch (error) {
+    console.error("Error during initialization or saving order points:", error);
+  }
+}
+
 // async function saveOrderPoints(orderPoints) {
 //   try {
 //     for (const point of orderPoints) {

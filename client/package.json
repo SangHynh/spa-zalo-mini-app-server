@@ -19,6 +19,7 @@
     "@mui/x-data-grid": "^7.18.0",
     "@mui/x-date-pickers": "^7.17.0",
     "axios": "^1.7.7",
+    "better-react-mathjax": "^2.0.3",
     "client": "file:",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",

@@ -233,6 +233,63 @@ class AppConfigController {
         .json({ error: "An error occurred while deleting orderPoint" });
     }
   }
+
+  // UPDATE COMMISSION INFORMATION
+  async updateCommissionInformation(req, res) {
+    const { baseCommissionPercent, reductionPerLevelPercent } = req.body;
+
+    try {
+      const appConfig = await AppConfig.findOne().sort({ createdAt: -1 });
+      if (!appConfig) {
+        return res.status(404).json({ error: "AppConfig not found" });
+      }
+
+      if (typeof baseCommissionPercent !== 'number' || baseCommissionPercent > 100 || baseCommissionPercent < 0) {
+        return res.status(400).json({
+          error: "Invalid baseCommissionPercent. It must be a number between 0 and 100."
+        });
+      }
+    
+      if (typeof reductionPerLevelPercent !== 'number' || reductionPerLevelPercent > 100 || reductionPerLevelPercent < 0) {
+        return res.status(400).json({
+          error: "Invalid reductionPerLevelPercent. It must be a number between 0 and 100."
+        });
+      }
+
+      appConfig.baseCommissionPercent = baseCommissionPercent;
+      appConfig.reductionPerLevelPercent = reductionPerLevelPercent;
+
+      // Lưu bản ghi đã cập nhật
+      await appConfig.save();
+      return res.status(200).json({
+        message: "Commission updated successfully",
+        baseCommissionPercent: appConfig.baseCommissionPercent,
+        reductionPerLevelPercent: appConfig.reductionPerLevelPercent
+      });
+    } catch (error) {
+      console.error("Error updating Commission:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating Commission" });
+    }
+  }
+
+  // GET COMMISSION
+  async getCommission(req, res) {
+    try {
+      const appConfig = await AppConfig.findOne().sort({ minPoints: 1 });
+
+      return res.status(200).json({
+        baseCommissionPercent: appConfig.baseCommissionPercent,
+        reductionPerLevelPercent: appConfig.reductionPerLevelPercent
+      });
+    } catch (error) {
+      console.error("Error fetching order points:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while fetching order points" });
+    }
+  }
 }
 
 module.exports = new AppConfigController();

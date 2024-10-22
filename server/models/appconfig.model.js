@@ -15,6 +15,8 @@ const appConfigSchema = new mongoose.Schema(
         minPoints: { type: Number, required: true, default: 0 },
       },
     ],
+    baseCommissionPercent: { type: Number, required: true, default: 10 },
+    reductionPerLevelPercent: { type: Number, required: true, default: 20 }
     // ...
   },
   {

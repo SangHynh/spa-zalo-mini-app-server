@@ -17,7 +17,7 @@ export const apiGetPermission = () =>
 // PUT SLIDER
 export const apiUpdateSlider = (formData) =>
   axios({
-    url: "/api/configs/",
+    url: "/api/configs/slider",
     method: "PUT",
     data: formData,
   });
@@ -25,14 +25,14 @@ export const apiUpdateSlider = (formData) =>
 // GET ORDER-POINT
 export const apiGetOrderPoints = () =>
   axios({
-    url: "/api/configs/",
+    url: "/api/configs/orderPoints",
     method: "GET",
   });
 
 // CREATE ORDER-POINT
 export const apiCreateOrderPoint = (orderPointData) =>
   axios({
-    url: "/api/configs/",
+    url: "/api/configs/orderPoints",
     method: "POST",
     data: orderPointData,
   });
@@ -40,7 +40,7 @@ export const apiCreateOrderPoint = (orderPointData) =>
 // UPDATE ORDER-POINT
 export const apiUpdateOrderPoint = (orderPointId, orderPointData) =>
   axios({
-    url: `/api/configs/${orderPointId}`,
+    url: `/api/configs/orderPoints/${orderPointId}`,
     method: "PUT",
     data: orderPointData,
   });
@@ -48,6 +48,21 @@ export const apiUpdateOrderPoint = (orderPointId, orderPointData) =>
 // DELETE ORDER-POINT
 export const apiDeleteOrderPoint = (orderPointId) =>
   axios({
-    url: `/api/configs/${orderPointId}`,
+    url: `/api/configs/orderPoints/${orderPointId}`,
     method: "DELETE",
+  });
+
+// UPDATE COMMISSION
+export const apiUpdateCommission = (data) =>
+  axios({
+    url: `/api/configs/commission`,
+    method: "PUT",
+    data: data,
+  });
+
+// GET COMMISSION
+export const apiGetCommission = () =>
+  axios({
+    url: `/api/configs/commission`,
+    method: "GET",
   });

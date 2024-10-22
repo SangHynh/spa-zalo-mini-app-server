@@ -8,6 +8,7 @@ const Voucher = require('../models/voucher.model');
 const AppConfig = require('../models/appconfig.model');
 const Rank = require('../models/rank.model');
 const BookingHistory = require('../models/bookinghistory.model');
+const { calculateReferralCommission } = require('../services/referral.service');
 
 class PaymentController {
     // GET ORDERS
@@ -272,24 +273,9 @@ class PaymentController {
                 }
 
                 // TÍNH TIỀN HOA HỒNG
-                if (user.referralInfo && user.referralInfo.paths) {
-                    const referralPaths = user.referralInfo.paths.split(',').filter(path => path.trim() !== "");
-
-                    let commissionAmount = order.finalAmount;
-
-                    for (let i = referralPaths.length - 2; i >= 0; i--) {
-                        const refCode = referralPaths[i];
-                        const refUser = await User.findOne({ referralCode: refCode });
-
-                        if (refUser) {
-                            const refUserRank = await Rank.findOne({ tier: refUser.membershipTier });
-                            if (refUserRank) {
-                                commissionAmount *= (refUserRank.commissionPercent / 100);
-                                refUser.amounts += commissionAmount;
-                                await refUser.save();
-                            }
-                        }
-                    }
+                const commissionResult = await calculateReferralCommission(order, order.customerId);
+                if (!commissionResult.success) {
+                    return res.status(500).json({ message: commissionResult.message });
                 }
             }
 

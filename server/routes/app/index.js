@@ -26,7 +26,7 @@ router.get("/permission", (req, res) => { res.json(PERMISSIONS); });
 
 // PUT SLIDER
 router.put(
-  "/",
+  "/slider",
   (req, res, next) => {
     req.folder = process.env.APP_FOLDER; // Folder name in cloud
     next();
@@ -37,23 +37,33 @@ router.put(
 ); // FOR ADMIN
 
 // GET ORDER-POINT
-router.get("/", verifyAccessToken, appConfigController.getOrderPoints);
+router.get("/orderPoints", verifyAccessToken, appConfigController.getOrderPoints);
 
 // CREATE ORDER-POINT
-router.post("/", verifyAccessToken, appConfigController.createOrderPoint);
+router.post("/orderPoints", verifyAccessToken, appConfigController.createOrderPoint);
 
 // UPDATE ORDER-POINT
 router.put(
-  "/:orderPointId",
+  "/orderPoints/:orderPointId",
   verifyAccessToken,
   appConfigController.updateOrderPoint
 );
 
 // DELETE ORDER-POINT
 router.delete(
-  "/:orderPointId",
+  "/orderPoints/:orderPointId",
   verifyAccessToken,
   appConfigController.deleteOrderPoint
+);
+
+// GET COMMISSION
+router.get("/commission", verifyAccessToken, appConfigController.getCommission);
+
+// UPDATE COMMISSION
+router.put(
+  "/commission",
+  verifyAccessToken,
+  appConfigController.updateCommissionInformation
 );
 
 module.exports = router;
