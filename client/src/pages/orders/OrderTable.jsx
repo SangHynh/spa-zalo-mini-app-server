@@ -13,7 +13,15 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Button, Checkbox, Chip, ImageList, ImageListItem, Stack, Tooltip } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Chip,
+  ImageList,
+  ImageListItem,
+  Stack,
+  Tooltip,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import WidgetsIcon from "@mui/icons-material/Widgets";
@@ -28,8 +36,12 @@ import PendingIcon from "@mui/icons-material/Pending";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { blue, green, red } from "@mui/material/colors";
-import { apiDeleteOrder, apiDeleteOrders, apiGetOrders } from "../../apis/payments";
-import PrintIcon from '@mui/icons-material/Print';
+import {
+  apiDeleteOrder,
+  apiDeleteOrders,
+  apiGetOrders,
+} from "../../apis/payments";
+import PrintIcon from "@mui/icons-material/Print";
 import InvoiceModal from "./InvoiceModal";
 
 function Row(props) {
@@ -117,7 +129,6 @@ function Row(props) {
               >
                 {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
-
             </Stack>
           </TableCell>
           <TableCell
@@ -270,10 +281,10 @@ function Row(props) {
                 row.paymentStatus === "pending"
                   ? "primary"
                   : row.paymentStatus === "cancelled"
-                    ? "error"
-                    : row.paymentStatus === "completed"
-                      ? "success"
-                      : "default"
+                  ? "error"
+                  : row.paymentStatus === "completed"
+                  ? "success"
+                  : "default"
               }
             />
           </TableCell>
@@ -344,7 +355,7 @@ function Row(props) {
                 <IconButton
                   color="primary"
                   onClick={() => openInvoiceModal(row)}
-                // disabled={row.paymentStatus === "completed"}
+                  // disabled={row.paymentStatus === "completed"}
                 >
                   <PrintIcon />
                 </IconButton>
@@ -354,7 +365,7 @@ function Row(props) {
                 <IconButton
                   color="error"
                   onClick={() => handleDeleteOrder(row._id)}
-                // disabled={row.paymentStatus === "completed"}
+                  // disabled={row.paymentStatus === "completed"}
                 >
                   <CancelIcon />
                 </IconButton>
@@ -363,7 +374,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={17}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -393,14 +404,6 @@ function Row(props) {
                             onClick={() => handleCopy(product.productId)}
                           >
                             {product.productId}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                            onClick={() => handleCopy(product.variantId)}
-                          >
-                            {product.variantId}
                           </TableCell>
                           <TableCell component="th" scope="row" align="center">
                             {product.productName}
@@ -460,7 +463,7 @@ const OrderTable = ({ searchTerm, status }) => {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
@@ -471,7 +474,7 @@ const OrderTable = ({ searchTerm, status }) => {
 
   const handleDeleteSelectedOrders = () => {
     if (selected.length <= 0) {
-      toast.warning(`${t("toast-selected")}!`)
+      toast.warning(`${t("toast-selected")}!`);
     } else {
       Swal.fire({
         title: `${t("confirm")}`,
@@ -482,7 +485,7 @@ const OrderTable = ({ searchTerm, status }) => {
         if (result.isConfirmed) {
           // Gọi API để xóa các đơn hàng đã chọn
           showLoading();
-  
+
           const res = await apiDeleteOrders({ orderIds: selected }); // Truyền danh sách orderIds
           if (res.status === 200) {
             Swal.fire(`${t("delete-success")}!`, "", "success").then(() => {
@@ -500,7 +503,12 @@ const OrderTable = ({ searchTerm, status }) => {
   // GET PRODUCTS
   useEffect(() => {
     const fetchOrders = async () => {
-      const response = await apiGetOrders(currentPage, rowsPerPage, searchTerm, status);
+      const response = await apiGetOrders(
+        currentPage,
+        rowsPerPage,
+        searchTerm,
+        status
+      );
       if (response.status === 200) {
         setOrders(response.data.orders);
         setTotalOrders(response.data.totalOrders);

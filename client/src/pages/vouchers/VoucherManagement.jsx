@@ -96,12 +96,12 @@ const VoucherManagement = () => {
         </Grid2>
         <div className="flex items-center justify-between gap-4">
           <Button
-            variant="outlined"
-            color="success"
+            variant="contained"
+            color="warning"
             onClick={handleOpenModal}
             className="flex-none gap-2"
           >
-            <ForwardToInboxIcon color="success" />
+            <ForwardToInboxIcon />
             {t("give-voucher")}
           </Button>
 

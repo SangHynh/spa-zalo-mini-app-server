@@ -28,7 +28,6 @@ const path = {
   // SUB
   CREATE_PRODUCT: "create-product",
   CREATE_SERVICE: "create-service",
-  CREATE_CUSTOMER: "create-customer",
   CREATE_CATEGORY: "create-category",
   CREATE_VOUCHER: "create-voucher",
   CREATE_STAFF: "create-staff",

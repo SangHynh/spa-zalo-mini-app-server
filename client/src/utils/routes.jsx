@@ -18,7 +18,6 @@ import {
   RecommendSystem,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
-import CreateCustomer from "../pages/users/CreateCustomer";
 import EditProduct from "../pages/products/EditProducts";
 import CreateCategory from "../pages/categories/CreateCategory";
 import CreateService from "../pages/services/CreateService";
@@ -123,10 +122,6 @@ const routes = [
           {
             path: path.EDIT_SERVICE + "/:id",
             element: <EditService />,
-          },
-          {
-            path: path.CREATE_CUSTOMER,
-            element: <CreateCustomer />,
           },
           {
             path: path.CREATE_CATEGORY,
