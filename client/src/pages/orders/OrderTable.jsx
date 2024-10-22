@@ -405,14 +405,6 @@ function Row(props) {
                           >
                             {product.productId}
                           </TableCell>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            align="center"
-                            onClick={() => handleCopy(product.variantId)}
-                          >
-                            {product.variantId}
-                          </TableCell>
                           <TableCell component="th" scope="row" align="center">
                             {product.productName}
                           </TableCell>

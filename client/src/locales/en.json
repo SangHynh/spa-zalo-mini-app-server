@@ -195,6 +195,8 @@
   "amounts": "Amounts",
   "select user-voucher pls": "Please select customer and voucher",
   "select user-cate pls": "Please select customer and category",
+  "select user-prod pls": "Please select customer and product",
+  "select user-svc pls": "Please select customer and service",
   "products": "Products",
   "level": "Level",
   "cate-suggest": "Suggested Categories",
@@ -212,5 +214,10 @@
   "select-prod": "Select Products",
   "select-option": "Select option",
   "user-svc": "Users - Services",
-  "select-svc": "Select Services"
+  "select-svc": "Select Services",
+  "user-id": "User Id",
+  "user-name": "User Name",
+  "exist-cate": "Existing Categories",
+  "empty": "Empty",
+  "exist-prod": "Existing Products"
 }

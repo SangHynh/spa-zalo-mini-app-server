@@ -46,7 +46,7 @@ export const apiUpdateMultipleSuggestionScores = (
     },
   });
 
-// USERS - CATEGORIES
+// USERS - PRODUCTS
 export const apiConfigProductToUser = (userIds, productIds) =>
   axios({
     url: "/api/recommendations/configure-product-to-user",
@@ -54,5 +54,34 @@ export const apiConfigProductToUser = (userIds, productIds) =>
     data: {
       userIds,
       productIds,
+    },
+  });
+
+export const apiGetProductConfig = (userId) =>
+  axios({
+    url: "/api/recommendations/get-product-configuration",
+    method: "POST",
+    data: {
+      userId,
+    },
+  });
+
+// USERS - SERVICES
+export const apiConfigServiceToUser = (userIds, serviceIds) =>
+  axios({
+    url: "/api/recommendations/configure-service-to-user",
+    method: "POST",
+    data: {
+      userIds,
+      serviceIds,
+    },
+  });
+
+export const apiGetServiceConfig = (userId) =>
+  axios({
+    url: "/api/recommendations/get-service-configuration",
+    method: "POST",
+    data: {
+      userId,
     },
   });

@@ -3,6 +3,7 @@ import {
   Button,
   Checkbox,
   Grid2,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -18,9 +19,13 @@ import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiGetCustomers } from "../../../apis/users";
 import Swal from "sweetalert2";
-import { apiConfigProductToUser } from "../../../apis/recommend-system";
-import { FaEye } from "react-icons/fa";
+import {
+  apiConfigServiceToUser,
+  apiGetServiceConfig,
+} from "../../../apis/recommend-system";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { apiGetServices } from "../../../apis/services";
+import { toast } from "react-toastify";
 
 const UserSvc = () => {
   const { t } = useTranslation();
@@ -180,28 +185,50 @@ const UserSvc = () => {
   const isServiceSelected = (id) => selectedServiceIds.indexOf(id) !== -1;
 
   const handleUpdate = async () => {
-    console.log("Selected User IDs:", selectedUserIds);
-    console.log("Selected Category IDs:", selectedServiceIds);
+    // console.log("Selected User IDs:", selectedUserIds);
+    // console.log("Selected Category IDs:", selectedServiceIds);
 
-    // try {
-    //   const response = await apiConfigProductToUser(
-    //     selectedUserIds,
-    //     selectedServiceIds
-    //   );
-    //   if (response.status === 200) {
-    //     Swal.fire({
-    //       icon: "success",
-    //       title: `${t("update-success")}!`,
-    //       showConfirmButton: true,
-    //     }).then(() => {
-    //       window.location.reload();
-    //     });
-    //   } else {
-    //     console.error("Unexpected response status:", response.status);
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating suggestions:", error);
-    // }
+    if (selectedUserIds.length === 0 || selectedServiceIds.length === 0) {
+      toast.info(`${t("select user-svc pls")}`);
+      return;
+    }
+
+    try {
+      const response = await apiConfigServiceToUser(
+        selectedUserIds,
+        selectedServiceIds
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("update-success")}!`,
+          showConfirmButton: true,
+        }).then(() => {
+          window.location.reload();
+        });
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating suggestions:", error);
+    }
+  };
+
+  //MODAL
+  const [open, setOpen] = useState(false);
+  const [serviceConfig, setServiceConfig] = useState(null);
+  const handleClose = () => setOpen(false);
+  const handleOpen = async (userId) => {
+    console.log(userId);
+    setOpen(true);
+
+    try {
+      const response = await apiGetServiceConfig(userId);
+      console.log("Service configuration retrieved:", response.data);
+      setServiceConfig(response.data.data);
+    } catch (error) {
+      console.error("Error fetching service configuration:", error);
+    }
   };
 
   return (
@@ -259,6 +286,7 @@ const UserSvc = () => {
                   >
                     {t("phone")}
                   </TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -289,6 +317,15 @@ const UserSvc = () => {
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.phone}</TableCell>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpen(user._id);
+                        }}
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -413,6 +450,59 @@ const UserSvc = () => {
           {t("update")}
         </Button>
       </Box>
+
+      {/* Modal */}
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          component={Paper}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            padding: 4,
+            boxShadow: 24,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            {t("user")}
+          </Typography>
+          <Typography sx={{ mt: 2 }}>
+            <span className="font-bold">{t("user-id")} : </span>
+            {serviceConfig?.userId}
+          </Typography>
+          <Typography id="modal-description" sx={{ mt: 1.5 }}>
+            <span className="font-bold">{t("user-name")} : </span>
+            {/* {serviceConfig?.name} */}
+          </Typography>
+          <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
+            {t("exist-prod")}
+          </Typography>
+          <Typography sx={{ mt: 2, ml: 2 }}>
+            {Array.isArray(serviceConfig?.configSuggestions) &&
+            serviceConfig.configSuggestions.length > 0 ? (
+              serviceConfig.configSuggestions.map((configSuggestion) => (
+                <div key={configSuggestion._id} className="my-2">
+                  {configSuggestion.name}
+                </div>
+              ))
+            ) : (
+              <div>{t("empty")}.</div>
+            )}
+          </Typography>
+          <div className="w-full flex justify-end">
+            <Button
+              onClick={handleClose}
+              sx={{ mt: 2 }}
+              variant="outlined"
+              color="warning"
+            >
+              {t("close")}
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </Box>
   );
 };

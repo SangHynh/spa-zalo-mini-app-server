@@ -3,6 +3,7 @@ import {
   Button,
   Checkbox,
   Grid2,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -20,7 +21,8 @@ import { apiGetCustomers } from "../../../apis/users";
 import { apiGetCategories } from "../../../apis/categories";
 import Swal from "sweetalert2";
 import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
-import { FaEye } from "react-icons/fa";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { toast } from "react-toastify";
 
 const UserCate = () => {
   const { t } = useTranslation();
@@ -189,12 +191,7 @@ const UserCate = () => {
     // console.log("Selected Category IDs:", selectedCategoryIds);
 
     if (selectedUserIds.length === 0 || selectedCategoryIds.length === 0) {
-      Swal.fire({
-        icon: "warning",
-        title: `${t("warning")}!`,
-        text: `${t("select user-cate pls")}`,
-        target: "",
-      });
+      toast.info(`${t("select user-cate pls")}`);
       return;
     }
 
@@ -224,6 +221,15 @@ const UserCate = () => {
     } catch (error) {
       console.error("Error updating suggestions:", error);
     }
+  };
+
+  //MODAL
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const handleClose = () => setOpen(false);
+  const handleOpen = (user) => {
+    setSelectedUser(user);
+    setOpen(true);
   };
 
   return (
@@ -281,6 +287,7 @@ const UserCate = () => {
                   >
                     {t("phone")}
                   </TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -311,6 +318,15 @@ const UserCate = () => {
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.phone}</TableCell>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpen(user);
+                        }}
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -450,6 +466,59 @@ const UserCate = () => {
           {t("update")}
         </Button>
       </Box>
+
+      {/* Modal */}
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          component={Paper}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            padding: 4,
+            boxShadow: 24,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            {t("user")}
+          </Typography>
+          <Typography sx={{ mt: 2 }}>
+            <span className="font-bold">{t("user-id")} : </span>
+            {selectedUser?._id}
+          </Typography>
+          <Typography id="modal-description" sx={{ mt: 1.5 }}>
+            <span className="font-bold">{t("user-name")} : </span>
+            {selectedUser?.name}
+          </Typography>
+          <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
+            {t("exist-cate")}
+          </Typography>
+          <Typography sx={{ mt: 2, ml: 2 }}>
+            {Array.isArray(selectedUser?.suggestions) &&
+            selectedUser.suggestions.length > 0 ? (
+              selectedUser.suggestions.map((suggestion) => (
+                <div key={suggestion._id} className="my-2">
+                  {suggestion.categoryId} - {suggestion.suggestedScore}
+                </div>
+              ))
+            ) : (
+              <div>{t("empty")}.</div>
+            )}
+          </Typography>
+          <div className="w-full flex justify-end">
+            <Button
+              onClick={handleClose}
+              sx={{ mt: 2 }}
+              variant="outlined"
+              color="warning"
+            >
+              {t("close")}
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </Box>
   );
 };
