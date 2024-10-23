@@ -9,6 +9,7 @@ router.get('/single/:id', verifyAccessToken, bookingController.getBookingById); 
 
 // GET: /api/bookings?status=...
 router.get('/user', verifyAccessToken, bookingController.getBookingHistoriesByUserId);
+router.get('/user/:id', verifyAccessToken, bookingController.getUserBookingById);
 
 // POST
 /* Body:

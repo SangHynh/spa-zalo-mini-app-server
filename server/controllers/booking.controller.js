@@ -116,7 +116,7 @@ class BookingController {
                 query.status = { $regex: status, $options: 'i' }; // Case-insensitive search
             }
 
-            const response = await BookingHistory.find({ customerId: user._id, ...query });
+            const response = await BookingHistory.find({ customerId: user._id, ...query }).sort({ createdAt: -1 });
 
             // console.log(response)
 
@@ -143,6 +143,65 @@ class BookingController {
             return res.status(200).json({
                 ...response.toObject(),
                 customer: customer ? customer : null
+            });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message,
+                message: 'An error occurred'
+            });
+        }
+    }
+
+    // GET USER BOOKING BY ID
+    async getUserBookingById(req, res) {
+        try {
+            const userId = req.payload.aud
+
+            const user = await User.findById(userId);
+
+            if (!user) return res.status(404).json({ message: "User not found" })
+
+            const booking = await BookingHistory.findById(req.params.id);
+
+            if (!booking) {
+                return res.status(404).json({ message: 'Booking not found' });
+            }
+
+            if (booking.customerId.toString() !== userId) {
+                return res.status(403).json({ message: "You do not have permission to view this booking" });
+            }
+
+            const servicesDetails = await Promise.all(
+                booking.services.map(async (serviceItem) => {
+                    const service = await Service.findById(serviceItem.serviceId).select('name price images');
+                    return {
+                        ...serviceItem._doc, // Giữ lại thông tin ban đầu từ booking
+                        images: service?.images || [] // Lấy từ DB hoặc để trống
+                    };
+                })
+            );
+
+            const productsDetails = await Promise.all(
+                booking.products.map(async (productItem) => {
+                    const product = await Product.findById(productItem.productId).select('name price variants images');
+                    const variant = product?.variants.id(productItem.variantId); // Tìm variant theo variantId
+                    return {
+                        ...productItem._doc, // Giữ lại thông tin ban đầu từ booking
+                        volume: variant?.volume || productItem.volume,
+                        images: product?.images || [] // Lấy hình ảnh từ DB hoặc để trống
+                    };
+                })
+            );
+
+            const servicesTotal = servicesDetails.reduce((acc, service) => acc + service.price, 0);
+            const productsTotal = productsDetails.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+            const total = servicesTotal + productsTotal;
+
+            return res.status(200).json({
+                ...booking._doc,
+                services: servicesDetails,
+                products: productsDetails,
+                totalAmount: total
             });
         } catch (error) {
             return res.status(500).json({

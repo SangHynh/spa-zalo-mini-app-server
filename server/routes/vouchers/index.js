@@ -6,6 +6,7 @@ const { verifyAccessToken } = require('../../configs/jwt.config')
 // GET
 router.get('/', voucherController.getVouchers);
 router.get('/:id', voucherController.getVoucherById);
+router.get('/user/vouchers', verifyAccessToken, voucherController.getUserVouchers);
 
 // POST
 router.post('/', verifyAccessToken, voucherController.createVoucher);
