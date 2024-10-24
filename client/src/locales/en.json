@@ -219,5 +219,8 @@
   "user-name": "User Name",
   "exist-cate": "Existing Categories",
   "empty": "Empty",
-  "exist-prod": "Existing Products"
+  "exist-prod": "Existing Products",
+  "for-exchange": "For Exchange",
+  "true": "True",
+  "false": "False"
 }

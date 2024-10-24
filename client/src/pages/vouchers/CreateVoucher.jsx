@@ -22,6 +22,7 @@ import {
   MenuItem,
   Modal,
   styled,
+  Switch,
   TextField,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -59,6 +60,7 @@ const CreateVoucher = () => {
   const [voucherValidTo, setVoucherValidTo] = useState(dayjs());
   const [voucherUsageLimit, setVoucherUsageLimit] = useState(1);
   const [voucherExchangePoints, setVoucherExchangePoints] = useState(100);
+  const [voucherForExchange, setVoucherForExchange] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -105,7 +107,8 @@ const CreateVoucher = () => {
       validTo: voucherValidTo.format("DD/MM/YYYY"),
       priceApplied: voucherPriceApplied,
       usageLimit: voucherUsageLimit,
-      exchangePoints: voucherExchangePoints
+      exchangePoints: voucherExchangePoints,
+      forExchange: voucherForExchange
     };
 
     try {
@@ -232,7 +235,7 @@ const CreateVoucher = () => {
             </FormControl>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DatePicker"]}>
                 <DatePicker
@@ -247,7 +250,7 @@ const CreateVoucher = () => {
             </LocalizationProvider>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DatePicker"]}>
                 <DatePicker
@@ -262,7 +265,7 @@ const CreateVoucher = () => {
             </LocalizationProvider>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <FormControl fullWidth margin="dense" variant="standard">
               <InputLabel htmlFor="voucherUsageLimit">
                 {t("usage-limit")}
@@ -272,6 +275,20 @@ const CreateVoucher = () => {
                 value={voucherUsageLimit}
                 onChange={(e) => setVoucherUsageLimit(e.target.value)}
               />
+            </FormControl>
+          </Grid2>
+
+          <Grid2 size={3}>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <Typography>
+                {t("for-exchange")}
+                <Switch
+                  checked={voucherForExchange}
+                  onChange={(e) => setVoucherForExchange(e.target.checked)}
+                  color="secondary"
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              </Typography>
             </FormControl>
           </Grid2>
         </Grid2>
@@ -312,6 +329,7 @@ const CreateVoucher = () => {
           voucherUsageLimit={voucherUsageLimit}
           voucherPriceApplied={voucherPriceApplied}
           voucherExchangePoints={voucherExchangePoints}
+          voucherForExchange={voucherForExchange}
         />
       </form>
     </Container>

@@ -218,5 +218,8 @@
   "user-name": "Tên người dùng",
   "exist-cate": "Những danh mục đã có",
   "empty": "Trống",
-  "exist-prod": "Những sản phẩm đã có"
+  "exist-prod": "Những sản phẩm đã có",
+  "for-exchange": "Có thể đổi",
+  "true": "Có",
+  "false": "Không"
 }

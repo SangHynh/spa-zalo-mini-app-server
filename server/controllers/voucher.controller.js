@@ -224,7 +224,8 @@ class VoucherController {
 
                         userRecord.vouchers.push({
                             code: validVoucher.code,
-                            voucherId: validVoucher._id
+                            voucherId: validVoucher._id,
+                            usageLimit: 1 // User can only use 1 time
                         });
 
                         if (!vouchersToUpdate[voucherId]) {
@@ -232,7 +233,7 @@ class VoucherController {
                             validVoucher.usageLimit -= 1;
                         }
                     } else {
-                        console.log(`User already has voucher: ${existingVoucher.code}`);
+                        existingVoucher.usageLimit += 1;
                     }
                 });
 
@@ -268,11 +269,21 @@ class VoucherController {
 
             if (voucher.usageLimit <= 0) return res.status(400).json({ message: "Voucher usage limit reached" });
 
+            if (!voucher.forExchange) return res.status(400).json({ message: "You cannot exchange that voucher" });
+
+            const existingVoucher = user.vouchers.find(v => v.voucherId.toString() === voucherId);
+            
+            if (existingVoucher) {
+                existingVoucher.usageLimit += 1;
+            } else {
+                user.vouchers.push({
+                    code: voucher.code,
+                    voucherId: voucher._id,
+                    usageLimit: 1
+                });
+            }
+
             user.points -= voucher.exchangePoints
-            user.vouchers.push({
-                code: voucher.code,
-                voucherId: voucher._id
-            });
 
             voucher.usageLimit -= 1;
 
@@ -283,6 +294,52 @@ class VoucherController {
         } catch (error) {
             return res.status(500).json({
                 error: error.message,
+                message: 'An error occurred'
+            });
+        }
+    }
+
+    async getVouchersUserCanExchange(req, res) {
+        try {
+            const page = parseInt(req.query.page) || 1;  // Current page
+            const limit = parseInt(req.query.limit) || 10;  // Items per page
+            const skip = (page - 1) * limit;  // Skip results for pagination
+
+            const { keyword, validFrom, validTo } = req.query;
+
+            const query = { forExchange: true };
+
+            console.log(validFrom)
+
+            if (keyword) {
+                query.$or = [
+                    { code: { $regex: keyword, $options: 'i' } },        // Search in 'code'
+                    { description: { $regex: keyword, $options: 'i' } }  // Search in 'description'
+                ];
+            }
+
+            if (validFrom) {
+                query.validFrom = { $gte: moment(validFrom, 'DD/MM/YYYY').format('YYYY-MM-DD') };
+            }
+            if (validTo) {
+                query.validTo = { $lte: moment(validTo, 'DD/MM/YYYY').format('YYYY-MM-DD') };
+            }
+
+            const vouchers = await Voucher.find(query)
+                .skip(skip)
+                .limit(limit);
+
+            const totalVouchers = await Voucher.countDocuments(query);
+
+            return res.status(200).json({
+                vouchers,
+                currentPage: page,
+                totalPages: Math.ceil(totalVouchers / limit),
+                totalVouchers
+            });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message || error,
                 message: 'An error occurred'
             });
         }

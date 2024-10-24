@@ -25,7 +25,8 @@ const PreviewVoucher = ({
     voucherValidTo,
     voucherUsageLimit,
     voucherPriceApplied,
-    voucherExchangePoints
+    voucherExchangePoints,
+    voucherForExchange
 }) => {
     const { t } = useTranslation();
 
@@ -76,6 +77,9 @@ const PreviewVoucher = ({
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
                     <strong>{t("exchange-points")} :</strong> {voucherExchangePoints}
+                </Typography>
+                <Typography sx={{ mt: 2 }}>
+                    <strong>{t("for-exchange")} :</strong> {voucherForExchange}
                 </Typography>
 
                 <Grid2

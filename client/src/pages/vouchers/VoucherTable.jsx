@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Button, ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Button, Chip, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
@@ -214,6 +214,22 @@ function Row(props) {
           </TableCell>
 
           <TableCell
+            align="center"
+            sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {(row.forExchange) ? (
+              <Chip label={t("true")} color="success" />
+            ) : (
+              <Chip label={t("false")} color="error" />
+            )}
+          </TableCell>
+
+          <TableCell
             align="left"
             sx={{
               minWidth: "100px",
@@ -390,6 +406,13 @@ const VoucherTable = ({ searchTerm, validFrom, validTo }) => {
                 className="relative dark:text-black"
               >
                 {t("usage-limit")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="relative dark:text-black"
+              >
+                {t("for-exchange")}
               </TableCell>
               <TableCell
                 align="center"

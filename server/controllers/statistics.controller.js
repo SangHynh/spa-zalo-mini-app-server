@@ -5,77 +5,58 @@ const Service = require("../models/service.model");
 class StatisticsController {
     async getRevenueStatistics(req, res) {
         try {
-            const { period } = req.query; // "week", "month", "year"
-            let startDate;
-            let endDate = new Date();
+            const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
+            const { year = currentYear } = req.query; // Nếu không có year, dùng năm hiện tại
     
-            if (period === 'week') {
-                startDate = new Date();
-                const dayOfWeek = startDate.getDay(); 
-                startDate.setDate(startDate.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-                endDate.setDate(startDate.getDate() + 6);
-            } else if (period === 'month') {
-                startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-                endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
-            } else if (period === 'year') {
-                startDate = new Date(endDate.getFullYear(), 0, 1);
-                endDate = new Date(endDate.getFullYear(), 11, 31);
-            } else {
-                return res.status(400).json({ message: "Invalid period. Please use 'week', 'month', or 'year'." });
+            if (isNaN(year)) {
+                return res.status(400).json({ message: "Invalid year. Please provide a valid year." });
             }
+    
+            const startDate = new Date(parseInt(year), 0, 1); // Ngày đầu tiên của năm
+            const endDate = new Date(parseInt(year), 11, 31); // Ngày cuối cùng của năm
     
             const orders = await Order.find({
                 orderDate: { $gte: startDate, $lte: endDate },
                 paymentStatus: 'completed',
             });
     
-            let revenueData = [];
-            if (period === 'week' || period === 'month') {
-                const days = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
-                revenueData = Array.from({ length: days }, () => 0);
+            // Tạo mảng chứa doanh thu cho từng tháng trong năm
+            let revenueData = Array(12).fill(0);
     
-                orders.forEach(order => {
-                    const orderDate = new Date(order.orderDate);
-                    const dayIndex = Math.floor((orderDate - startDate) / (1000 * 60 * 60 * 24)); // Tính chỉ số của ngày trong tuần hoặc tháng
-                    revenueData[dayIndex] += order.finalAmount;
-                });
-            } else if (period === 'year') {
-                revenueData = Array(12).fill(0);
-    
-                orders.forEach(order => {
-                    const orderMonth = new Date(order.orderDate).getMonth();
-                    revenueData[orderMonth] += order.finalAmount;
-                });
-            }
+            orders.forEach(order => {
+                const orderMonth = new Date(order.orderDate).getMonth(); // Lấy chỉ số tháng từ 0-11
+                revenueData[orderMonth] += order.finalAmount; // Cộng doanh thu vào tháng tương ứng
+            });
     
             return res.status(200).json({
-                revenueData,
+                revenueData, // Doanh thu theo từng tháng
                 from: startDate,
                 to: endDate,
-                period,
+                year,
             });
         } catch (error) {
             return res.status(500).json({
                 error: error.message,
                 message: 'An error occurred'
-            })
+            });
         }
-    }
+    }    
 
     async getTopProductsAndServices(req, res) {
         try {
-            const limit = parseInt(req.query.limit) || 10;
+            const productLimit = parseInt(req.query.productLimit) || 10;
+            const serviceLimit = parseInt(req.query.serviceLimit) || 10;
 
             // Top products
             const topProducts = await Product.find({ salesQuantity: { $gt: 0 } })
                 .sort({ salesQuantity: -1 })
-                .limit(limit)
+                .limit(productLimit)
                 .select('name price salesQuantity');
 
             // Top Service
             const topServices = await Service.find({ timesUsed: { $gt: 0 } })
                 .sort({ timesUsed: -1 })
-                .limit(limit)
+                .limit(serviceLimit)
                 .select('name price timesUsed');
 
             return res.status(200).json({

@@ -265,6 +265,14 @@ class PaymentController {
                             user.points += pointLevel.minPoints;
                             user.rankPoints += pointLevel.minPoints;
 
+                            if (order.voucherId && order.discountApplied) {
+                                const existingVoucher = user.vouchers.find(v => v.voucherId.toString() === order.voucherId);
+
+                                if (existingVoucher && existingVoucher.usageLimit > 0) {
+                                    existingVoucher.usageLimit -= 1;
+                                }
+                            }
+
                             await user.save({ validateBeforeSave: false })
 
                             break;

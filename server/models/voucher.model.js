@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const voucherSchema = new mongoose.Schema({
-  code: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   description: { type: String, required: true },
   discountType: { type: String, required: true },
   discountValue: { type: Number, required: true },
@@ -13,7 +13,8 @@ const voucherSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId },
     usedAt: { type: Date, required: true },
   }],
-  exchangePoints: { type: Number, default: 0 }
+  exchangePoints: { type: Number, default: 0 },
+  forExchange: { type: Boolean, default: false }
 },{
     timestamps: true
 });

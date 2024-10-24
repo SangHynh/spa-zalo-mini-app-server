@@ -22,6 +22,7 @@ import {
   MenuItem,
   Modal,
   styled,
+  Switch,
   TextField,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -60,6 +61,7 @@ const EditVoucher = () => {
   const [voucherValidTo, setVoucherValidTo] = useState(dayjs());
   const [voucherUsageLimit, setVoucherUsageLimit] = useState(1);
   const [voucherExchangePoints, setVoucherExchangePoints] = useState(100);
+  const [voucherForExchange, setVoucherForExchange] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -86,6 +88,7 @@ const EditVoucher = () => {
           setVoucherValidTo(dayjs(voucher.validTo));
           setVoucherUsageLimit(voucher.usageLimit);
           setVoucherExchangePoints(voucher.exchangePoints);
+          setVoucherForExchange(voucher.forExchange)
         }
       }
     };
@@ -133,7 +136,8 @@ const EditVoucher = () => {
       validTo: voucherValidTo.format("DD/MM/YYYY"),
       priceApplied: voucherPriceApplied,
       usageLimit: voucherUsageLimit,
-      exchangePoints: voucherExchangePoints
+      exchangePoints: voucherExchangePoints,
+      forExchange: voucherForExchange
     };
 
     try {
@@ -204,7 +208,7 @@ const EditVoucher = () => {
         />
 
         <Grid2 container fullWidth spacing={2} sx={{ mt: 2 }}>
-        <Grid2 size={6}>
+          <Grid2 size={6}>
             <FormControl fullWidth margin="dense" variant="standard">
               <InputLabel htmlFor="voucherPriceApplied">
                 {t("price-applied")}
@@ -262,7 +266,7 @@ const EditVoucher = () => {
             </FormControl>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DatePicker"]}>
                 <DatePicker
@@ -277,7 +281,7 @@ const EditVoucher = () => {
             </LocalizationProvider>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DatePicker"]}>
                 <DatePicker
@@ -292,7 +296,7 @@ const EditVoucher = () => {
             </LocalizationProvider>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={3}>
             <FormControl fullWidth margin="dense" variant="standard">
               <InputLabel htmlFor="voucherUsageLimit">
                 {t("usage-limit")}
@@ -302,6 +306,20 @@ const EditVoucher = () => {
                 value={voucherUsageLimit}
                 onChange={(e) => setVoucherUsageLimit(e.target.value)}
               />
+            </FormControl>
+          </Grid2>
+
+          <Grid2 size={3}>
+            <FormControl fullWidth margin="dense" variant="standard">
+              <Typography>
+                {t("for-exchange")}
+                <Switch
+                  checked={voucherForExchange}
+                  onChange={(e) => setVoucherForExchange(e.target.checked)}
+                  color="secondary"
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              </Typography>
             </FormControl>
           </Grid2>
         </Grid2>
@@ -342,6 +360,7 @@ const EditVoucher = () => {
           voucherUsageLimit={voucherUsageLimit}
           voucherPriceApplied={voucherPriceApplied}
           voucherExchangePoints={voucherExchangePoints}
+          voucherForExchange={voucherForExchange}
         />
       </form>
     </Container>

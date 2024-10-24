@@ -59,6 +59,7 @@ const userSchema = new mongoose.Schema(
     vouchers: [{
       code: { type: String, required: true },
       voucherId: { type: mongoose.Schema.Types.ObjectId },
+      usageLimit: { type: Number, default: 1 }
     }],
     rankPoints: { type: Number, default: 0 },
     amounts: { type: Number, default: 0 },
