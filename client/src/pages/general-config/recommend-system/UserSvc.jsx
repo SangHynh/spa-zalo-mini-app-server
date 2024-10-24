@@ -216,14 +216,15 @@ const UserSvc = () => {
 
   //MODAL
   const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [serviceConfig, setServiceConfig] = useState(null);
   const handleClose = () => setOpen(false);
-  const handleOpen = async (userId) => {
-    console.log(userId);
+  const handleOpen = async (user) => {
+    setSelectedUser(user);
     setOpen(true);
 
     try {
-      const response = await apiGetServiceConfig(userId);
+      const response = await apiGetServiceConfig(user._id);
       console.log("Service configuration retrieved:", response.data);
       setServiceConfig(response.data.data);
     } catch (error) {
@@ -321,7 +322,7 @@ const UserSvc = () => {
                         className="cursor-pointer"
                         onClick={(event) => {
                           event.stopPropagation();
-                          handleOpen(user._id);
+                          handleOpen(user);
                         }}
                       >
                         <VisibilityIcon fontSize="small" />
@@ -474,7 +475,7 @@ const UserSvc = () => {
           </Typography>
           <Typography id="modal-description" sx={{ mt: 1.5 }}>
             <span className="font-bold">{t("user-name")} : </span>
-            {/* {serviceConfig?.name} */}
+            {selectedUser?.name}
           </Typography>
           <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
             {t("exist-prod")}
