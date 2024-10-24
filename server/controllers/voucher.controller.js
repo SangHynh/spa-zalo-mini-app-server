@@ -57,7 +57,7 @@ class VoucherController {
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            const voucherIds = user.vouchers;
+            const voucherIds = user.vouchers.map(v => v.voucherId);
 
             if (!voucherIds || voucherIds.length === 0) {
                 return res.status(200).json([]);
