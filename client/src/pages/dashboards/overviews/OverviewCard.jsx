@@ -12,36 +12,45 @@ const OverviewCard = ({
     return (
         <Card sx={{ width: '100%', height: '100%' }} elevation={5}>
             <CardContent sx={{ width: '100%' }}>
-                <Typography variant="h6" color="textSecondary" gutterBottom>
-                    {card.title}
-                </Typography>
-                <Box display="flex" alignItems="center">
-                    <Typography variant="h4">{card.value}</Typography>
-                    {card.icon && <Box ml={1}>{card.icon}</Box>}
-                </Box>
-                {card.progress && (
-                    <Box mt={2} width="100%">
-                        <Box height={10} bgcolor="#f5f5f5" borderRadius={5}>
-                            <Box
-                                height={10}
-                                width={`${card.value}`}
-                                bgcolor="#ff9800"
-                                borderRadius={5}
-                            />
+                <Grid2 container>
+                    <Grid2 size={8}>
+
+                        <Typography variant="h6" color="textSecondary" gutterBottom>
+                            {card.title}
+                        </Typography>
+                        <Box display="flex" alignItems="center">
+                            <Typography variant="h4">{card.value}</Typography>
                         </Box>
-                    </Box>
-                )}
-                <Typography color="textSecondary" variant="body2">
-                    {card.description}
-                </Typography>
-                {card.change && (
-                    <Typography
-                        variant="body2"
-                        style={{ color: card.changeColor }}
-                    >
-                        {card.change}
-                    </Typography>
-                )}
+                        {card.progress && (
+                            <Box mt={2} width="100%">
+                                <Box height={10} bgcolor="#f5f5f5" borderRadius={5}>
+                                    <Box
+                                        height={10}
+                                        width={`${card.value}`}
+                                        bgcolor="#ff9800"
+                                        borderRadius={5}
+                                    />
+                                </Box>
+                            </Box>
+                        )}
+                        <Typography color="textSecondary" variant="body2">
+                            {card.description}
+                        </Typography>
+                        {card.change && (
+                            <Typography
+                                variant="body2"
+                                style={{ color: card.changeColor }}
+                            >
+                                {card.change}
+                            </Typography>
+                        )}
+                    </Grid2>
+                    <Grid2 size={4}>
+                        {card.icon}
+
+                    </Grid2>
+                </Grid2>
+
             </CardContent>
         </Card>
     );

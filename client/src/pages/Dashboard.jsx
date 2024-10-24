@@ -6,14 +6,26 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import OverviewCard from "./dashboards/overviews/OverviewCard";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts";
-import { apiGetRevenue, apiGetTopProductsAndServices } from "../apis/statistics";
+import { apiGetOverview, apiGetRevenue, apiGetTopProductsAndServices } from "../apis/statistics";
 
 const Dashboard = () => {
   const { t } = useTranslation();
 
+  const [overviewData, setOverviewData] = useState(null)
   const [revenueData, setRevenueData] = useState([]);
   const [labels, setLabels] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
+
+  useEffect(() => {
+    const fetchOverviewData = async () => {
+      const response = await apiGetOverview();
+      if (response.status === 200) {
+        setOverviewData(response.data)
+      }
+    };
+
+    fetchOverviewData();
+  }, [year]);
 
   useEffect(() => {
     const fetchRevenueData = async () => {
@@ -62,32 +74,32 @@ const Dashboard = () => {
 
   const cards = [
     {
-      title: "BUDGET",
-      value: "$24k",
-      change: "+12%",
-      description: "Since last month",
-      changeColor: "green",
-      icon: <ArrowUpwardIcon style={{ color: "green" }} />,
+      title: t("product"),
+      value: overviewData?.totalProducts,
+      icon: <img src="/product.png" alt="" className="w-18 h-18" />,
+      // change: "+12%",
+      // description: "Since last month",
+      // changeColor: "green",
+      // icon: <ArrowUpwardIcon style={{ color: "green" }} />,
     },
     {
-      title: "TOTAL CUSTOMERS",
-      value: "1.6k",
-      change: "-16%",
-      description: "Since last month",
-      changeColor: "red",
-      icon: <ArrowDownwardIcon style={{ color: "red" }} />,
+      title: t("service"),
+      value: overviewData?.totalServices,
+      icon: <img src="/spa.png" alt="" className="w-18 h-18" />,
     },
     {
-      title: "TASK PROGRESS",
-      value: "75.5%",
-      description: "",
-      progress: true,
+      title: t("user"),
+      value: overviewData?.totalUsers,
+      icon: <img src="/user.png" alt="" className="w-18 h-18" />,
+      // change: "-16%",
+      // description: "Since last month",
+      // changeColor: "red",
+      // icon: <ArrowDownwardIcon style={{ color: "red" }} />,
     },
     {
-      title: "TOTAL PROFIT",
-      value: "$15k",
-      description: "Since last month",
-      changeColor: "blue",
+      title: t("booking"),
+      value: overviewData?.totalBookings,
+      icon: <img src="/booking.png" alt="" className="w-18 h-18" />,
     },
   ];
 

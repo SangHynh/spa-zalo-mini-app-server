@@ -1,5 +1,13 @@
 import axios from "../utils/axios";
 
+// GET OVERVIEW
+export const apiGetOverview = () => axios(
+    {
+        url: "/api/statistics/overview",
+        method: "GET",
+    }
+)
+
 // GET REVENUE
 export const apiGetRevenue = (year) => axios(
     {

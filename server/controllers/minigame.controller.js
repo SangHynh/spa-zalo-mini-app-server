@@ -76,11 +76,13 @@ const updatePoints = async (req, res) => {
     }
     // Cập nhật điểm số trực tiếp
     user.points += gamePoints;
+    user.rankPoints += gamePoints;
     await user.save();
     const userInfo = {
       _id: user._id,
       name: user.name,
       points: user.points,
+      rankPoints: user.rankPoints
     };
     res.status(200).json({ message: "Points updated successfully!", userInfo });
   } catch (err) {

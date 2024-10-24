@@ -1,8 +1,31 @@
+const BookingHistory = require("../models/bookinghistory.model");
 const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const Service = require("../models/service.model");
+const User = require("../models/user.model");
 
 class StatisticsController {
+    async getOverviewStatistic(req, res) {
+        try {
+            const totalProducts = await Product.countDocuments();
+            const totalServices = await Service.countDocuments();
+            const totalUsers = await User.countDocuments();
+            const totalBookings = await BookingHistory.countDocuments();
+    
+            return res.status(200).json({
+                totalProducts,
+                totalServices,
+                totalUsers,
+                totalBookings,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message,
+                message: 'An error occurred'
+            });
+        }
+    }
+
     async getRevenueStatistics(req, res) {
         try {
             const currentYear = new Date().getFullYear(); // Lấy năm hiện tại

@@ -17,3 +17,9 @@ Run server: `npm run dev`
     - **Key 1:** `8NdU5pG5R2spGHGhyO99HN1OhD8IQJBn` (Test Merchant)
     - **Key 2:** `uUfsWgfLkRLzq6W2uNXTCxrfxs51auny` (Test Merchant)
     - **Redirect path:** `/payment-result`
+
+### Zalopay Sandbox App
+- Truy cập [Zalopay Doanh nghiệp](https://docs.zalopay.vn/v1/start/)
+- Chọn **A. Trải nghiệm với ZaloPay** và làm theo hướng dẫn
+- Xác thực tài khoản trong ứng dụng
+- Đảm bảo **ZaloPay** thật trên **Zalo** cần tắt hoặc đăng xuất
