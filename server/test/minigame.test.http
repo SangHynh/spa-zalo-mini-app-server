@@ -22,3 +22,12 @@ Content-Type: application/json
     "userId": "objectId",
     "points": 10
 }
+
+### UPDATE PLAY COUNT
+PUT http://localhost:8080/api/minigame/update-play-count
+Content-Type: application/json
+
+{
+    "userId": "objectId",
+    "playCount": 3
+}

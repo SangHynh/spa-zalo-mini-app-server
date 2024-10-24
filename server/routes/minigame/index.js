@@ -6,5 +6,6 @@ const { verifyAccessToken } = require('../../configs/jwt.config')// miniapp-> mi
 router.get('/play-count', minigameController.getPlayCount);
 router.post('/play', minigameController.playMinigame);
 router.put('/update-points', minigameController.updatePoints);
+router.put('/update-play-count', minigameController.updatePlayCount);
 
 module.exports = router
