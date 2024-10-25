@@ -598,9 +598,17 @@ class PaymentController {
             const orders = await Order.find(query)
                 .skip(skip)
                 .limit(limit)
-                .sort({ createdAt: -1 });
+                .sort({ createdAt: -1 })
+                .lean();
 
             const totalOrders = await Order.countDocuments(query);
+
+            for (const order of orders) {
+                for (const product of order.products) {
+                    const productData = await Product.findById(product.productId, 'images').lean();
+                    product.images = productData ? productData.images : [];
+                }
+            }
 
             return res.status(200).json({
                 orders,
