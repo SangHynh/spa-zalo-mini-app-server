@@ -239,7 +239,8 @@ const login = async (req, res, next) => {
         referralCode: user.referralCode,
         referralInfo: user.referralInfo,
         points: user.points,
-        amounts: user.amounts
+        amounts: user.amounts,
+        rankColor: user.rankColor
       };
       if (!user) throw createError.NotFound("User not found");
       // Tạo access token và refresh token sau khi đăng nhập thành công
