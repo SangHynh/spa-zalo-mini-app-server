@@ -140,7 +140,16 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const productId = req.body.productID; // Lấy productId từ body
   const rating = parseInt(req.body.rating, 10); // Lấy rating từ body và chuyển đổi thành số
   const comment = req.body.comment;
-  const images = req.body.images || []; // Mảng hình ảnh từ body, nếu có
+
+  // const images = req.body.images || []; // Mảng hình ảnh từ body, nếu có
+
+  // Nhận vào file hình ảnh
+  let images = [];
+
+  if (req.files) {
+    images = req.files.map(file => file.path);
+  }
+  
   try {
     // Tìm sản phẩm trước
     const product = await Product.findById(productId);

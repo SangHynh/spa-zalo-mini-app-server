@@ -38,7 +38,12 @@ class CartController {
                 return res.status(404).json({ message: 'Product not found' })
             }
 
-            const existingItem = user.carts.find(item => item.productId.toString() === productId);
+            const variant = product.variants.find(variant => variant._id.toString() === variantId);
+            if (!variant) {
+                return res.status(404).json({ message: 'Variant not found' });
+            }
+
+            const existingItem = user.carts.find(item => item.productId.toString() === productId && item.variantId.toString() === variantId);
             if (existingItem) {
                 existingItem.quantity += quantity;
             }
@@ -47,7 +52,7 @@ class CartController {
                     productId: productId,
                     variantId: variantId,
                     productName: product.name,
-                    price: product.price,
+                    price: variant.price,
                     quantity: quantity,
                     images: product.images,
                     volume: volume

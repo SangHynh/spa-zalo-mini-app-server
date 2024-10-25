@@ -3,9 +3,15 @@ const router = express.Router();
 const recommendationController = require("../../controllers/recommendation.controller");
 const { validateUpdateUserInfo } = require("../../validations/user.validation");
 const { verifyAccessToken } = require("../../configs/jwt.config");
+const { upload } = require("../../middlewares/upload.middlewares");
+const MAX_FILES = 10
+
 //đánh giá sản phẩm và thu thập thông tin về danh mục yêu thích của khách hàng
-router.put(
-  "/rating-product/:id",
+router.put("/rating-product/:id", (req, res, next) => {
+  req.folder = process.env.REVIEW_FOLDER; // Folder name in cloud
+  next();
+},
+  upload.array('images', MAX_FILES),
   recommendationController.ratingToUpdateSuggestScoreOfUser
 );
 //lấy các review qua id của sản phẩm
