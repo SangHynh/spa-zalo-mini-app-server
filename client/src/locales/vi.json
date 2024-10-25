@@ -221,5 +221,7 @@
   "exist-prod": "Những sản phẩm đã có",
   "for-exchange": "Có thể đổi",
   "true": "Có",
-  "false": "Không"
+  "false": "Không",
+  "color": "Màu",
+  "refresh-rank": "Cập Nhật Lại Hạng"
 }

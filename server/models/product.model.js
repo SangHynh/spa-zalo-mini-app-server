@@ -27,7 +27,10 @@ const productSchema = new mongoose.Schema({
   benefits: [String],
   expiryDate: { type: Date, required: false },
   usageInstructions: { type: String, required: false },
-  salesQuantity: { type: Number, default: 0 }
+  salesQuantity: { type: Number, default: 0 },
+  averageRating: { type: Number, default: 0 },
+  totalRatings: { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 }
 },{
     timestamps: true
 });

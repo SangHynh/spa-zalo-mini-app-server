@@ -63,6 +63,7 @@ const userSchema = new mongoose.Schema(
     }],
     rankPoints: { type: Number, default: 0 },
     amounts: { type: Number, default: 0 },
+    rankColor: { type: String, default: "#000000" }
   }, {
   timestamps: true
 });
@@ -74,15 +75,18 @@ userSchema.pre('save', async function (next) {
     const ranks = await mongoose.model('Rank').find().sort({ minPoints: -1 });
 
     let newTier = 'Member'; // Default tier
+    let newColor = '#000000'; 
     for (let rank of ranks) {
       if (user.rankPoints >= rank.minPoints) {
         newTier = rank.tier;
+        newColor = rank.color;
         break;
       }
     }
 
     if (user.membershipTier !== newTier) {
       user.membershipTier = newTier;
+      user.rankColor = newColor;
     }
 
     next();

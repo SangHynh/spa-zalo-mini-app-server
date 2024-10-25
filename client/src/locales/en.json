@@ -222,5 +222,7 @@
   "exist-prod": "Existing Products",
   "for-exchange": "For Exchange",
   "true": "True",
-  "false": "False"
+  "false": "False",
+  "color": "Color",
+  "refresh-rank": "Refresh Rank"
 }

@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Chip, ImageList, ImageListItem, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
@@ -140,7 +140,7 @@ function Row(props) {
             }}
             className="relative"
           >
-            {row.membershipTier}
+            <Chip label={row.membershipTier} variant="outlined" sx={{ color: (row.rankColor), borderColor: (row.rankColor) }} />
           </TableCell>
           {/* <TableCell
               align="right"

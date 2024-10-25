@@ -19,7 +19,9 @@ const orderSchema = new mongoose.Schema({
         productName: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },
-        volume: { type: String, required: false }
+        volume: { type: String, required: false },
+        rated: { type: Boolean, default: false },
+        reviewId: { type: mongoose.Schema.Types.ObjectId, required: false }
     }],
     services: [{
         serviceId: { type: mongoose.Schema.Types.ObjectId },
@@ -27,7 +29,7 @@ const orderSchema = new mongoose.Schema({
         price: { type: Number, required: true },
     }],
     voucherId: { type: mongoose.Schema.Types.ObjectId, required: false },
-    address: { type: String, required: false, default: "" }
+    address: { type: String, required: false, default: "" },
 },{
     timestamps: true
 });

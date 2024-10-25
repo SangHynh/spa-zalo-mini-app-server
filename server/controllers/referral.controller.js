@@ -57,6 +57,7 @@ const getReferralInfo = async (req, res) => {
             zaloId: parent.zaloId,
             name: parent.name,
             membershipTier: parent.membershipTier,
+            rankColor: parent.rankColor,
             referralCode: parent.referralCode,
             referralInfo: parent.referralInfo,
           }
@@ -65,6 +66,7 @@ const getReferralInfo = async (req, res) => {
         zaloId: user.zaloId,
         name: user.name,
         membershipTier: user.membershipTier,
+        rankColor: user.rankColor,
         referralCode: user.referralCode,
         referralInfo: user.referralInfo,
       },
@@ -73,6 +75,7 @@ const getReferralInfo = async (req, res) => {
         zaloId: child.zaloId,
         name: child.name,
         membershipTier: child.membershipTier,
+        rankColor: child.rankColor,
         referralCode: child.referralCode,
         referralInfo: child.referralInfo,
       })), // danh sách con cháu giới thiệu gần nhất

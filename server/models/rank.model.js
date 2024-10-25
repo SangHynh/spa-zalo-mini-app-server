@@ -5,6 +5,7 @@ const rankSchema = new mongoose.Schema({
   minPoints: { type: Number, required: true },
   commissionPercent: { type: Number, default: 0 },
   benefits: { type: String, default: "" },
+  color: { type: String, default: "#2979ff" }
 });
 
 const Rank = mongoose.model("Rank", rankSchema);

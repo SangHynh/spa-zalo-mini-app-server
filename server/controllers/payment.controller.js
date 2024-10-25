@@ -587,9 +587,9 @@ class PaymentController {
             const limit = Math.max(1, parseInt(req.query.limit) || 10);
             const skip = (page - 1) * limit;
 
-            const { status } = req.query;
+            const { status = "completed" } = req.query;
 
-            const query = { customerId: userId, bookingId: { $exists: false } };
+            const query = { customerId: userId };
 
             if (status) {
                 query.paymentStatus = status;

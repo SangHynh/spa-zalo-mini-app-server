@@ -23,6 +23,13 @@ export const apiUpdateRank = (rankId, formData) =>
     data: formData,
   });
 
+// PUT RANK
+export const apiUpdateAllUserRank = () =>
+  axios({
+    url: `/api/ranks/users/apply-all`,
+    method: "PUT",
+  });
+
 // DELETE RANK
 export const apiDeleteRank = (rankId) =>
   axios({

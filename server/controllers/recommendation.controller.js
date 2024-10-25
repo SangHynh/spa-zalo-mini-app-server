@@ -7,6 +7,7 @@ const Review = require("../models/review.model");
 const User = require("../models/user.model");
 const Recommendation = require("../models/recommendation.model");
 const Configuration = require("../models/configuration.model");
+const Order = require("../models/order.model");
 exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id; // Lấy user ID từ body
   const productName = req.params.productName; // Lấy product name từ params
@@ -140,6 +141,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const productId = req.body.productID; // Lấy productId từ body
   const rating = parseInt(req.body.rating, 10); // Lấy rating từ body và chuyển đổi thành số
   const comment = req.body.comment;
+  const orderId = req.body.orderID; // Phải mua mới được rating
 
   // const images = req.body.images || []; // Mảng hình ảnh từ body, nếu có
 
@@ -149,7 +151,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   if (req.files) {
     images = req.files.map(file => file.path);
   }
-  
+
   try {
     // Tìm sản phẩm trước
     const product = await Product.findById(productId);
@@ -226,6 +228,39 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
 
     // Lưu đánh giá vào cơ sở dữ liệu
     await review.save();
+
+    // Cập nhật hóa đơn là đã đánh giá
+    if (orderId) {
+      const order = await Order.findById(orderId);
+      if (order) {
+        // Tìm sản phẩm trong mảng products
+        const productInOrder = order.products.find(product => product.productId.toString() === productId);
+
+        if (productInOrder) {
+          // Đánh dấu sản phẩm là đã đánh giá và lưu reviewId
+          productInOrder.rated = true;
+          productInOrder.reviewId = review._id;
+        } else {
+          return res.status(404).json({ message: "Product not found in the order" });
+        }
+
+        // Lưu cập nhật hóa đơn mà không cần validate
+        await order.save({ validateBeforeSave: false });
+      } else {
+        return res.status(404).json({ message: "Order not found" });
+      }
+    } else {
+      return res.status(400).json({ message: "OrderId is required" });
+    }
+
+    // Cập nhật điểm của sản phẩm
+    if (product) {
+      product.totalRatings = (product.totalRatings || 0) + rating;
+      product.ratingCount = (product.ratingCount || 0) + 1;
+      product.averageRating = product.totalRatings / product.ratingCount;
+
+      await product.save();
+    }
 
     // Chỉ trả về thông tin cần thiết
     res.status(200).json({
@@ -311,7 +346,7 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
         (suggestedCategory) =>
           suggestedCategory.categoryId &&
           suggestedCategory.categoryId.toString() ===
-            product.categoryId.toString()
+          product.categoryId.toString()
       );
 
       if (!existingCategory) {
@@ -567,7 +602,7 @@ exports.suggestProductsForUser = async (req, res) => {
   try {
     const customerId = req.params.id;
     const customer = await User.findById(customerId);
-    
+
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -601,7 +636,7 @@ exports.suggestProductsForUser = async (req, res) => {
     });
 
     const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
-    
+
     // Tìm sản phẩm tương ứng với các category gợi ý
     const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
     const products = await Product.find({ categoryId: { $in: topCategoryIds } });
@@ -638,7 +673,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
 
     // Bước 2: Lấy thông tin khách hàng và gợi ý từ các category của họ
     const customer = await User.findById(customerId);
-    
+
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -672,7 +707,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     });
 
     const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
-    
+
     // Bước 3: Tìm sản phẩm tương ứng với các category gợi ý, giới hạn 3 sản phẩm mỗi category
     const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
     const suggestedProductsByCategory = await Promise.all(
@@ -725,7 +760,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
   try {
     // Bước 1: Lấy thông tin khách hàng và gợi ý từ các category của họ
     const customer = await User.findById(customerId);
-    
+
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -759,7 +794,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
     });
 
     const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
-    
+
     // Bước 2: Tìm dịch vụ tương ứng với các category gợi ý, giới hạn 3 dịch vụ mỗi category
     const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
     const suggestedServicesByCategory = await Promise.all(
@@ -864,8 +899,8 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
 exports.configureProductToUser = async (req, res) => {
   const { userIds, productIds } = req.body; // Lấy userIds và productIds từ body
 
-  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 || 
-      !productIds || !Array.isArray(productIds) || productIds.length === 0) {
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 ||
+    !productIds || !Array.isArray(productIds) || productIds.length === 0) {
     return res.status(400).json({ message: "Invalid user IDs or product IDs" });
   }
 
@@ -937,7 +972,7 @@ exports.getProductConfiguration = async (req, res) => {
   try {
     // Khởi tạo ObjectId từ userId
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Tìm kiếm cấu hình với type là "product"
     const configuration = await Configuration.findOne({ userId: objectId, type: "product" });
 
@@ -957,8 +992,8 @@ exports.getProductConfiguration = async (req, res) => {
 exports.configureServiceToUser = async (req, res) => {
   const { userIds, serviceIds } = req.body; // Lấy userIds và serviceIds từ body
 
-  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 || 
-      !serviceIds || !Array.isArray(serviceIds) || serviceIds.length === 0) {
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 ||
+    !serviceIds || !Array.isArray(serviceIds) || serviceIds.length === 0) {
     return res.status(400).json({ message: "Invalid user IDs or service IDs" });
   }
 
@@ -1030,7 +1065,7 @@ exports.getServiceConfiguration = async (req, res) => {
   try {
     // Khởi tạo ObjectId từ userId
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Tìm kiếm cấu hình với type là "service"
     const configuration = await Configuration.findOne({ userId: objectId, type: "service" });
 

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   FormControl,
   Grid2,
   IconButton,
@@ -41,6 +42,7 @@ const ForUser = () => {
   const [commissionPercent, setCommissionPercent] = useState("");
   const [benefits, setBenefits] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
+  const [rankColor, setRankColor] = useState("");
 
   const handleEditBtn = (row) => {
     setIsEdit(true);
@@ -48,6 +50,7 @@ const ForUser = () => {
     setId(row._id);
     setRank(row.tier);
     setPoint(row.minPoints);
+    setRankColor(row.color);
     setCommissionPercent(row.commissionPercent);
     setBenefits(row.benefits);
     setOriginalRow(row); // Save original row
@@ -59,6 +62,7 @@ const ForUser = () => {
     setId(null);
     setRank("");
     setPoint(0);
+    setRankColor("");
     setCommissionPercent(0);
     setBenefits([]);
     setOriginalRow(null);
@@ -79,6 +83,7 @@ const ForUser = () => {
         minPoints: point,
         commissionPercent: commissionPercent,
         benefits: benefits,
+        color: rankColor
       };
 
       const response = await apiUpdateRank(id, formData);
@@ -88,7 +93,8 @@ const ForUser = () => {
         formData.tier === originalRow.tier &&
         formData.minPoints === originalRow.minPoints &&
         formData.commissionPercent === originalRow.commissionPercent &&
-        formData.benefits === originalRow.benefits
+        formData.benefits === originalRow.benefits &&
+        formData.color === originalRow.color
       ) {
         toast.info(t("no-change"));
         return;
@@ -123,6 +129,7 @@ const ForUser = () => {
         minPoints: point,
         commissionPercent: commissionPercent,
         benefits: benefits,
+        color: rankColor
       };
 
       const response = await apiCreateRank(formData);
@@ -257,6 +264,12 @@ const ForUser = () => {
                     align="center"
                     sx={{ fontWeight: "bold", color: "black" }}
                   >
+                    {t("color")}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ fontWeight: "bold", color: "black" }}
+                  >
                     {t("benefits")}
                   </TableCell>
                   <TableCell
@@ -284,6 +297,9 @@ const ForUser = () => {
                     </TableCell>
                     <TableCell align="right" sx={{ width: "15%" }}>
                       {row.commissionPercent}
+                    </TableCell>
+                    <TableCell align="right" sx={{ width: "15%" }}>
+                      <Chip label={row.color} variant="outlined" sx={{ color: (row.color), borderColor: (row.color) }} />
                     </TableCell>
                     <TableCell align="left" sx={{ width: "20%" }}>
                       {row.benefits}
@@ -355,7 +371,7 @@ const ForUser = () => {
                     onChange={(e) => setPoint(e.target.value)}
                   />
                 </Grid2>
-                <Grid2 size={12}>
+                <Grid2 size={6}>
                   <TextField
                     id="commissionPercent"
                     label={t("commission-percent")}
@@ -364,6 +380,17 @@ const ForUser = () => {
                     margin="dense"
                     value={commissionPercent}
                     onChange={(e) => setCommissionPercent(e.target.value)}
+                  />
+                </Grid2>
+                <Grid2 size={6}>
+                  <TextField
+                    id="commissionColor"
+                    label={t("color")}
+                    variant="standard"
+                    fullWidth
+                    margin="dense"
+                    value={rankColor}
+                    onChange={(e) => setRankColor(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={12}>
@@ -436,7 +463,7 @@ const ForUser = () => {
                     onChange={(e) => setPoint(e.target.value)}
                   />
                 </Grid2>
-                <Grid2 size={12}>
+                <Grid2 size={6}>
                   <TextField
                     id="commissionPercent"
                     label={t("commission-percent")}
@@ -445,6 +472,17 @@ const ForUser = () => {
                     margin="commissionPercent"
                     value={commissionPercent}
                     onChange={(e) => setCommissionPercent(e.target.value)}
+                  />
+                </Grid2>
+                <Grid2 size={6}>
+                  <TextField
+                    id="commissionColor"
+                    label={t("color")}
+                    variant="standard"
+                    fullWidth
+                    margin="color"
+                    value={rankColor}
+                    onChange={(e) => setRankColor(e.target.value)}
                   />
                 </Grid2>
                 <Grid2 size={12}>

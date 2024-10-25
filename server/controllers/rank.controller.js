@@ -16,7 +16,7 @@ class RankController {
   // UPDATE
   async updateRank(req, res) {
     const { rankId } = req.params;
-    const { tier, minPoints, commissionPercent, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits, color } = req.body;
 
     try {
       const rank = await Rank.findById(rankId);
@@ -26,6 +26,7 @@ class RankController {
       const oldMinPoints = rank.minPoints;
 
       // Cập nhật các trường
+      rank.color = color;
       rank.tier = tier || rank.tier;
       rank.minPoints = minPoints !== undefined ? minPoints : rank.minPoints;
       rank.commissionPercent =
@@ -63,7 +64,7 @@ class RankController {
 
   // CREATE
   async createRank(req, res) {
-    const { tier, minPoints, commissionPercent, benefits } = req.body;
+    const { tier, minPoints, commissionPercent, benefits, color } = req.body;
 
     try {
       // Kiểm tra các bản ghi hiện có
@@ -83,6 +84,7 @@ class RankController {
         minPoints,
         commissionPercent,
         benefits,
+        color
       });
 
       await newRank.save();
@@ -111,41 +113,46 @@ class RankController {
     }
   }
 
-  // // CHECK USER'S RANK (REMOVE)
-  // async getCurrentUserRank(req, res) {
-  //   try {
-  //     const userId = req.payload.aud
+  // UPDATE USER'S RANK (...)
+  async updateAllUsersRank(req, res) {
+    try {
+      const ranks = await Rank.find().sort({ minPoints: -1 });
 
-  //     const user = await User.findById(userId);
-  //     if (!user) {
-  //       return res.status(404).json({ message: 'User not found' });
-  //     }
+      const users = await User.find();
 
-  //     const ranks = await Rank.find().sort({ minPoints: -1 });
+      for (let user of users) {
+        let newTier = "Member";
+        let newColor = "#000000";
 
-  //     let updatedTier = user.membershipTier;
-  //     for (const rank of ranks) {
-  //       if (user.rankPoints >= rank.minPoints) {
-  //         updatedTier = rank.tier;
-  //         break;
-  //       }
-  //     }
+        for (let rank of ranks) {
+          if (user.rankPoints >= rank.minPoints) {
+            newTier = rank.tier;
+            newColor = rank.color;
+            break;
+          }
+        }
 
-  //     if (user.membershipTier !== updatedTier) {
-  //       user.membershipTier = updatedTier;
-  //       await user.save();
-  //     }
+        user.membershipTier = newTier;
+        user.rankColor = newColor;
+      }
 
-  //     return res.status(200).json({
-  //       message: `User's rank checked and updated`,
-  //       userId: user._id,
-  //       membershipTier: user.membershipTier,
-  //       rankPoints: user.rankPoints,
-  //     });
-  //   } catch (error) {
-  //     return res.status(500).json({ message: "An error occurred: " + error.message });
-  //   }
-  // }
+      await User.bulkWrite(
+        users.map((user) => ({
+          updateOne: {
+            filter: { _id: user._id },
+            update: {
+              membershipTier: user.membershipTier,
+              rankColor: user.rankColor,
+            },
+          },
+        }))
+      );
+
+      return res.status(200).json({ message: "Cập nhật rank cho tất cả người dùng thành công!" });
+    } catch (error) {
+      return res.status(500).json({ message: "An error occurred: " + error.message });
+    }
+  }
 }
 
 module.exports = new RankController();

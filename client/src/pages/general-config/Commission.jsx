@@ -97,8 +97,7 @@ const Commission = () => {
             </li>
             <li className="my-2 ml-4">
               <MathJax inline>{`\\( P \\)`}</MathJax>: Phần trăm hoa hồng bổ
-              sung dựa trên hạng của khách hàng, khuyến khích người tham gia
-              phát triển mạng lưới khách hàng.
+              sung dựa trên hạng của khách hàng.
             </li>
           </ul>
         </div>

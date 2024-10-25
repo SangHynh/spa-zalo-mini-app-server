@@ -1,0 +1,65 @@
+.tree-container {
+    position: relative;
+}
+
+.tree-node {
+    position: relative;
+    padding-left: 75px;
+    margin-left: 18px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.tree-node::before {
+    content: '';
+    position: absolute;
+    top: 0%;
+    left: -16px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    height: 20px;
+    /* Điều chỉnh chiều cao để không quá dài */
+    width: 90px;
+}
+
+.tree-node:first-child::before {
+    border-top: none;
+}
+
+.tree-content {
+    display: flex;
+    align-items: center;
+}
+
+.tree-children {
+    margin-left: 16px;
+    position: relative;
+}
+
+.tree-children::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 2px;
+    border-left: 2px solid #fff;
+    border-top: 2px solid #fff;
+    height: 100%;
+    /* width: 100px; */
+}
+
+.tree-container > .tree-node {
+    padding-left: 0px;
+    margin-left: 0px;
+}
+
+.tree-container>.tree-node::before {
+    content: none;
+}
+
+.tree-children .tree-node:first-child::before {
+    border-top: none;
+}
+
+.tree-children:empty::before {
+    display: none;
+}

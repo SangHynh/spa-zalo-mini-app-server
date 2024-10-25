@@ -1,5 +1,6 @@
 import {
   Box,
+  Chip,
   IconButton,
   InputAdornment,
   TextField,
@@ -9,8 +10,9 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaSearch } from "react-icons/fa";
 import { apiSearchAffiate } from "../../apis/users";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import './AffiliateMarketing.css';
 
 const AffiliateMarketing = () => {
   const { t } = useTranslation();
@@ -57,26 +59,26 @@ const AffiliateMarketing = () => {
   };
 
   const renderNode = (user, descendants, nodeId, level = 1) => (
-    <div key={nodeId || user.referralCode} className="flex flex-col gap-4 ml-4">
-      <div className="flex items-center gap-4">
-        <Typography variant="body1" className="w-fit">
-          {user.name} ({user.referralCode}) - {t("level")} {level}
-        </Typography>
+    <div key={nodeId || user.referralCode} className="tree-node">
+      <div className="tree-content">
         <IconButton
           onClick={() =>
             handleToggleNode(user.referralCode, nodeId || user.referralCode)
           }
         >
           {expandedNodes[nodeId || user.referralCode] ? (
-            <RemoveIcon />
+            <RemoveCircleIcon />
           ) : (
-            <AddIcon />
+            <AddCircleIcon />
           )}
         </IconButton>
+        <Typography variant="body1" className="w-fit">
+          {user.name} ({user.referralCode}) - - - - - - - <Chip label={user.membershipTier} variant="outlined" sx={{ color: (user.rankColor), borderColor: (user.rankColor) }} /> - - - - - - - {t("level")} {level}
+        </Typography>
       </div>
 
       {expandedNodes[nodeId || user.referralCode] && (
-        <div className="ml-8 gap-4 flex flex-col">
+        <div className="tree-children">
           {expandedNodes[nodeId || user.referralCode].map((descendant) =>
             renderNode(
               descendant,
@@ -113,7 +115,7 @@ const AffiliateMarketing = () => {
       </div>
 
       {foundCustomer && (
-        <div className="flex flex-col gap-4">
+        <div className="tree-container">
           {renderNode(foundCustomer.user, foundCustomer.descendants, null, 1)}
         </div>
       )}
