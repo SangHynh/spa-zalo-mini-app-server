@@ -589,7 +589,7 @@ class PaymentController {
 
             const { status = "completed" } = req.query;
 
-            const query = { customerId: userId };
+            const query = { customerId: userId, products: { $ne: [] } };
 
             if (status) {
                 query.paymentStatus = status;
@@ -605,8 +605,14 @@ class PaymentController {
 
             for (const order of orders) {
                 for (const product of order.products) {
-                    const productData = await Product.findById(product.productId, 'images').lean();
+                    const productData = await Product.findById(product.productId, 'images variants').lean();
+
                     product.images = productData ? productData.images : [];
+
+                    if (productData && productData.variants) {
+                        const variant = productData.variants.find(variant => variant._id.toString() === product.variantId.toString());
+                        product.volume = variant ? variant.volume : null;
+                    }
                 }
             }
 

@@ -142,6 +142,8 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   const rating = parseInt(req.body.rating, 10); // Lấy rating từ body và chuyển đổi thành số
   const comment = req.body.comment;
   const orderId = req.body.orderID; // Phải mua mới được rating
+  const variantId = req.body.variantID;
+  const volume = req.body.volume;
 
   // const images = req.body.images || []; // Mảng hình ảnh từ body, nếu có
 
@@ -224,6 +226,8 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
       rating: rating,
       images: images,
       userId: userId,
+      variantId: variantId,
+      volume: volume
     });
 
     // Lưu đánh giá vào cơ sở dữ liệu
@@ -285,10 +289,19 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
 // Get reviews by product ID
 exports.getReviewsByProductId = async (req, res) => {
   const productId = req.params.productId; // Lấy productId từ params
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   console.log("Product ID:", productId);
   try {
     // Tìm tất cả review theo productId
-    const reviews = await Review.find({ productId: productId });
+    const reviews = await Review.find({ productId: productId })
+      .skip(skip)
+      .limit(limit);
+
+    const totalReviews = await Review.countDocuments({ productId: productId });
+    const totalPages = Math.ceil(totalReviews / limit);
 
     // Nếu không tìm thấy review nào
     if (reviews.length === 0) {
@@ -301,6 +314,9 @@ exports.getReviewsByProductId = async (req, res) => {
     res.status(200).json({
       message: "Reviews fetched successfully.",
       reviews: reviews,
+      currentPage: page,
+      totalPages: totalPages,
+      totalReviews: totalReviews,
     });
   } catch (error) {
     console.error("Error fetching reviews:", error.message);
