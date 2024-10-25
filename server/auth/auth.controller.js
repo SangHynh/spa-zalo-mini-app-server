@@ -145,15 +145,15 @@ const registerWithReferral = async (req, res, next) => {
       }
 
       // Lấy đường dẫn theo refCode của người giơi thiệu
-      const referrerUser = await User.findOne({referralCode: referralCode});//
+      const referrerUser = await User.findOne({ referralCode: referralCode }); //
       if (!referrerUser) {
         throw createError.BadRequest("Invalid referral code");
       }
 
-      const {paths} = referrerUser.referralInfo;
+      const { paths } = referrerUser.referralInfo;
 
       //Tạo thông tin tiếp thị liên kết của người dùng
-      const refCode = await generateReferralCode();// refCode của người dùng hiện tại
+      const refCode = await generateReferralCode(); // refCode của người dùng hiện tại
       const referralInfo = {
         paths: `${paths},${refCode}`,
         referredAt: new Date(),
@@ -229,6 +229,7 @@ const login = async (req, res, next) => {
       const user = await User.findOne({ zaloId });
       if (!user) throw createError.NotFound("User not found");
       const userProfile = {
+        id: user._id,
         zaloId: user.zaloId,
         name: user.name,
         avatar: user.avatar,
