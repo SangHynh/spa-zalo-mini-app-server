@@ -280,6 +280,17 @@ class PaymentController {
                     }
                 }
 
+                // CẬP NHẬT GIỎ HÀNG NẾU CÓ SAU KHI MUA THÀNH CÔNG
+                if (user.carts && user.carts.length > 0) {
+                    user.carts = user.carts.filter(cartItem =>
+                        !order.products.some(productOrder =>
+                            cartItem.productId.toString() === productOrder.productId.toString() &&
+                            cartItem.variantId?.toString() === productOrder.variantId?.toString()
+                        )
+                    );
+                    await user.save({ validateBeforeSave: false });
+                }
+
                 // TÍNH TIỀN HOA HỒNG
                 const commissionResult = await calculateReferralCommission(order, order.customerId);
                 if (!commissionResult.success) {
