@@ -310,10 +310,21 @@ exports.getReviewsByProductId = async (req, res) => {
         .json({ message: "No reviews found for this product." });
     }
 
+    const reviewsWithUserDetails = await Promise.all(
+      reviews.map(async (review) => {
+        const user = await User.findById(review.userId).select('name avatar');
+        return {
+          ...review.toObject(),
+          userName: user ? user.name : 'Unknown User',
+          userAvatar: user ? user.avatar : '',
+        };
+      })
+    );
+
     // Trả về danh sách review
     res.status(200).json({
       message: "Reviews fetched successfully.",
-      reviews: reviews,
+      reviews: reviewsWithUserDetails,
       currentPage: page,
       totalPages: totalPages,
       totalReviews: totalReviews,
@@ -487,6 +498,28 @@ exports.getProductRecommendations = async (req, res) => {
       return res.status(404).json({ message: "Recommendations not found for this product" });
     }
 
+    const suggestionsWithDetails = await Promise.all(
+      recommendation.items.map(async (item) => {
+        if (item.itemType === 'Product') {
+          const product = await Product.findById(item.itemId)
+            .select('images price averageRating name')
+            .lean();
+
+          if (product) {
+            return {
+              ...item,
+              images: product.images,
+              price: product.price,
+              averageRating: product.averageRating,
+              name: product.name,
+              itemId: product._id
+            };
+          }
+        }
+        return item;
+      })
+    );
+
     // Trả về thông tin recommendation
     res.status(200).json({
       message: "Recommendations retrieved successfully",
@@ -494,7 +527,7 @@ exports.getProductRecommendations = async (req, res) => {
         id: recommendation.mainItemId,
         name: recommendation.mainItemName,
       },
-      suggestions: recommendation.items,
+      suggestions: suggestionsWithDetails,
       collection: "Recommendation"
     });
   } catch (error) {
