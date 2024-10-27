@@ -89,6 +89,8 @@ userSchema.pre('save', async function (next) {
       user.rankColor = newColor;
     }
 
+    user.vouchers = user.vouchers.filter(voucher => voucher.usageLimit > 0);
+
     next();
   } catch (error) {
     next(error);
