@@ -479,9 +479,9 @@ const UserProd = () => {
             {t("exist-prod")}
           </Typography>
           <Typography sx={{ mt: 2, ml: 2 }}>
-            {Array.isArray(productConfig?.configSuggestions) &&
-            productConfig.configSuggestions.length > 0 ? (
-              productConfig.configSuggestions.map((configSuggestion) => (
+            {Array.isArray(productConfig) &&
+            productConfig.length > 0 ? (
+              productConfig.map((configSuggestion) => (
                 <div key={configSuggestion._id} className="my-2">
                   {configSuggestion.name}
                 </div>

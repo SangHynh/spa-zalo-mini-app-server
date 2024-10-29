@@ -481,9 +481,9 @@ const UserSvc = () => {
             {t("exist-prod")}
           </Typography>
           <Typography sx={{ mt: 2, ml: 2 }}>
-            {Array.isArray(serviceConfig?.configSuggestions) &&
-            serviceConfig.configSuggestions.length > 0 ? (
-              serviceConfig.configSuggestions.map((configSuggestion) => (
+            {Array.isArray(serviceConfig) &&
+            serviceConfig.length > 0 ? (
+              serviceConfig.map((configSuggestion) => (
                 <div key={configSuggestion._id} className="my-2">
                   {configSuggestion.name}
                 </div>

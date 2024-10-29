@@ -288,20 +288,23 @@ const ProdRecommendSystem = () => {
             {products.map((product, index) => {
               const isItemSelected = isSelected(product._id);
               const labelId = `enhanced-table-checkbox-${index}`;
+              const isDisabled = product._id === id;
 
               return (
                 <TableRow
                   hover
-                  onClick={(event) => handleClickProduct(event, product._id)}
+                  onClick={(event) => !isDisabled && handleClickProduct(event, product._id)}
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}
                   key={product._id}
                   selected={isItemSelected}
+                  style={{ opacity: isDisabled ? 0.5 : 1 }}
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={isItemSelected}
+                      disabled={isDisabled}
                       inputProps={{
                         "aria-labelledby": labelId,
                       }}

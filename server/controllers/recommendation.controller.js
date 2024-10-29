@@ -12,15 +12,27 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
   const userId = req.body.id; // Lấy user ID từ body
   const productName = req.params.productName; // Lấy product name từ params
 
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const skip = (page - 1) * limit;
+
+
   try {
     // Tìm kiếm sản phẩm dựa trên tên với regex
     const products = await Product.find({
       name: { $regex: productName, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa chữ thường
-    });
+    })
+      .skip(skip)
+      .limit(limit);
 
     if (!products || products.length === 0) {
       return res.status(404).json({ message: "No products found" });
     }
+
+    const totalProducts = await Product.countDocuments({
+      name: { $regex: productName, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa chữ thường
+    });
 
     // Tìm người dùng
     const user = await User.findById(userId);
@@ -66,6 +78,9 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
       message: "Updated successfully",
       suggestions: updatedUser.suggestions,
       products: products, // Thêm danh sách sản phẩm tìm được vào phản hồi
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit)
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
@@ -1029,9 +1044,27 @@ exports.getProductConfiguration = async (req, res) => {
       return res.status(404).json({ message: "Configuration not found for this user with type 'product'" });
     }
 
+    // Lấy chi tiết sản phẩm dựa trên configSuggestions
+    const productIds = configuration.configSuggestions.map(suggestion => suggestion.id);
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    // Thêm các thông tin chi tiết của product vào configSuggestions
+    const enrichedConfigSuggestions = configuration.configSuggestions.map(suggestion => {
+      const product = products.find(p => p._id.toString() === suggestion.id);
+      return product
+        ? {
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          images: product.images,
+          averageRating: product.averageRating
+        }
+        : suggestion;
+    });
+
     res.status(200).json({
       message: "Configuration retrieved successfully",
-      data: configuration,
+      data: enrichedConfigSuggestions,
     });
   } catch (error) {
     console.error("Error retrieving user configuration:", error.message);
@@ -1122,9 +1155,26 @@ exports.getServiceConfiguration = async (req, res) => {
       return res.status(404).json({ message: "Configuration not found for this user with type 'service'" });
     }
 
+    // Lấy chi tiết dịch vụ dựa trên configSuggestions
+    const serviceIds = configuration.configSuggestions.map(suggestion => suggestion.id);
+    const services = await Service.find({ _id: { $in: serviceIds } });
+
+    // Thêm các thông tin chi tiết của service vào configSuggestions
+    const enrichedConfigSuggestions = configuration.configSuggestions.map(suggestion => {
+      const service = services.find(s => s._id.toString() === suggestion.id);
+      return service
+        ? {
+          _id: service._id,
+          name: service.name,
+          price: service.price,
+          images: service.images,
+        }
+        : suggestion;
+    });
+
     res.status(200).json({
       message: "Configuration retrieved successfully",
-      data: configuration,
+      data: enrichedConfigSuggestions,
     });
   } catch (error) {
     console.error("Error retrieving user configuration:", error.message);
