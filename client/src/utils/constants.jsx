@@ -116,6 +116,12 @@ export const getSidebar = (t) => [
         path: `/${path.ADMIN_LAYOUT}/${path.IMAGES}`,
         name: t("nor-image"),
       },
+      {
+        id: 85,
+        icon: <GoDash />,
+        path: `/${path.ADMIN_LAYOUT}/${path.MINI_GAME}`,
+        name: t("mini-game"),
+      },
     ],
   },
 ];
@@ -157,7 +163,7 @@ export function stringToColor(string) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  let color = '#';
+  let color = "#";
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -169,10 +175,11 @@ export function stringToColor(string) {
 }
 
 export function stringAvatar(name) {
-  const splitName = name.split(' ');
-  const initials = splitName.length > 1 
-    ? `${splitName[0][0]}${splitName[1][0]}` 
-    : `${splitName[0][0]}`;
+  const splitName = name.split(" ");
+  const initials =
+    splitName.length > 1
+      ? `${splitName[0][0]}${splitName[1][0]}`
+      : `${splitName[0][0]}`;
 
   return {
     sx: {
@@ -181,4 +188,3 @@ export function stringAvatar(name) {
     children: initials.toUpperCase(),
   };
 }
-

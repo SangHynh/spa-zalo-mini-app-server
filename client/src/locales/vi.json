@@ -223,5 +223,8 @@
   "true": "Có",
   "false": "Không",
   "color": "Màu",
-  "refresh-rank": "Cập Nhật Lại Hạng"
+  "refresh-rank": "Cập Nhật Lại Hạng",
+  "mini-game": "Mini Game",
+  "play-count": "Số lượt chơi",
+  "increase-play-config": "Cấu hình tăng lượt chơi"
 }

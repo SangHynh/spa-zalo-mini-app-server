@@ -224,5 +224,8 @@
   "true": "True",
   "false": "False",
   "color": "Color",
-  "refresh-rank": "Refresh Rank"
+  "refresh-rank": "Refresh Rank",
+  "mini-game": "Mini Game",
+  "play-count": "Play Count",
+  "increase-play-config": "Configure to increase play"
 }

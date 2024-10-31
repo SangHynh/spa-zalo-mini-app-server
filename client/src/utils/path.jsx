@@ -20,6 +20,7 @@ const path = {
   RANK_POINT: "rank-point",
   IMAGES: "images",
   RECOMMEND_SYSTEM: "recommend-system",
+  MINI_GAME: "mini-game",
 
   // RECOMMENDED
   PROD_RECOMMEND_SYSTEM: "prod-recommend-system",

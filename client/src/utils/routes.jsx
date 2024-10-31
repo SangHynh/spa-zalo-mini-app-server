@@ -16,6 +16,7 @@ import {
   Images,
   VoucherManagement,
   RecommendSystem,
+  MiniGame,
 } from "../pages";
 import CreateProduct from "../pages/products/CreateProduct";
 import EditProduct from "../pages/products/EditProducts";
@@ -90,6 +91,10 @@ const routes = [
           {
             path: path.RECOMMEND_SYSTEM,
             element: <RecommendSystem />,
+          },
+          {
+            path: path.MINI_GAME,
+            element: <MiniGame />,
           },
           {
             path: path.RANK_POINT,
