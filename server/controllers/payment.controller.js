@@ -174,6 +174,7 @@ class PaymentController {
                 discountApplied,
                 discountAmount,
                 finalAmount,
+                address: data.address,
             });
 
             // Tạo order
