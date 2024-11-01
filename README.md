@@ -28,6 +28,15 @@ Run server: `npm run dev`
     - **Secret Key:** (vnp_HashSecret) đã có
     - **Redirect path:** `/payment-result`
 
+### Tài khoản test thanh toán
+|    Key   |       Value           |
+|-----------------|-------------------------|
+| **Ngân hàng**  | NCB                      |
+| **Số thẻ**      | 9704 1985 2619 1432 198 |
+| **Tên chủ thẻ** | NGUYEN VAN A            |
+| **Ngày phát hành** | 07/15                 |
+| **Mật khẩu OTP** | 123456                  |
+
 ### Kiểm tra đã cấu hình IPN Url chưa (Nếu thanh toán bị lỗi không chuyển đến trang thanh toán thành công)
 - Truy cập website để làm theo chỉ dẫn [Hướng dẫn](https://vnpay.js.org/ipn/config-ipn)
 
