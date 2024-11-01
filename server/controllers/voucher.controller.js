@@ -57,7 +57,43 @@ class VoucherController {
 
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            const voucherIds = user.vouchers.map(v => v.voucherId);
+            const activeVouchers = user.vouchers
+            .filter(v => v.usageLimit > 0)
+            .map(v => ({ voucherId: v.voucherId, usageLimit: v.usageLimit }));
+
+            if (activeVouchers.length === 0) {
+                return res.status(200).json([]);
+            }
+
+            const vouchers = await Voucher.find({ _id: { $in: activeVouchers.map(v => v.voucherId) } });
+
+            const vouchersWithUsageLimit = vouchers.map(voucher => {
+                const userVoucher = activeVouchers.find(v => v.voucherId.equals(voucher._id));
+                return {
+                    ...voucher.toObject(),
+                    usageLimit: userVoucher ? userVoucher.usageLimit : null,
+                };
+            });
+    
+            return res.status(200).json(vouchersWithUsageLimit);
+        } catch (error) {
+            return res.status(500).json({
+                error: error.message || error,
+                message: 'An error occurred'
+            });
+        }
+    }
+
+    // GET USER INVALID VOUCHERS
+    async getUserInvalidVouchers(req, res) {
+        try {
+            const user = await User.findById(req.payload.aud)
+
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const voucherIds = user.vouchers
+                .filter(v => v.usageLimit <= 0) 
+                .map(v => v.voucherId);
 
             if (!voucherIds || voucherIds.length === 0) {
                 return res.status(200).json([]);

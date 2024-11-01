@@ -257,27 +257,27 @@ class PaymentController {
                 const appConfig = await AppConfig.findOne()
                 const user = await User.findById(order.customerId);
                 if (!user) return res.status(404).json({ message: "User not found" });
+
+                // CẬP NHẬT ĐIỂM
                 if (appConfig) {
                     const sortedOrderPoints = appConfig.orderPoints.sort((a, b) => b.price - a.price);
                     for (let pointLevel of sortedOrderPoints) {
-                        console.log(pointLevel)
                         if (order.finalAmount >= pointLevel.price) {
 
                             user.points += pointLevel.minPoints;
                             user.rankPoints += pointLevel.minPoints;
 
-                            if (order.voucherId && order.discountApplied) {
-                                const existingVoucher = user.vouchers.find(v => v.voucherId.toString() === order.voucherId);
-
-                                if (existingVoucher && existingVoucher.usageLimit > 0) {
-                                    existingVoucher.usageLimit -= 1;
-                                }
-                            }
-
-                            await user.save({ validateBeforeSave: false })
-
                             break;
                         }
+                    }
+                }
+
+                // CẬP NHẬT VOUCHER
+                if (order.voucherId && order.discountApplied) {
+                    const existingVoucherIndex = user.vouchers.findIndex(v => v.voucherId.toString() === order.voucherId.toString());
+                
+                    if (existingVoucherIndex !== -1 && user.vouchers[existingVoucherIndex].usageLimit > 0) {
+                        user.vouchers[existingVoucherIndex].usageLimit -= 1;
                     }
                 }
 
@@ -289,8 +289,9 @@ class PaymentController {
                             cartItem.variantId?.toString() === productOrder.variantId?.toString()
                         )
                     );
-                    await user.save({ validateBeforeSave: false });
                 }
+                
+                await user.save({ validateBeforeSave: false });
 
                 // TÍNH TIỀN HOA HỒNG
                 const commissionResult = await calculateReferralCommission(order, order.customerId);
@@ -303,6 +304,7 @@ class PaymentController {
 
             return res.status(200).json(updatedOrder);
         } catch (error) {
+            console.log(error.message)
             return res.status(500).json(error.message);
         }
     }
