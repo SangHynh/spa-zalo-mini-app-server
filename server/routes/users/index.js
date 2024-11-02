@@ -37,5 +37,6 @@ router.delete('/address/:addressId', verifyAccessToken, userController.removeUse
 // REFERRAL ROUTES
 router.get('/referral-info/:referralCode', referralController.getReferralInfo);
 router.get('/register-page/:referralCode', referralController.getRegisterPage); // chuyển đến trang đăng ký
+router.post('/referral-history', referralController.getChildReferralHistoryByParent);
 
 module.exports = router;

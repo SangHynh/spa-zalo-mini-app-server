@@ -1,5 +1,6 @@
 const AppConfig = require("../models/appconfig.model");
 const Rank = require("../models/rank.model");
+const ReferralHistory = require("../models/referralhistory.model");
 const User = require("../models/user.model");
 
 async function calculateReferralCommission(order, customerId) {
@@ -40,6 +41,19 @@ async function calculateReferralCommission(order, customerId) {
 
                         // Lưu user cấp trên sau khi cộng hoa hồng
                         await refUser.save({ validateBeforeSave: false });
+
+                        const history = new ReferralHistory({
+                            userId: customerId,
+                            childId: refUser._id,
+                            childReferralCode: refUser.referralCode,
+                            childName: refUser.name,
+                            childPhone: refUser.phone || '',
+                            childAvatar: refUser.avatar,
+                            earnedAmount: userCommissionAmount,
+                        });
+
+                        // Lưu lịch sử hoa hồng
+                        await history.save();
                     }
                 }
             }

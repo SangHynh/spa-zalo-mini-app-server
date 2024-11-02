@@ -1,3 +1,4 @@
+const ReferralHistory = require("../models/referralhistory.model");
 const Users = require("../models/user.model");
 
 // Tìm thông tin tiếp thị liên kết người dùng theo referralCode và trả về cha và các con gần nhất và tổng số con cháu
@@ -48,6 +49,25 @@ const getReferralInfo = async (req, res) => {
     // Tổng số tất cả con cháu (bao gồm cả các cấp con cháu)
     const totalDescendants = allDescendants.length;
 
+    const descendantsWithEarnings = await Promise.all(immediateDescendants.map(async (child) => {
+      // Tính tổng số tiền child đã kiếm được cho user
+      const totalEarned = await ReferralHistory.aggregate([
+        { $match: { userId: user._id, childId: child._id } },
+        { $group: { _id: null, total: { $sum: "$earnedAmount" } } }
+      ]);
+
+      return {
+        userId: child._id.toString(),
+        zaloId: child.zaloId,
+        name: child.name,
+        membershipTier: child.membershipTier,
+        rankColor: child.rankColor,
+        referralCode: child.referralCode,
+        referralInfo: child.referralInfo,
+        totalEarned: totalEarned.length > 0 ? totalEarned[0].total : 0
+      };
+    }));
+
     // Trả về thông tin người dùng, tổng số con cháu và danh sách các con gần nhất
     return res.status(200).json({
       ancestor: ancestor,
@@ -71,14 +91,7 @@ const getReferralInfo = async (req, res) => {
         referralInfo: user.referralInfo,
       },
       totalDescendants: totalDescendants, // tổng số tất cả con cháu
-      descendants: immediateDescendants.map((child) => ({
-        zaloId: child.zaloId,
-        name: child.name,
-        membershipTier: child.membershipTier,
-        rankColor: child.rankColor,
-        referralCode: child.referralCode,
-        referralInfo: child.referralInfo,
-      })), // danh sách con cháu giới thiệu gần nhất
+      descendants: descendantsWithEarnings // danh sách con cháu giới thiệu gần nhất
     });
   } catch (error) {
     return res.status(500).json({
@@ -106,4 +119,37 @@ const getRegisterPage = async (req, res) => {
   }
 };
 
-module.exports = { getReferralInfo, getRegisterPage };
+// Lịch sử kiếm tiền cho user giới thiệu
+const getChildReferralHistoryByParent = async (req, res) => {
+  try {
+    const { userId, childId } = req.body;
+
+    if (!userId || !childId) {
+      return res.status(400).json({ message: "User and child are required" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const history = await ReferralHistory.find({ userId, childId })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalRecords = await ReferralHistory.countDocuments({ userId, childId });
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    return res.status(200).json({
+      history,
+      currentPage: page,
+      totalPages,
+      totalRecords,
+    });
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+}
+
+module.exports = { getReferralInfo, getRegisterPage, getChildReferralHistoryByParent };
