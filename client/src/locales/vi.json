@@ -39,6 +39,7 @@
   "booking-mgmt": "Quản lý đặt lịch",
   "phone": "Số điện thoại",
   "points": "Điểm tích lũy",
+  "rankPoints": "Hạng điểm",
   "gender": "Giới tính",
   "cumulative-points": "Điểm tích lũy theo thời gian",
   "age": "Tuổi",
@@ -226,5 +227,7 @@
   "refresh-rank": "Cập Nhật Lại Hạng",
   "mini-game": "Mini Game",
   "play-count": "Số lượt chơi",
-  "increase-play-config": "Cấu hình tăng lượt chơi"
+  "increase-play-config": "Cấu hình tăng lượt chơi",
+  "use-for-earn": "Dùng để đổi thưởng",
+  "use-for-rank": "Dùng để thăng hạng"
 }

@@ -164,7 +164,7 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              minWidth: "300px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
@@ -175,13 +175,35 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              minWidth: "300px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
             className="relative"
           >
             {row.customerId?.phone}
+          </TableCell>
+          <TableCell
+            align="center"
+            sx={{
+              minWidth: "200px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            <Chip
+              label={row.paymentStatus}
+              color={
+                row.paymentStatus === "pending"
+                  ? "primary"
+                  : row.paymentStatus === "cancelled"
+                  ? "error"
+                  : row.paymentStatus === "completed"
+                  ? "success"
+                  : "default"
+              }
+            />
           </TableCell>
           <TableCell
             align="right"
@@ -258,35 +280,13 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              minWidth: "300px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
             className="relative"
           >
             {row.paymentMethod}
-          </TableCell>
-          <TableCell
-            align="center"
-            sx={{
-              minWidth: "200px",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-            className="relative"
-          >
-            <Chip
-              label={row.paymentStatus}
-              color={
-                row.paymentStatus === "pending"
-                  ? "primary"
-                  : row.paymentStatus === "cancelled"
-                  ? "error"
-                  : row.paymentStatus === "completed"
-                  ? "success"
-                  : "default"
-              }
-            />
           </TableCell>
           <TableCell
             component="th"
@@ -302,17 +302,6 @@ function Row(props) {
             onClick={() => handleCopy(row.transactionId)}
           >
             {row.transactionId}
-          </TableCell>
-          <TableCell
-            align="left"
-            sx={{
-              minWidth: "300px",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-            className="relative"
-          >
-            {row.remarks}
           </TableCell>
           <TableCell
             component="th"
@@ -580,6 +569,13 @@ const OrderTable = ({ searchTerm, status }) => {
               </TableCell>
               <TableCell
                 align="center"
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("payment-status")}
+              </TableCell>
+              <TableCell
+                align="center"
                 sx={{ fontWeight: "bold", minWidth: "120px" }}
                 className="relative dark:text-black"
               >
@@ -587,21 +583,21 @@ const OrderTable = ({ searchTerm, status }) => {
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 {t("price")}
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "250px" }}
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 {t("discount-applied")}
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 {t("discount-amount")}
@@ -622,24 +618,10 @@ const OrderTable = ({ searchTerm, status }) => {
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "200px" }}
-                className="relative dark:text-black"
-              >
-                {t("payment-status")}
-              </TableCell>
-              <TableCell
-                align="center"
                 sx={{ fontWeight: "bold", minWidth: "100px" }}
                 className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("transaction-id")}
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", minWidth: "100px" }}
-                className="right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
-              >
-                {t("remarks")}
               </TableCell>
               <TableCell
                 align="center"

@@ -30,6 +30,14 @@ export const apiUpdateAllUserRank = () =>
     method: "PUT",
   });
 
+// PUT RANK { userId, rankPoints, points }
+export const apiUpdateUserPoints = (data) =>
+  axios({
+    url: `/api/ranks/users/points`,
+    method: "PUT",
+    data
+  });
+
 // DELETE RANK
 export const apiDeleteRank = (rankId) =>
   axios({

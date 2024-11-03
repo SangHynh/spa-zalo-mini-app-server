@@ -7,6 +7,12 @@ export const apiGetCustomers = (page, limit, keyword) =>
     method: "GET",
   });
 
+export const apiGetCustomer = (userId) =>
+  axios({
+    url: `/api/users/${userId}`,
+    method: "GET",
+  });
+
 export const apiCreateCustomers = (formData) =>
   axios({
     url: "/api/customers/",

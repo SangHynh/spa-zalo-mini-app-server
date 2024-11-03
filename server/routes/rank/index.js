@@ -15,6 +15,7 @@ router.post("/", verifyAccessToken, RankController.createRank);
 // UPDATE
 router.put("/:rankId", verifyAccessToken, RankController.updateRank);
 router.put("/users/apply-all", verifyAccessToken, RankController.updateAllUsersRank);
+router.put("/users/points", verifyAccessToken, RankController.updateUserPoints);
 
 // DELETE
 router.delete("/:rankId", verifyAccessToken, RankController.deleteRank);

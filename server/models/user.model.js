@@ -63,7 +63,8 @@ const userSchema = new mongoose.Schema(
     }],
     rankPoints: { type: Number, default: 0 },
     amounts: { type: Number, default: 0 },
-    rankColor: { type: String, default: "#000000" }
+    rankColor: { type: String, default: "#000000" },
+    available: { type: Boolean, default: true }
   }, {
   timestamps: true
 });

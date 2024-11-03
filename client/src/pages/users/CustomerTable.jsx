@@ -13,19 +13,53 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Chip, ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid2, ImageList, ImageListItem, Modal, Slide, Stack, TextField, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { apiGetCustomers } from "../../apis/users";
+import { apiGetCustomer, apiGetCustomers } from "../../apis/users";
+import { apiGetRanks, apiUpdateUserPoints } from "../../apis/rank";
+import Swal from "sweetalert2";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function Row(props) {
   const { row } = props;
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const [ranks, setRanks] = useState([]);
+  const [currentUserPoints, setCurrentUserPoints] = useState(0);
+  const [currentUserRankPoints, setCurrentUserRankPoints] = useState(0);
+  const [currentUserRank, setCurrentUserRank] = useState('');
+  const [currentUserRankColor, setCurrentUserRankColor] = useState('');
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const fetchRanks = async () => {
+      try {
+        const response = await apiGetRanks();
+  
+        if (response.status === 200) {
+          const sortedRanks = response.data.sort((a, b) => b.minPoints - a.minPoints);
+          setRanks(sortedRanks);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
+    fetchRanks();
+  }, [])
+
+  const handleClose = () => setOpenModal(false);
 
   const handleCopy = (text) => {
     navigator.clipboard
@@ -37,6 +71,68 @@ function Row(props) {
         toast.success("Copy thất bại");
       });
   };
+
+  const handleOpen = async (userId) => {
+    try {
+      setSelectedUserId(userId);
+
+      const response = await apiGetCustomer(userId);
+
+      if (response.status === 200) {
+        setSelectedUser(response.data);
+        setCurrentUserPoints(response.data.points);
+        setCurrentUserRankPoints(response.data.rankPoints);
+        setCurrentUserRank(response.data.membershipTier);
+        setCurrentUserRankColor(response.data.rankColor);
+        setOpenModal(true);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleRankPointsChange = (event) => {
+    const newRankPoints = event.target.value;
+    setCurrentUserRankPoints(newRankPoints);
+  
+    const matchedRank = ranks.find((rank) => newRankPoints >= rank.minPoints);
+  
+    if (matchedRank) {
+      setCurrentUserRank(matchedRank.tier);
+      setCurrentUserRankColor(matchedRank.color);
+    }
+  };
+  
+  const handleUpdateUserPoints = async () => {
+    if (
+      currentUserRankPoints !== selectedUser.rankPoints ||
+      currentUserPoints !== selectedUser.points
+    ) {
+      try {
+        // Gửi yêu cầu cập nhật chỉ khi có sự thay đổi
+        const response = await apiUpdateUserPoints({
+          userId: selectedUserId,
+          rankPoints: currentUserRankPoints,
+          points: currentUserPoints,
+        });
+  
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: `${t("update-success")}!`,
+            showConfirmButton: true,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    } else {
+      toast.info(t("no-change"));
+    }
+  };
+  
 
   return (
     <>
@@ -110,6 +206,28 @@ function Row(props) {
             {row.phone}
           </TableCell>
           <TableCell
+            align="center"
+            sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            <Chip label={row.membershipTier} variant="outlined" sx={{ color: (row.rankColor), borderColor: (row.rankColor) }} />
+          </TableCell>
+          <TableCell
+            align="right"
+            sx={{
+              minWidth: "100px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {row.rankPoints}
+          </TableCell>
+          <TableCell
             align="right"
             sx={{
               minWidth: "100px",
@@ -131,39 +249,6 @@ function Row(props) {
           >
             {row.gender}
           </TableCell>
-          <TableCell
-            align="center"
-            sx={{
-              minWidth: "100px",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-            className="relative"
-          >
-            <Chip label={row.membershipTier} variant="outlined" sx={{ color: (row.rankColor), borderColor: (row.rankColor) }} />
-          </TableCell>
-          {/* <TableCell
-              align="right"
-              sx={{
-                minWidth: "150px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.skinType}
-            </TableCell>
-            <TableCell
-              align="right"
-              sx={{
-                minWidth: "150px",
-                overflowX: "auto",
-                whiteSpace: "nowrap",
-              }}
-              className="relative"
-            >
-              {row.hairType}
-            </TableCell> */}
           <TableCell
             component="th"
             scope="row"
@@ -230,7 +315,7 @@ function Row(props) {
           >
             <div className="flex gap-2">
               <Tooltip title={t("edit")}>
-                <IconButton color="primary">
+                <IconButton color="primary" onClick={() => handleOpen(row._id)}>
                   <EditIcon />
                 </IconButton>
               </Tooltip>
@@ -520,6 +605,61 @@ function Row(props) {
             </Collapse>
           </TableCell>
         </TableRow>
+
+        <Dialog
+          open={openModal}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>
+            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
+              <div>{selectedUser?.name}</div>
+              <Chip label={currentUserRank} variant="outlined" sx={{ color: (currentUserRankColor), borderColor: (currentUserRankColor) }} />
+            </Stack>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              <Grid2 container spacing={2}>
+                <Grid2 size={6}>
+                  <TextField
+                    id="rankPoints"
+                    label={`${t('rankPoints')} - ${t('use-for-rank')}`}
+                    type="number"
+                    variant="standard"
+                    value={currentUserRankPoints}
+                    onChange={handleRankPointsChange}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </Grid2>
+                <Grid2 size={6}>
+                  <TextField
+                    id="points"
+                    label={`${t('points')} - ${t('use-for-earn')}`}
+                    type="number"
+                    variant="standard"
+                    value={currentUserPoints}
+                    onChange={(e) => setCurrentUserPoints(e.target.value)}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </Grid2>
+              </Grid2>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="success" onClick={handleUpdateUserPoints}>{t('update')}</Button>
+            <Button variant="outlined" color="warning" onClick={handleClose}>{t('cancel')}</Button>
+          </DialogActions>
+        </Dialog>
       </React.Fragment>
     </>
   );
@@ -590,7 +730,7 @@ const CustomerTable = ({ searchTerm }) => {
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "300px" }}
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
                 className="relative dark:text-black"
               >
                 {t("customer-name")}
@@ -604,7 +744,21 @@ const CustomerTable = ({ searchTerm }) => {
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                sx={{ fontWeight: "bold", minWidth: "200px" }}
+                className="relative dark:text-black"
+              >
+                {t("membership-tier")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
+                className="relative dark:text-black"
+              >
+                {t("rankPoints")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "100px" }}
                 className="relative dark:text-black"
               >
                 {t("points")}
@@ -616,34 +770,6 @@ const CustomerTable = ({ searchTerm }) => {
               >
                 {t("gender")}
               </TableCell>
-              <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", minWidth: "200px" }}
-                className="relative dark:text-black"
-              >
-                {t("membership-tier")}
-              </TableCell>
-              {/* <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", maxWidth: "100px" }}
-                className="relative dark:text-black"
-              >
-                {t("age")}
-              </TableCell> */}
-              {/* <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", minWidth: "150px" }}
-                className="relative dark:text-black"
-              >
-                {t("skin-style")}
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{ fontWeight: "bold", minWidth: "150px" }}
-                className="relative dark:text-black"
-              >
-                {t("hair-style")}
-              </TableCell> */}
               <TableCell
                 align="center"
                 sx={{ fontWeight: "bold", minWidth: "120px" }}

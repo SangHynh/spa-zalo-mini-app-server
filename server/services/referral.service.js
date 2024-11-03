@@ -43,12 +43,12 @@ async function calculateReferralCommission(order, customerId) {
                         await refUser.save({ validateBeforeSave: false });
 
                         const history = new ReferralHistory({
-                            userId: customerId,
-                            childId: refUser._id,
-                            childReferralCode: refUser.referralCode,
-                            childName: refUser.name,
-                            childPhone: refUser.phone || '',
-                            childAvatar: refUser.avatar,
+                            userId: refUser._id,
+                            childId: customerId,
+                            childReferralCode: user.referralCode,
+                            childName: user.name,
+                            childPhone: user.phone || '',
+                            childAvatar: user.avatar,
                             earnedAmount: userCommissionAmount,
                         });
 

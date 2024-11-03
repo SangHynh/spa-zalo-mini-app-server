@@ -112,7 +112,7 @@ function Row(props) {
             component="th"
             scope="row"
             sx={{
-              maxWidth: "100px",
+              maxWidth: "150px",
               whiteSpace: "nowrap",
               // overflowX: "auto",
               overflow: "hidden",
@@ -127,7 +127,7 @@ function Row(props) {
             component="th"
             scope="row"
             sx={{
-              maxWidth: "100px",
+              maxWidth: "150px",
               whiteSpace: "nowrap",
               // overflowX: "auto",
               overflow: "hidden",
@@ -141,7 +141,7 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              minWidth: "200px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
@@ -152,7 +152,7 @@ function Row(props) {
           <TableCell
             align="left"
             sx={{
-              minWidth: "200px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
@@ -161,28 +161,9 @@ function Row(props) {
             {row.customer?.phone}
           </TableCell>
           <TableCell
-            align="right"
-            sx={{
-              minWidth: "200px",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-            className="relative"
-          >
-            {new Date(row.date).toLocaleString("vi-VN", {
-              timeZone: "Asia/Ho_Chi_Minh",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false, // 24-hour format
-            })}
-          </TableCell>
-          <TableCell
             align="center"
             sx={{
-              minWidth: "200px",
+              minWidth: "150px",
               overflowX: "auto",
               whiteSpace: "nowrap",
             }}
@@ -203,7 +184,25 @@ function Row(props) {
               }
             />
           </TableCell>
-
+          <TableCell
+            align="right"
+            sx={{
+              minWidth: "150px",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+            className="relative"
+          >
+            {new Date(row.date).toLocaleString("vi-VN", {
+              timeZone: "Asia/Ho_Chi_Minh",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false, // 24-hour format
+            })}
+          </TableCell>
           <TableCell
             align="right"
             sx={{ minWidth: "100px" }}
@@ -425,38 +424,31 @@ const BookingTable = ({ searchTerm, status, sortDate }) => {
               <TableCell className="relative" />
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", maxWidth: "120px" }}
+                sx={{ fontWeight: "bold", maxWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 Id
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "120px" }}
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 {t("customer-id")}
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "250px" }}
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
                 {t("customer-name")}
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ fontWeight: "bold", minWidth: "300px" }}
-                className="relative dark:text-black"
-              >
-                {t("phone")}
-              </TableCell>
-              <TableCell
-                align="center"
                 sx={{ fontWeight: "bold", minWidth: "150px" }}
                 className="relative dark:text-black"
               >
-                {t("booking-date")}
+                {t("phone")}
               </TableCell>
               <TableCell
                 align="center"
@@ -464,6 +456,13 @@ const BookingTable = ({ searchTerm, status, sortDate }) => {
                 className="sticky right-0 z-10 bg-gray-400 dark:bg-gray-100 dark:text-black"
               >
                 {t("status")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold", minWidth: "150px" }}
+                className="relative dark:text-black"
+              >
+                {t("booking-date")}
               </TableCell>
               <TableCell
                 align="center"
