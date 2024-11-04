@@ -2,9 +2,15 @@ import {
   Box,
   Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid2,
   Modal,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -23,6 +29,7 @@ import Swal from "sweetalert2";
 import { apiUpdateMultipleSuggestionScores } from "../../../apis/recommend-system";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { toast } from "react-toastify";
+import { Item } from "../../../utils/constants";
 
 const UserCate = () => {
   const { t } = useTranslation();
@@ -467,58 +474,53 @@ const UserCate = () => {
         </Button>
       </Box>
 
-      {/* Modal */}
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          component={Paper}
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            padding: 4,
-            boxShadow: 24,
-          }}
-        >
-          <Typography variant="h6" component="h2">
-            {t("user")}
-          </Typography>
-          <Typography sx={{ mt: 2 }}>
-            <span className="font-bold">{t("user-id")} : </span>
-            {selectedUser?._id}
-          </Typography>
-          <Typography id="modal-description" sx={{ mt: 1.5 }}>
-            <span className="font-bold">{t("user-name")} : </span>
-            {selectedUser?.name}
-          </Typography>
-          <Typography variant="h6" component="h2" sx={{ mt: 2 }}>
-            {t("exist-cate")}
-          </Typography>
-          <Typography sx={{ mt: 2, ml: 2 }}>
-            {Array.isArray(selectedUser?.suggestions) &&
-            selectedUser.suggestions.length > 0 ? (
-              selectedUser.suggestions.map((suggestion) => (
-                <div key={suggestion._id} className="my-2">
-                  {suggestion.categoryId} - {suggestion.suggestedScore}
-                </div>
-              ))
-            ) : (
-              <div>{t("empty")}.</div>
-            )}
-          </Typography>
-          <div className="w-full flex justify-end">
-            <Button
-              onClick={handleClose}
-              sx={{ mt: 2 }}
-              variant="outlined"
-              color="warning"
-            >
-              {t("close")}
-            </Button>
-          </div>
-        </Box>
-      </Modal>
+      {/* Dialog */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth='sm'
+        fullWidth={true}
+      >
+        <DialogTitle id="responsive-dialog-title">
+          <Stack>
+            <Typography variant="h5" sx={{ mt: 2 }}>
+              {selectedUser?.name}
+            </Typography>
+            <Typography sx={{ mt: 2 }}>
+              ID: {selectedUser?._id}
+            </Typography>
+          </Stack>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <Typography variant="h6" component="h2">
+              {t("exist-cate")}
+            </Typography>
+            <Stack spacing={2} className="mt-2">
+              {Array.isArray(selectedUser?.suggestions) &&
+                selectedUser.suggestions.length > 0 ? (
+                selectedUser.suggestions.map((suggestion) => (
+                  <Item style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>ID: {suggestion._id}</span>
+                    <span>{suggestion.suggestedScore}</span>
+                  </Item>
+                ))
+              ) : (
+                <Typography align="center">{t("empty")}.</Typography>
+              )}
+            </Stack>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            color="warning"
+          >
+            {t("close")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

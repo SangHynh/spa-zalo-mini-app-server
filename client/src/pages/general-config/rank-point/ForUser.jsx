@@ -31,6 +31,7 @@ import {
 } from "../../../apis/rank";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import RankActionDialog from "./RankActionDialog";
 
 const ForUser = () => {
   const { t } = useTranslation();
@@ -43,6 +44,7 @@ const ForUser = () => {
   const [benefits, setBenefits] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
   const [rankColor, setRankColor] = useState("");
+  const [open, setOpen] = useState(false);
 
   const handleEditBtn = (row) => {
     setIsEdit(true);
@@ -54,6 +56,7 @@ const ForUser = () => {
     setCommissionPercent(row.commissionPercent);
     setBenefits(row.benefits);
     setOriginalRow(row); // Save original row
+    setOpen(true);
   };
 
   const handleCreateBtn = () => {
@@ -66,15 +69,24 @@ const ForUser = () => {
     setCommissionPercent(0);
     setBenefits([]);
     setOriginalRow(null);
+    setOpen(true);
   };
 
   const handleCancelEdit = () => {
     setIsEdit(false);
+    setOpen(false);
   };
 
   const handleCancelCreate = () => {
     setIsCreate(false);
+    setOpen(false);
   };
+
+  const handleClose = () => {
+    setIsEdit(false);
+    setIsCreate(false);
+    setOpen(false);
+  }
 
   const handleUpdate = async () => {
     try {
@@ -231,9 +243,9 @@ const ForUser = () => {
         {t("create")}
       </Button>
       <Grid2 container spacing={4}>
-        <Grid2 size={7}>
+        <Grid2 size={12}>
           <TableContainer component={Paper} className="border shadow-2xl">
-            <Table sx={{ minWidth: 700 }} aria-label="simple table">
+            <Table aria-label="simple table">
               <TableHead className="bg-gray-400 dark:bg-gray-100">
                 <TableRow>
                   <TableCell
@@ -289,7 +301,7 @@ const ForUser = () => {
                     <TableCell align="center" sx={{ width: "10%" }}>
                       {index + 1}
                     </TableCell>
-                    <TableCell component="th" scope="row" sx={{ width: "20%" }}>
+                    <TableCell component="th" scope="row" sx={{ width: "10%" }}>
                       {row.tier}
                     </TableCell>
                     <TableCell align="right" sx={{ width: "15%" }}>
@@ -333,199 +345,27 @@ const ForUser = () => {
             </Table>
           </TableContainer>
         </Grid2>
-        {isEdit && (
-          <Grid2 size={5}>
-            <Typography variant="h6" color="primary">
-              {t("edit")}
-            </Typography>
-            <Box className="mt-4">
-              <Grid2 container spacing={4}>
-                <TextField
-                  id="id"
-                  label="Id"
-                  variant="standard"
-                  fullWidth
-                  margin="dense"
-                  value={id}
-                  style={{ display: "none" }}
-                />
-                <Grid2 size={6}>
-                  <TextField
-                    id="rank"
-                    label={t("rank")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={rank}
-                    onChange={(e) => setRank(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="point"
-                    label={t("point")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={point}
-                    onChange={(e) => setPoint(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="commissionPercent"
-                    label={t("commission-percent")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={commissionPercent}
-                    onChange={(e) => setCommissionPercent(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="commissionColor"
-                    label={t("color")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={rankColor}
-                    onChange={(e) => setRankColor(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <FormControl fullWidth margin="dense" variant="standard">
-                    <InputLabel>{t("benefits")}</InputLabel>
-                    <Input
-                      id="ingredientUsageInstructions"
-                      multiline
-                      rows={3}
-                      value={benefits}
-                      onChange={(e) => setBenefits(e.target.value)}
-                    />
-                  </FormControl>
-                </Grid2>
-              </Grid2>
-              <Grid2
-                container
-                fullWidth
-                spacing={2}
-                sx={{ mt: 2, justifyContent: "flex-end" }}
-              >
-                <Grid2>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleUpdate}
-                  >
-                    {t("update")}
-                  </Button>
-                </Grid2>
-                <Grid2>
-                  <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleCancelEdit}
-                  >
-                    {t("cancel")}
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </Box>
-          </Grid2>
-        )}
-        {isCreate && (
-          <Grid2 size={5}>
-            <Typography variant="h6" color="secondary">
-              {t("create")}
-            </Typography>
-            <Box className="mt-4">
-              <Grid2 container spacing={4}>
-                <Grid2 size={6}>
-                  <TextField
-                    id="rank"
-                    label={t("rank")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={rank}
-                    onChange={(e) => setRank(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="point"
-                    label={t("point")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={point}
-                    onChange={(e) => setPoint(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="commissionPercent"
-                    label={t("commission-percent")}
-                    variant="standard"
-                    fullWidth
-                    margin="commissionPercent"
-                    value={commissionPercent}
-                    onChange={(e) => setCommissionPercent(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="commissionColor"
-                    label={t("color")}
-                    variant="standard"
-                    fullWidth
-                    margin="color"
-                    value={rankColor}
-                    onChange={(e) => setRankColor(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={12}>
-                  <FormControl fullWidth margin="dense" variant="standard">
-                    <InputLabel>{t("benefits")}</InputLabel>
-                    <Input
-                      id="ingredientUsageInstructions"
-                      multiline
-                      rows={3}
-                      value={benefits}
-                      onChange={(e) => setBenefits(e.target.value)}
-                    />
-                  </FormControl>
-                </Grid2>
-              </Grid2>
-              <Grid2
-                container
-                fullWidth
-                spacing={2}
-                sx={{ mt: 2, justifyContent: "flex-end" }}
-              >
-                <Grid2>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleCreate}
-                  >
-                    {t("create")}
-                  </Button>
-                </Grid2>
-                <Grid2>
-                  <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleCancelCreate}
-                  >
-                    {t("cancel")}
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </Box>
-          </Grid2>
-        )}
+        <RankActionDialog
+          open={open}
+          onClose={handleClose}
+          isEdit={isEdit}
+          isCreate={isCreate}
+          handleUpdate={handleUpdate}
+          handleCreate={handleCreate}
+          handleCancelEdit={handleCancelEdit}
+          handleCancelCreate={handleCancelCreate}
+          id={id}
+          rank={rank}
+          point={point}
+          commissionPercent={commissionPercent}
+          rankColor={rankColor}
+          benefits={benefits}
+          setRank={setRank}
+          setPoint={setPoint}
+          setCommissionPercent={setCommissionPercent}
+          setRankColor={setRankColor}
+          setBenefits={setBenefits}
+        />
       </Grid2>
     </Box>
   );

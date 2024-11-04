@@ -1,6 +1,62 @@
 const Minigame = require("../models/minigame.model");
 const User = require("../models/user.model");
 
+// Lấy danh sách người dùng kèm theo lượt chơi
+const getUsersPlayCount = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { keyword } = req.query;
+
+    const query = {};
+    if (keyword) {
+      const isObjectId = mongoose.Types.ObjectId.isValid(keyword);
+      query.$or = [
+        { name: { $regex: keyword, $options: 'i' } },
+        { phone: { $regex: keyword, $options: 'i' } }
+      ];
+      if (isObjectId) {
+        query.$or.push({ _id: new mongoose.Types.ObjectId(keyword) });
+      }
+    }
+
+    const users = await User.find(query)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const totalUsers = await User.countDocuments(query);
+
+    const userIds = users.map(user => user._id);
+    const minigameRecords = await Minigame.find({ userId: { $in: userIds } });
+
+    const playCountMap = {};
+    minigameRecords.forEach(record => {
+      playCountMap[record.userId] = {
+        playCount: record.playCount,
+        lastPlayed: record.lastPlayed
+      };
+    });
+
+    const usersWithPlayCount = users.map(user => ({
+      ...user,
+      playCount: playCountMap[user._id]?.playCount || 0,
+      lastPlayed: playCountMap[user._id]?.lastPlayed || null 
+    }));
+
+    return res.status(200).json({
+      totalUsers,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      users: usersWithPlayCount
+    });
+  } catch (err) {
+    res.status(500).json({ message: "An error occurred!", error: err.message });
+  }
+};
+
 // Lấy lượt chơi hiện tại của người dùng
 const getPlayCount = async (req, res) => {
   const userId = req.body.userId; // Nhận từ request body
@@ -103,13 +159,13 @@ const updatePlayCount = async (req, res) => {
       }
       minigame = new Minigame({
         userId: user._id,
-        playCount: 10 + bonusPlayCount,
+        playCount: bonusPlayCount,
         lastPlayed: Date.now(),
       });
       await minigame.save();
     }
     else {
-      minigame.playCount += bonusPlayCount;
+      minigame.playCount = bonusPlayCount;
       await minigame.save();
     }
     res.status(200).json({ message: "Play count updated successfully!", minigame });
@@ -122,5 +178,6 @@ module.exports = {
   getPlayCount,
   playMinigame,
   updatePoints,
-  updatePlayCount
+  updatePlayCount,
+  getUsersPlayCount
 };

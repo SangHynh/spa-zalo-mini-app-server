@@ -981,36 +981,26 @@ exports.configureProductToUser = async (req, res) => {
       return res.status(404).json({ message: "No products found" });
     }
 
+    const newConfigSuggestions = products.map(product => ({
+      id: product._id,
+      name: product.name,
+    }));
+
     // Lặp qua từng người dùng để cập nhật configSuggestions
     for (const user of users) {
       // Tìm kiếm cấu hình hiện tại của người dùng với type là "product"
       let configuration = await Configuration.findOne({ userId: user._id, type: "product" });
 
-      // Nếu không tìm thấy cấu hình, khởi tạo mới
-      if (!configuration) {
+       // Nếu không tìm thấy cấu hình, khởi tạo mới
+       if (!configuration) {
         configuration = new Configuration({
           userId: user._id,
-          type: "product",  // Gán giá trị type là "product"
-          configSuggestions: [],
+          type: "product",
+          configSuggestions: newConfigSuggestions, // Gán configSuggestions mới
         });
-      }
-
-      // Lặp qua các sản phẩm để thêm vào configSuggestions
-      for (const product of products) {
-        const { _id: productId, name: productName } = product;
-
-        // Kiểm tra xem sản phẩm đã tồn tại trong configSuggestions chưa
-        const existingSuggestion = configuration.configSuggestions.find(
-          (suggestion) => suggestion.id.toString() === productId.toString()
-        );
-
-        if (!existingSuggestion) {
-          // Nếu chưa tồn tại, thêm sản phẩm mới vào configSuggestions
-          configuration.configSuggestions.push({
-            id: productId,
-            name: productName,
-          });
-        }
+      } else {
+        // Nếu đã có cấu hình, thay thế configSuggestions với danh sách mới
+        configuration.configSuggestions = newConfigSuggestions;
       }
 
       // Lưu cập nhật vào cơ sở dữ liệu
@@ -1092,36 +1082,26 @@ exports.configureServiceToUser = async (req, res) => {
       return res.status(404).json({ message: "No services found" });
     }
 
+    const newConfigSuggestions = services.map(service => ({
+      id: service._id,
+      name: service.name,
+    }));
+
     // Lặp qua từng người dùng để cập nhật configSuggestions
     for (const user of users) {
       // Tìm kiếm cấu hình hiện tại của người dùng với type là "service"
       let configuration = await Configuration.findOne({ userId: user._id, type: "service" });
 
-      // Nếu không tìm thấy cấu hình, khởi tạo mới
-      if (!configuration) {
+       // Nếu không tìm thấy cấu hình, khởi tạo mới
+       if (!configuration) {
         configuration = new Configuration({
           userId: user._id,
-          type: "service",  // Gán giá trị type là "service"
-          configSuggestions: [],
+          type: "service",
+          configSuggestions: newConfigSuggestions, // Gán configSuggestions mới
         });
-      }
-
-      // Lặp qua các sản phẩm để thêm vào configSuggestions
-      for (const service of services) {
-        const { _id: serviceId, name: serviceName } = service;
-
-        // Kiểm tra xem sản phẩm đã tồn tại trong configSuggestions chưa
-        const existingSuggestion = configuration.configSuggestions.find(
-          (suggestion) => suggestion.id.toString() === serviceId.toString()
-        );
-
-        if (!existingSuggestion) {
-          // Nếu chưa tồn tại, thêm sản phẩm mới vào configSuggestions
-          configuration.configSuggestions.push({
-            id: serviceId,
-            name: serviceName,
-          });
-        }
+      } else {
+        // Nếu đã có cấu hình, thay thế configSuggestions với danh sách mới
+        configuration.configSuggestions = newConfigSuggestions;
       }
 
       // Lưu cập nhật vào cơ sở dữ liệu

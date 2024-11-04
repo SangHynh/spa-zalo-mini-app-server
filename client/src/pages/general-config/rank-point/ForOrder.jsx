@@ -30,6 +30,7 @@ import {
 } from "../../../apis/config";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import OrderActionDialog from "./OrderActionDialog";
 
 const ForOrder = () => {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ const ForOrder = () => {
   const [point, setPoint] = useState("");
   const [originalRow, setOriginalRow] = useState(null);
   const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrderPoints = async () => {
@@ -66,6 +68,7 @@ const ForOrder = () => {
     setPrice(row.price);
     setPoint(row.minPoints);
     setOriginalRow(row); // Save original row
+    setOpen(true);
   };
 
   const handleCreateBtn = () => {
@@ -75,15 +78,24 @@ const ForOrder = () => {
     setPrice("");
     setPoint(0);
     setOriginalRow(null);
+    setOpen(true);
   };
 
   const handleCancelEdit = () => {
     setIsEdit(false);
+    setOpen(false);
   };
 
   const handleCancelCreate = () => {
     setIsCreate(false);
+    setOpen(false);
   };
+
+  const handleClose = () => {
+    setIsEdit(false);
+    setIsCreate(false);
+    setOpen(false);
+  }
 
   const handleUpdate = async () => {
     try {
@@ -211,9 +223,9 @@ const ForOrder = () => {
         {t("create")}
       </Button>
       <Grid2 container spacing={4}>
-        <Grid2 size={7}>
+        <Grid2 size={12}>
           <TableContainer component={Paper} className="border shadow-2xl">
-            <Table sx={{ minWidth: 700 }} aria-label="simple table">
+            <Table aria-label="simple table">
               <TableHead className="bg-gray-400 dark:bg-gray-100">
                 <TableRow>
                   <TableCell
@@ -291,131 +303,21 @@ const ForOrder = () => {
             </Table>
           </TableContainer>
         </Grid2>
-        {isEdit && (
-          <Grid2 size={5}>
-            <Typography variant="h6" color="primary">
-              {t("edit")}
-            </Typography>
-            <Box className="mt-4">
-              <Grid2 container spacing={4}>
-                <TextField
-                  id="id"
-                  label="Id"
-                  variant="standard"
-                  fullWidth
-                  margin="dense"
-                  value={id}
-                  style={{ display: "none" }}
-                />
-                <Grid2 size={6}>
-                  <TextField
-                    id="price"
-                    label={t("price")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="point"
-                    label={t("point")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={point}
-                    onChange={(e) => setPoint(e.target.value)}
-                  />
-                </Grid2>
-              </Grid2>
-              <Grid2
-                container
-                fullWidth
-                spacing={2}
-                sx={{ mt: 2, justifyContent: "flex-end" }}
-              >
-                <Grid2>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleUpdate}
-                  >
-                    {t("update")}
-                  </Button>
-                </Grid2>
-                <Grid2>
-                  <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleCancelEdit}
-                  >
-                    {t("cancel")}
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </Box>
-          </Grid2>
-        )}
-        {isCreate && (
-          <Grid2 size={5}>
-            <Typography variant="h6" color="secondary">
-              {t("create")}
-            </Typography>
-            <Box className="mt-4">
-              <Grid2 container spacing={4}>
-                <Grid2 size={6}>
-                  <TextField
-                    id="price"
-                    label={t("price")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                  />
-                </Grid2>
-                <Grid2 size={6}>
-                  <TextField
-                    id="point"
-                    label={t("point")}
-                    variant="standard"
-                    fullWidth
-                    margin="dense"
-                    value={point}
-                    onChange={(e) => setPoint(e.target.value)}
-                  />
-                </Grid2>
-              </Grid2>
-              <Grid2
-                container
-                fullWidth
-                spacing={2}
-                sx={{ mt: 2, justifyContent: "flex-end" }}
-              >
-                <Grid2>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleCreate}
-                  >
-                    {t("create")}
-                  </Button>
-                </Grid2>
-                <Grid2>
-                  <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleCancelCreate}
-                  >
-                    {t("cancel")}
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </Box>
-          </Grid2>
-        )}
+        <OrderActionDialog
+          open={open}
+          onClose={handleClose}
+          isEdit={isEdit}
+          isCreate={isCreate}
+          handleUpdate={handleUpdate}
+          handleCreate={handleCreate}
+          handleCancelEdit={handleCancelEdit}
+          handleCancelCreate={handleCancelCreate}
+          id={id}
+          price={price}
+          point={point}
+          setPrice={setPrice}
+          setPoint={setPoint}
+        />
       </Grid2>
     </Box>
   );

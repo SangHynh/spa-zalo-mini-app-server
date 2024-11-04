@@ -230,5 +230,6 @@
   "play-count": "Play Count",
   "increase-play-config": "Configure to increase play",
   "use-for-earn": "Use for earning",
-  "use-for-rank": "Use for updating tier"
+  "use-for-rank": "Use for updating tier",
+  "last-played": "Last played"
 }

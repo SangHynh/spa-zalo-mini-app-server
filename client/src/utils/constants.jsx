@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { Paper, styled } from "@mui/material";
 import path from "./path";
 import { RiDashboardLine } from "react-icons/ri";
 import { MdProductionQuantityLimits } from "react-icons/md";
@@ -188,3 +188,14 @@ export function stringAvatar(name) {
     children: initials.toUpperCase(),
   };
 }
+
+export const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));

@@ -10,3 +10,9 @@ export const apiUpdatePlayCount = (userId, playCount) =>
       playCount,
     },
   });
+
+export const apiGetUsersPlayCount = (page, limit, keyword) =>
+  axios({
+    url: `/api/minigame/users/play-count?page=${page}&limit=${limit}&keyword=${keyword}`,
+    method: "GET",
+  });

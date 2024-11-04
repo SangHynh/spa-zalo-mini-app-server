@@ -21,7 +21,7 @@ import Swal from "sweetalert2";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { toast } from "react-toastify";
 import { apiGetCustomers } from "../../apis/users";
-import { apiUpdatePlayCount } from "../../apis/minigame";
+import { apiGetUsersPlayCount, apiUpdatePlayCount } from "../../apis/minigame";
 
 const MiniGame = () => {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ const MiniGame = () => {
   // GET USERS
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await apiGetCustomers(
+      const response = await apiGetUsersPlayCount(
         currentPageUser,
         rowsPerPageUser,
         searchTermUser
@@ -162,7 +162,7 @@ const MiniGame = () => {
         </Grid2>
       </Grid2>
       <Grid2 container spacing={4}>
-        <Grid2 size={6}>
+        <Grid2 size={10}>
           <TableContainer component={Paper} className="border shadow-2xl">
             <Table>
               <TableHead className="sticky top-0 z-20 bg-gray-400 dark:bg-gray-100">
@@ -199,7 +199,19 @@ const MiniGame = () => {
                   >
                     {t("phone")}
                   </TableCell>
-                  <TableCell></TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ color: "black", fontWeight: "bold" }}
+                  >
+                    {t("play-count")}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ color: "black", fontWeight: "bold" }}
+                  >
+                    {t("last-played")}
+                  </TableCell>
+                  {/* <TableCell></TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -226,11 +238,23 @@ const MiniGame = () => {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row">
-                        {user._id}
+                        {user?._id}
                       </TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell
+                      <TableCell>{user?.name}</TableCell>
+                      <TableCell>{user?.phone}</TableCell>
+                      <TableCell>{user?.playCount}</TableCell>
+                      <TableCell>
+                        {new Date(user?.lastPlayed).toLocaleString("vi-VN", {
+                          timeZone: "Asia/Ho_Chi_Minh",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false, // 24-hour format
+                        })}
+                      </TableCell>
+                      {/* <TableCell
                         className="cursor-pointer"
                         onClick={(event) => {
                           event.stopPropagation();
@@ -238,7 +262,7 @@ const MiniGame = () => {
                         }}
                       >
                         <VisibilityIcon fontSize="small" />
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   );
                 })}
@@ -256,7 +280,7 @@ const MiniGame = () => {
             labelRowsPerPage={t("rows-per-page")}
           />
         </Grid2>
-        <Grid2 size={6}>
+        <Grid2 size={2}>
           <TextField
             id="playCount"
             label={t("play-count")}
