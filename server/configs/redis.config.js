@@ -3,7 +3,8 @@ const redis = require("redis");
 const client = redis.createClient({
   socket: {
     port: process.env.REDIS_PORT,
-    host: process.env.REDIS_HOST
+    host: process.env.REDIS_HOST,
+    tls: {}
   },
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PASSWORD
