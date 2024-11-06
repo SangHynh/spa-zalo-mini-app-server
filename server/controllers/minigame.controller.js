@@ -123,6 +123,7 @@ const playMinigame = async (req, res) => {
 const updatePoints = async (req, res) => {
   const userId = req.body.userId; // Nhận từ request body game
   const gamePoints = req.body.points; // Điểm trò chơi từ body
+  console.log(req.body);
   try {
     console.log(userId);
     
@@ -140,6 +141,7 @@ const updatePoints = async (req, res) => {
       points: user.points,
       rankPoints: user.rankPoints
     };
+    console.log(userInfo);
     res.status(200).json({ message: "Points updated successfully!", userInfo });
   } catch (err) {
     res.status(500).json({ message: "An error occurred!", error: err.message });
