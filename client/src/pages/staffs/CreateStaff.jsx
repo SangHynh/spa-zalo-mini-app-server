@@ -251,15 +251,19 @@ const CreateStaff = () => {
             </FormControl>
           </Grid2>
 
-          <Grid2 size={8}>
+          <Grid2 size={6}>
             <Paper sx={{ width: "100%" }}>
               <DataGrid
                 rows={permissions}
                 columns={[
-                  { field: "key", headerName: "Permission Name", width: 250 },
+                  {
+                    field: "key",
+                    headerName: `${t("permission-name")}`,
+                    width: 250,
+                  },
                   {
                     field: "value",
-                    headerName: "Permission Value",
+                    headerName: `${t("permission-value")}`,
                     width: 250,
                   },
                 ]}
@@ -279,7 +283,7 @@ const CreateStaff = () => {
             </Paper>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={6}>
             <Grid2 size={12}>
               {/* Image */}
               <Button

@@ -332,7 +332,7 @@ const UserCate = () => {
                           handleOpen(user);
                         }}
                       >
-                        <VisibilityIcon fontSize="small" />
+                        <VisibilityIcon fontSize="inherit" />
                       </TableCell>
                     </TableRow>
                   );
@@ -475,20 +475,13 @@ const UserCate = () => {
       </Box>
 
       {/* Dialog */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth='sm'
-        fullWidth={true}
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         <DialogTitle id="responsive-dialog-title">
           <Stack>
             <Typography variant="h5" sx={{ mt: 2 }}>
               {selectedUser?.name}
             </Typography>
-            <Typography sx={{ mt: 2 }}>
-              ID: {selectedUser?._id}
-            </Typography>
+            <Typography sx={{ mt: 2 }}>ID: {selectedUser?._id}</Typography>
           </Stack>
         </DialogTitle>
         <DialogContent>
@@ -498,9 +491,11 @@ const UserCate = () => {
             </Typography>
             <Stack spacing={2} className="mt-2">
               {Array.isArray(selectedUser?.suggestions) &&
-                selectedUser.suggestions.length > 0 ? (
+              selectedUser.suggestions.length > 0 ? (
                 selectedUser.suggestions.map((suggestion) => (
-                  <Item style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Item
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <span>ID: {suggestion._id}</span>
                     <span>{suggestion.suggestedScore}</span>
                   </Item>
@@ -512,11 +507,7 @@ const UserCate = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleClose}
-            variant="outlined"
-            color="warning"
-          >
+          <Button onClick={handleClose} variant="outlined" color="warning">
             {t("close")}
           </Button>
         </DialogActions>

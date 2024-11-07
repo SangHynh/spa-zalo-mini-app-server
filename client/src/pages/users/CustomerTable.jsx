@@ -13,7 +13,24 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid2, ImageList, ImageListItem, Modal, Slide, Stack, TextField, Tooltip } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Grid2,
+  ImageList,
+  ImageListItem,
+  Modal,
+  Slide,
+  Stack,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
@@ -31,14 +48,14 @@ function Row(props) {
 
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
 
   const [ranks, setRanks] = useState([]);
   const [currentUserPoints, setCurrentUserPoints] = useState(0);
   const [currentUserRankPoints, setCurrentUserRankPoints] = useState(0);
-  const [currentUserRank, setCurrentUserRank] = useState('');
-  const [currentUserRankColor, setCurrentUserRankColor] = useState('');
+  const [currentUserRank, setCurrentUserRank] = useState("");
+  const [currentUserRankColor, setCurrentUserRankColor] = useState("");
 
   const { t } = useTranslation();
 
@@ -46,9 +63,11 @@ function Row(props) {
     const fetchRanks = async () => {
       try {
         const response = await apiGetRanks();
-  
+
         if (response.status === 200) {
-          const sortedRanks = response.data.sort((a, b) => b.minPoints - a.minPoints);
+          const sortedRanks = response.data.sort(
+            (a, b) => b.minPoints - a.minPoints
+          );
           setRanks(sortedRanks);
         }
       } catch (error) {
@@ -57,7 +76,7 @@ function Row(props) {
     };
 
     fetchRanks();
-  }, [])
+  }, []);
 
   const handleClose = () => setOpenModal(false);
 
@@ -94,15 +113,15 @@ function Row(props) {
   const handleRankPointsChange = (event) => {
     const newRankPoints = event.target.value;
     setCurrentUserRankPoints(newRankPoints);
-  
+
     const matchedRank = ranks.find((rank) => newRankPoints >= rank.minPoints);
-  
+
     if (matchedRank) {
       setCurrentUserRank(matchedRank.tier);
       setCurrentUserRankColor(matchedRank.color);
     }
   };
-  
+
   const handleUpdateUserPoints = async () => {
     if (
       currentUserRankPoints !== selectedUser.rankPoints ||
@@ -115,7 +134,7 @@ function Row(props) {
           rankPoints: currentUserRankPoints,
           points: currentUserPoints,
         });
-  
+
         if (response.status === 200) {
           Swal.fire({
             icon: "success",
@@ -132,7 +151,6 @@ function Row(props) {
       toast.info(t("no-change"));
     }
   };
-  
 
   return (
     <>
@@ -214,7 +232,11 @@ function Row(props) {
             }}
             className="relative"
           >
-            <Chip label={row.membershipTier} variant="outlined" sx={{ color: (row.rankColor), borderColor: (row.rankColor) }} />
+            <Chip
+              label={row.membershipTier}
+              variant="outlined"
+              sx={{ color: row.rankColor, borderColor: row.rankColor }}
+            />
           </TableCell>
           <TableCell
             align="right"
@@ -328,7 +350,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -355,18 +377,12 @@ function Row(props) {
                           <TableCell component="th" scope="row" align="center">
                             {address._id}
                           </TableCell>
-                          <TableCell align="center">
-                            {address.number}
-                          </TableCell>
-                          <TableCell align="center">
-                            {address.ward}
-                          </TableCell>
+                          <TableCell align="center">{address.number}</TableCell>
+                          <TableCell align="center">{address.ward}</TableCell>
                           <TableCell align="center">
                             {address.district}
                           </TableCell>
-                          <TableCell align="center">
-                            {address.city}
-                          </TableCell>
+                          <TableCell align="center">{address.city}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -376,7 +392,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -416,7 +432,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -458,7 +474,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -494,7 +510,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -534,7 +550,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -568,7 +584,7 @@ function Row(props) {
           </TableCell>
         </TableRow>
         <TableRow className="bg-[#F0F2F5] dark:bg-[#121212]">
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={14}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 <Typography variant="h6" gutterBottom component="div">
@@ -614,9 +630,20 @@ function Row(props) {
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>
-            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
+            <Stack
+              direction="row"
+              spacing={2}
+              divider={<Divider orientation="vertical" flexItem />}
+            >
               <div>{selectedUser?.name}</div>
-              <Chip label={currentUserRank} variant="outlined" sx={{ color: (currentUserRankColor), borderColor: (currentUserRankColor) }} />
+              <Chip
+                label={currentUserRank}
+                variant="outlined"
+                sx={{
+                  color: currentUserRankColor,
+                  borderColor: currentUserRankColor,
+                }}
+              />
             </Stack>
           </DialogTitle>
           <DialogContent>
@@ -625,7 +652,7 @@ function Row(props) {
                 <Grid2 size={6}>
                   <TextField
                     id="rankPoints"
-                    label={`${t('rankPoints')} - ${t('use-for-rank')}`}
+                    label={`${t("rankPoints")} - ${t("use-for-rank")}`}
                     type="number"
                     variant="standard"
                     value={currentUserRankPoints}
@@ -640,7 +667,7 @@ function Row(props) {
                 <Grid2 size={6}>
                   <TextField
                     id="points"
-                    label={`${t('points')} - ${t('use-for-earn')}`}
+                    label={`${t("points")} - ${t("use-for-earn")}`}
                     type="number"
                     variant="standard"
                     value={currentUserPoints}
@@ -656,8 +683,16 @@ function Row(props) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="success" onClick={handleUpdateUserPoints}>{t('update')}</Button>
-            <Button variant="outlined" color="warning" onClick={handleClose}>{t('cancel')}</Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleUpdateUserPoints}
+            >
+              {t("update")}
+            </Button>
+            <Button variant="outlined" color="warning" onClick={handleClose}>
+              {t("cancel")}
+            </Button>
           </DialogActions>
         </Dialog>
       </React.Fragment>

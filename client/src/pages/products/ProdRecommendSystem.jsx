@@ -275,13 +275,37 @@ const ProdRecommendSystem = () => {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
+          <TableHead className="bg-gray-400 dark:bg-gray-100">
             <TableRow>
               <TableCell padding="checkbox"></TableCell>
-              <TableCell>{t("product-id")}</TableCell>
-              <TableCell>{t("name")}</TableCell>
-              <TableCell>{t("category")}</TableCell>
-              <TableCell>{t("sub-category")}</TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="dark:text-black"
+              >
+                {t("product-id")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="dark:text-black"
+              >
+                {t("name")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="dark:text-black"
+              >
+                {t("category")}
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ fontWeight: "bold" }}
+                className="dark:text-black"
+              >
+                {t("sub-category")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -293,7 +317,9 @@ const ProdRecommendSystem = () => {
               return (
                 <TableRow
                   hover
-                  onClick={(event) => !isDisabled && handleClickProduct(event, product._id)}
+                  onClick={(event) =>
+                    !isDisabled && handleClickProduct(event, product._id)
+                  }
                   role="checkbox"
                   aria-checked={isItemSelected}
                   tabIndex={-1}

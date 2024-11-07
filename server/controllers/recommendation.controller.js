@@ -17,7 +17,6 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-
   try {
     // Tìm kiếm sản phẩm dựa trên tên với regex
     const products = await Product.find({
@@ -80,7 +79,7 @@ exports.findProductToUpdateSuggestScoreOfUser = async (req, res) => {
       products: products, // Thêm danh sách sản phẩm tìm được vào phản hồi
       totalProducts,
       currentPage: page,
-      totalPages: Math.ceil(totalProducts / limit)
+      totalPages: Math.ceil(totalProducts / limit),
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
@@ -95,7 +94,7 @@ exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
   try {
     // Tìm kiếm dịch vụ dựa trên tên với regex
     const services = await Service.find({
-      name: { $regex: serviceName, $options: 'i' } // Tìm kiếm không phân biệt chữ hoa chữ thường
+      name: { $regex: serviceName, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa chữ thường
     });
 
     if (!services || services.length === 0) {
@@ -120,7 +119,9 @@ exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
 
       // Tìm kiếm category trong mảng suggestions của user
       const existingCategory = user.suggestions.find(
-        (suggestedCategory) => suggestedCategory.categoryId && suggestedCategory.categoryId.toString() === categoryId.toString()
+        (suggestedCategory) =>
+          suggestedCategory.categoryId &&
+          suggestedCategory.categoryId.toString() === categoryId.toString()
       );
 
       if (existingCategory) {
@@ -131,7 +132,7 @@ exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
         user.suggestions.push({
           categoryId: categoryId,
           category: category, // Đảm bảo thêm category vào đây
-          suggestedScore: 1
+          suggestedScore: 1,
         });
       }
     }
@@ -143,7 +144,7 @@ exports.findServiceToUpdateSuggestScoreOfUser = async (req, res) => {
     res.status(200).json({
       message: "Updated successfully",
       suggestions: updatedUser.suggestions,
-      services: services // Thêm danh sách dịch vụ tìm được vào phản hồi
+      services: services, // Thêm danh sách dịch vụ tìm được vào phản hồi
     });
   } catch (error) {
     console.error("Error updating suggested score:", error.message);
@@ -166,7 +167,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
   let images = [];
 
   if (req.files) {
-    images = req.files.map(file => file.path);
+    images = req.files.map((file) => file.path);
   }
 
   try {
@@ -242,7 +243,7 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
       images: images,
       userId: userId,
       variantId: variantId,
-      volume: volume
+      volume: volume,
     });
 
     // Lưu đánh giá vào cơ sở dữ liệu
@@ -253,14 +254,18 @@ exports.ratingToUpdateSuggestScoreOfUser = async (req, res) => {
       const order = await Order.findById(orderId);
       if (order) {
         // Tìm sản phẩm trong mảng products
-        const productInOrder = order.products.find(product => product.productId.toString() === productId);
+        const productInOrder = order.products.find(
+          (product) => product.productId.toString() === productId
+        );
 
         if (productInOrder) {
           // Đánh dấu sản phẩm là đã đánh giá và lưu reviewId
           productInOrder.rated = true;
           productInOrder.reviewId = review._id;
         } else {
-          return res.status(404).json({ message: "Product not found in the order" });
+          return res
+            .status(404)
+            .json({ message: "Product not found in the order" });
         }
 
         // Lưu cập nhật hóa đơn mà không cần validate
@@ -327,11 +332,11 @@ exports.getReviewsByProductId = async (req, res) => {
 
     const reviewsWithUserDetails = await Promise.all(
       reviews.map(async (review) => {
-        const user = await User.findById(review.userId).select('name avatar');
+        const user = await User.findById(review.userId).select("name avatar");
         return {
           ...review.toObject(),
-          userName: user ? user.name : 'Unknown User',
-          userAvatar: user ? user.avatar : '',
+          userName: user ? user.name : "Unknown User",
+          userAvatar: user ? user.avatar : "",
         };
       })
     );
@@ -388,7 +393,7 @@ exports.updateSuggestedScoresForMultipleProducts = async (req, res) => {
         (suggestedCategory) =>
           suggestedCategory.categoryId &&
           suggestedCategory.categoryId.toString() ===
-          product.categoryId.toString()
+            product.categoryId.toString()
       );
 
       if (!existingCategory) {
@@ -503,21 +508,26 @@ exports.configureProductRecommendations = async (req, res) => {
 exports.getProductRecommendations = async (req, res) => {
   const mainItemId = req.params.id; // Lấy mainItemId từ params
 
-  console.log('Main Product ID:', mainItemId);
+  console.log("Main Product ID:", mainItemId);
 
   try {
     // Tìm kiếm recommendation theo mainItemId
-    const recommendation = await Recommendation.findOne({ mainItemId: mainItemId, itemType: 'Product' });
+    const recommendation = await Recommendation.findOne({
+      mainItemId: mainItemId,
+      itemType: "Product",
+    });
 
     if (!recommendation) {
-      return res.status(404).json({ message: "Recommendations not found for this product" });
+      return res
+        .status(404)
+        .json({ message: "Recommendations not found for this product" });
     }
 
     const suggestionsWithDetails = await Promise.all(
       recommendation.items.map(async (item) => {
-        if (item.itemType === 'Product') {
+        if (item.itemType === "Product") {
           const product = await Product.findById(item.itemId)
-            .select('images price averageRating name')
+            .select("images price averageRating name")
             .lean();
 
           if (product) {
@@ -527,7 +537,7 @@ exports.getProductRecommendations = async (req, res) => {
               price: product.price,
               averageRating: product.averageRating,
               name: product.name,
-              itemId: product._id
+              itemId: product._id,
             };
           }
         }
@@ -543,7 +553,7 @@ exports.getProductRecommendations = async (req, res) => {
         name: recommendation.mainItemName,
       },
       suggestions: suggestionsWithDetails,
-      collection: "Recommendation"
+      collection: "Recommendation",
     });
   } catch (error) {
     console.error("Error retrieving product recommendations:", error.message);
@@ -632,18 +642,20 @@ exports.configureServiceRecommendations = async (req, res) => {
 exports.getServiceRecommendations = async (req, res) => {
   const mainItemId = req.params.id; // Lấy mainItemId từ body của yêu cầu
 
-  console.log('Main Service ID:', mainItemId);
+  console.log("Main Service ID:", mainItemId);
 
   try {
     // Tìm kiếm recommendation theo mainItemId
     const recommendation = await Recommendation.findOne({
       mainItemId: mainItemId,
-      itemType: 'Service' // Đảm bảo loại là 'Service'
+      itemType: "Service", // Đảm bảo loại là 'Service'
     });
 
     // Kiểm tra nếu không tìm thấy recommendation
     if (!recommendation) {
-      return res.status(404).json({ message: "Recommendations not found for this service." });
+      return res
+        .status(404)
+        .json({ message: "Recommendations not found for this service." });
     }
 
     // Trả về thông tin recommendation
@@ -654,7 +666,7 @@ exports.getServiceRecommendations = async (req, res) => {
         name: recommendation.mainItemName,
       },
       suggestions: recommendation.items,
-      collection: "Recommendations"
+      collection: "Recommendations",
     });
   } catch (error) {
     console.error("Error retrieving service recommendations:", error.message);
@@ -671,12 +683,14 @@ exports.suggestProductsForUser = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
+    const customerCategoryIds = customer.suggestions.map(
+      (suggestion) => suggestion.categoryId
+    );
     const otherUsers = await User.find({ _id: { $ne: customerId } });
     const categoryScores = {};
 
-    otherUsers.forEach(user => {
-      user.suggestions.forEach(suggestion => {
+    otherUsers.forEach((user) => {
+      user.suggestions.forEach((suggestion) => {
         if (!customerCategoryIds.includes(suggestion.categoryId)) {
           if (!categoryScores[suggestion.categoryId]) {
             categoryScores[suggestion.categoryId] = {
@@ -685,31 +699,38 @@ exports.suggestProductsForUser = async (req, res) => {
               count: 0,
             };
           }
-          categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
+          categoryScores[suggestion.categoryId].totalScore +=
+            suggestion.suggestedScore;
           categoryScores[suggestion.categoryId].count += 1;
         }
       });
     });
 
-    const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
-      return {
-        categoryId,
-        categoryName,
-        averageScore: totalScore / count
-      };
-    });
+    const averageScores = Object.entries(categoryScores).map(
+      ([categoryId, { categoryName, totalScore, count }]) => {
+        return {
+          categoryId,
+          categoryName,
+          averageScore: totalScore / count,
+        };
+      }
+    );
 
-    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    const topRecommendations = averageScores
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, 3);
 
     // Tìm sản phẩm tương ứng với các category gợi ý
-    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
-    const products = await Product.find({ categoryId: { $in: topCategoryIds } });
+    const topCategoryIds = topRecommendations.map((rec) => rec.categoryId);
+    const products = await Product.find({
+      categoryId: { $in: topCategoryIds },
+    });
 
     // Trả về danh sách category gợi ý và sản phẩm tương ứng
     return res.status(200).json({
       message: "Suggested categories found successfully",
       recommendations: topRecommendations,
-      products // Thêm sản phẩm vào kết quả
+      products, // Thêm sản phẩm vào kết quả
     });
   } catch (error) {
     console.error("Error suggesting categories:", error.message);
@@ -721,8 +742,8 @@ exports.getCombinedProductRecommendations = async (req, res) => {
   const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
   const customerId = req.body.id; // Lấy customerId từ body của yêu cầu
 
-  console.log('Main Product ID:', mainItemId);
-  console.log('Customer ID:', customerId);
+  console.log("Main Product ID:", mainItemId);
+  console.log("Customer ID:", customerId);
 
   try {
     let recommendation = null;
@@ -731,7 +752,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     if (mainItemId) {
       recommendation = await Recommendation.findOne({
         mainItemId: mainItemId,
-        itemType: 'Product'
+        itemType: "Product",
       });
     }
 
@@ -742,38 +763,45 @@ exports.getCombinedProductRecommendations = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
+    const customerCategoryIds = customer.suggestions.map(
+      (suggestion) => suggestion.categoryId
+    );
     const otherUsers = await User.find({ _id: { $ne: customerId } });
     const categoryScores = {};
 
-    otherUsers.forEach(user => {
-      user.suggestions.forEach(suggestion => {
+    otherUsers.forEach((user) => {
+      user.suggestions.forEach((suggestion) => {
         if (!customerCategoryIds.includes(suggestion.categoryId)) {
           if (!categoryScores[suggestion.categoryId]) {
             categoryScores[suggestion.categoryId] = {
               categoryName: suggestion.categoryName,
               totalScore: 0,
-              count: 0
+              count: 0,
             };
           }
-          categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
+          categoryScores[suggestion.categoryId].totalScore +=
+            suggestion.suggestedScore;
           categoryScores[suggestion.categoryId].count += 1;
         }
       });
     });
 
-    const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
-      return {
-        categoryId,
-        categoryName,
-        averageScore: totalScore / count
-      };
-    });
+    const averageScores = Object.entries(categoryScores).map(
+      ([categoryId, { categoryName, totalScore, count }]) => {
+        return {
+          categoryId,
+          categoryName,
+          averageScore: totalScore / count,
+        };
+      }
+    );
 
-    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    const topRecommendations = averageScores
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, 3);
 
     // Bước 3: Tìm sản phẩm tương ứng với các category gợi ý, giới hạn 3 sản phẩm mỗi category
-    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
+    const topCategoryIds = topRecommendations.map((rec) => rec.categoryId);
     const suggestedProductsByCategory = await Promise.all(
       topCategoryIds.map(async (categoryId) => {
         const products = await Product.find({ categoryId }).limit(3);
@@ -785,7 +813,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     const response = {
       message: "Combined product recommendations retrieved successfully",
       suggestions: [],
-      collection: "Recommendation"
+      collection: "Recommendation",
     };
 
     // Nếu có recommendation cho sản phẩm chính, ưu tiên hiển thị trước
@@ -795,7 +823,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
           id: recommendation.mainItemId,
           name: recommendation.mainItemName,
         },
-        products: recommendation.items // Gợi ý từ sản phẩm chính
+        products: recommendation.items, // Gợi ý từ sản phẩm chính
       });
     }
 
@@ -803,7 +831,7 @@ exports.getCombinedProductRecommendations = async (req, res) => {
     suggestedProductsByCategory.forEach((products, index) => {
       response.suggestions.push({
         category: topRecommendations[index].categoryName,
-        products: products // Giới hạn 3 sản phẩm cho mỗi danh mục
+        products: products, // Giới hạn 3 sản phẩm cho mỗi danh mục
       });
     });
 
@@ -818,8 +846,8 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
   const mainItemId = req.body.mainItemId; // Lấy mainItemId từ body của yêu cầu
   const customerId = req.body.id; // Lấy customerId từ body của yêu cầu
 
-  console.log('Main Service ID:', mainItemId);
-  console.log('Customer ID:', customerId);
+  console.log("Main Service ID:", mainItemId);
+  console.log("Customer ID:", customerId);
 
   try {
     // Bước 1: Lấy thông tin khách hàng và gợi ý từ các category của họ
@@ -829,38 +857,45 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    const customerCategoryIds = customer.suggestions.map(suggestion => suggestion.categoryId);
+    const customerCategoryIds = customer.suggestions.map(
+      (suggestion) => suggestion.categoryId
+    );
     const otherUsers = await User.find({ _id: { $ne: customerId } });
     const categoryScores = {};
 
-    otherUsers.forEach(user => {
-      user.suggestions.forEach(suggestion => {
+    otherUsers.forEach((user) => {
+      user.suggestions.forEach((suggestion) => {
         if (!customerCategoryIds.includes(suggestion.categoryId)) {
           if (!categoryScores[suggestion.categoryId]) {
             categoryScores[suggestion.categoryId] = {
               categoryName: suggestion.categoryName,
               totalScore: 0,
-              count: 0
+              count: 0,
             };
           }
-          categoryScores[suggestion.categoryId].totalScore += suggestion.suggestedScore;
+          categoryScores[suggestion.categoryId].totalScore +=
+            suggestion.suggestedScore;
           categoryScores[suggestion.categoryId].count += 1;
         }
       });
     });
 
-    const averageScores = Object.entries(categoryScores).map(([categoryId, { categoryName, totalScore, count }]) => {
-      return {
-        categoryId,
-        categoryName,
-        averageScore: totalScore / count
-      };
-    });
+    const averageScores = Object.entries(categoryScores).map(
+      ([categoryId, { categoryName, totalScore, count }]) => {
+        return {
+          categoryId,
+          categoryName,
+          averageScore: totalScore / count,
+        };
+      }
+    );
 
-    const topRecommendations = averageScores.sort((a, b) => b.averageScore - a.averageScore).slice(0, 3);
+    const topRecommendations = averageScores
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, 3);
 
     // Bước 2: Tìm dịch vụ tương ứng với các category gợi ý, giới hạn 3 dịch vụ mỗi category
-    const topCategoryIds = topRecommendations.map(rec => rec.categoryId);
+    const topCategoryIds = topRecommendations.map((rec) => rec.categoryId);
     const suggestedServicesByCategory = await Promise.all(
       topCategoryIds.map(async (categoryId) => {
         const services = await Service.find({ categoryId }).limit(3);
@@ -872,14 +907,14 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
     const response = {
       message: "Combined service recommendations retrieved successfully",
       suggestions: [],
-      collection: "Recommendation"
+      collection: "Recommendation",
     };
 
     // Nếu có mainItemId thì lấy recommendation cho sản phẩm chính
     if (mainItemId) {
       const recommendation = await Recommendation.findOne({
         mainItemId: mainItemId,
-        itemType: 'Service'
+        itemType: "Service",
       });
 
       if (recommendation) {
@@ -888,7 +923,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
             id: recommendation.mainItemId,
             name: recommendation.mainItemName,
           },
-          services: recommendation.items // Gợi ý từ sản phẩm chính
+          services: recommendation.items, // Gợi ý từ sản phẩm chính
         });
       }
     }
@@ -897,7 +932,7 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
     suggestedServicesByCategory.forEach((services, index) => {
       response.suggestions.push({
         category: topRecommendations[index].categoryName,
-        services: services // Giới hạn 3 dịch vụ cho mỗi danh mục
+        services: services, // Giới hạn 3 dịch vụ cho mỗi danh mục
       });
     });
 
@@ -907,8 +942,6 @@ exports.getCombinedServiceRecommendations = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 //update multiple suggestion scores
 exports.updateMultipleSuggestionScores = async (req, res) => {
@@ -926,14 +959,18 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
     const users = await User.find({ _id: { $in: userIds } }); // Tìm tất cả người dùng theo userIds
 
     if (users.length === 0) {
-      return res.status(404).json({ message: 'No users found for the provided IDs.' });
+      return res
+        .status(404)
+        .json({ message: "No users found for the provided IDs." });
     }
 
     // Duyệt qua từng user
     for (const user of users) {
       // Duyệt qua mảng các suggestions cần cập nhật
-      suggestionsToUpdate.forEach(update => {
-        let suggestion = user.suggestions.find(sug => sug.categoryId.toString() === update.categoryId);
+      suggestionsToUpdate.forEach((update) => {
+        let suggestion = user.suggestions.find(
+          (sug) => sug.categoryId.toString() === update.categoryId
+        );
 
         if (suggestion) {
           // Cập nhật suggestedScore cho từng mục dựa trên categoryId
@@ -942,7 +979,7 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
           // Nếu không tìm thấy suggestion tương ứng, tạo mới suggestion
           user.suggestions.push({
             categoryId: update.categoryId,
-            suggestedScore: update.suggestedScore
+            suggestedScore: update.suggestedScore,
           });
         }
       });
@@ -952,20 +989,18 @@ exports.updateMultipleSuggestionScores = async (req, res) => {
     }
 
     res.status(200).json({
-      message: 'Multiple suggestions updated successfully',
+      message: "Multiple suggestions updated successfully",
     });
   } catch (error) {
-    console.error('Error updating multiple suggestions:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating multiple suggestions:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
 exports.configureProductToUser = async (req, res) => {
   const { userIds, productIds } = req.body; // Lấy userIds và productIds từ body
 
-  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 ||
-    !productIds || !Array.isArray(productIds) || productIds.length === 0) {
-    return res.status(400).json({ message: "Invalid user IDs or product IDs" });
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+    return res.status(400).json({ message: "Invalid user IDs" });
   }
 
   try {
@@ -975,24 +1010,31 @@ exports.configureProductToUser = async (req, res) => {
       return res.status(404).json({ message: "No users found" });
     }
 
-    // Tìm các sản phẩm dựa trên danh sách productIds
-    const products = await Product.find({ _id: { $in: productIds } });
-    if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found" });
-    }
+    let newConfigSuggestions = [];
+    if (productIds && Array.isArray(productIds) && productIds.length > 0) {
+      // Tìm các sản phẩm dựa trên danh sách productIds nếu có
+      const products = await Product.find({ _id: { $in: productIds } });
+      if (!products || products.length === 0) {
+        return res.status(404).json({ message: "No products found" });
+      }
 
-    const newConfigSuggestions = products.map(product => ({
-      id: product._id,
-      name: product.name,
-    }));
+      // Tạo danh sách newConfigSuggestions từ các sản phẩm
+      newConfigSuggestions = products.map((product) => ({
+        id: product._id,
+        name: product.name,
+      }));
+    }
 
     // Lặp qua từng người dùng để cập nhật configSuggestions
     for (const user of users) {
       // Tìm kiếm cấu hình hiện tại của người dùng với type là "product"
-      let configuration = await Configuration.findOne({ userId: user._id, type: "product" });
+      let configuration = await Configuration.findOne({
+        userId: user._id,
+        type: "product",
+      });
 
-       // Nếu không tìm thấy cấu hình, khởi tạo mới
-       if (!configuration) {
+      // Nếu không tìm thấy cấu hình, khởi tạo mới
+      if (!configuration) {
         configuration = new Configuration({
           userId: user._id,
           type: "product",
@@ -1028,29 +1070,40 @@ exports.getProductConfiguration = async (req, res) => {
     const objectId = new mongoose.Types.ObjectId(userId);
 
     // Tìm kiếm cấu hình với type là "product"
-    const configuration = await Configuration.findOne({ userId: objectId, type: "product" });
+    const configuration = await Configuration.findOne({
+      userId: objectId,
+      type: "product",
+    });
 
     if (!configuration) {
-      return res.status(404).json({ message: "Configuration not found for this user with type 'product'" });
+      return res.status(404).json({
+        message: "Configuration not found for this user with type 'product'",
+      });
     }
 
     // Lấy chi tiết sản phẩm dựa trên configSuggestions
-    const productIds = configuration.configSuggestions.map(suggestion => suggestion.id);
+    const productIds = configuration.configSuggestions.map(
+      (suggestion) => suggestion.id
+    );
     const products = await Product.find({ _id: { $in: productIds } });
 
     // Thêm các thông tin chi tiết của product vào configSuggestions
-    const enrichedConfigSuggestions = configuration.configSuggestions.map(suggestion => {
-      const product = products.find(p => p._id.toString() === suggestion.id);
-      return product
-        ? {
-          _id: product._id,
-          name: product.name,
-          price: product.price,
-          images: product.images,
-          averageRating: product.averageRating
-        }
-        : suggestion;
-    });
+    const enrichedConfigSuggestions = configuration.configSuggestions.map(
+      (suggestion) => {
+        const product = products.find(
+          (p) => p._id.toString() === suggestion.id
+        );
+        return product
+          ? {
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              images: product.images,
+              averageRating: product.averageRating,
+            }
+          : suggestion;
+      }
+    );
 
     res.status(200).json({
       message: "Configuration retrieved successfully",
@@ -1064,9 +1117,8 @@ exports.getProductConfiguration = async (req, res) => {
 exports.configureServiceToUser = async (req, res) => {
   const { userIds, serviceIds } = req.body; // Lấy userIds và serviceIds từ body
 
-  if (!userIds || !Array.isArray(userIds) || userIds.length === 0 ||
-    !serviceIds || !Array.isArray(serviceIds) || serviceIds.length === 0) {
-    return res.status(400).json({ message: "Invalid user IDs or service IDs" });
+  if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+    return res.status(400).json({ message: "Invalid user IDs" });
   }
 
   try {
@@ -1076,24 +1128,31 @@ exports.configureServiceToUser = async (req, res) => {
       return res.status(404).json({ message: "No users found" });
     }
 
-    // Tìm các sản phẩm dựa trên danh sách serviceIds
-    const services = await Service.find({ _id: { $in: serviceIds } });
-    if (!services || services.length === 0) {
-      return res.status(404).json({ message: "No services found" });
-    }
+    let newConfigSuggestions = [];
+    if (serviceIds && Array.isArray(serviceIds) && serviceIds.length > 0) {
+      // Tìm các dịch vụ dựa trên danh sách serviceIds nếu có
+      const services = await Service.find({ _id: { $in: serviceIds } });
+      if (!services || services.length === 0) {
+        return res.status(404).json({ message: "No services found" });
+      }
 
-    const newConfigSuggestions = services.map(service => ({
-      id: service._id,
-      name: service.name,
-    }));
+      // Tạo danh sách newConfigSuggestions từ các dịch vụ
+      newConfigSuggestions = services.map((service) => ({
+        id: service._id,
+        name: service.name,
+      }));
+    }
 
     // Lặp qua từng người dùng để cập nhật configSuggestions
     for (const user of users) {
       // Tìm kiếm cấu hình hiện tại của người dùng với type là "service"
-      let configuration = await Configuration.findOne({ userId: user._id, type: "service" });
+      let configuration = await Configuration.findOne({
+        userId: user._id,
+        type: "service",
+      });
 
-       // Nếu không tìm thấy cấu hình, khởi tạo mới
-       if (!configuration) {
+      // Nếu không tìm thấy cấu hình, khởi tạo mới
+      if (!configuration) {
         configuration = new Configuration({
           userId: user._id,
           type: "service",
@@ -1129,28 +1188,39 @@ exports.getServiceConfiguration = async (req, res) => {
     const objectId = new mongoose.Types.ObjectId(userId);
 
     // Tìm kiếm cấu hình với type là "service"
-    const configuration = await Configuration.findOne({ userId: objectId, type: "service" });
+    const configuration = await Configuration.findOne({
+      userId: objectId,
+      type: "service",
+    });
 
     if (!configuration) {
-      return res.status(404).json({ message: "Configuration not found for this user with type 'service'" });
+      return res.status(404).json({
+        message: "Configuration not found for this user with type 'service'",
+      });
     }
 
     // Lấy chi tiết dịch vụ dựa trên configSuggestions
-    const serviceIds = configuration.configSuggestions.map(suggestion => suggestion.id);
+    const serviceIds = configuration.configSuggestions.map(
+      (suggestion) => suggestion.id
+    );
     const services = await Service.find({ _id: { $in: serviceIds } });
 
     // Thêm các thông tin chi tiết của service vào configSuggestions
-    const enrichedConfigSuggestions = configuration.configSuggestions.map(suggestion => {
-      const service = services.find(s => s._id.toString() === suggestion.id);
-      return service
-        ? {
-          _id: service._id,
-          name: service.name,
-          price: service.price,
-          images: service.images,
-        }
-        : suggestion;
-    });
+    const enrichedConfigSuggestions = configuration.configSuggestions.map(
+      (suggestion) => {
+        const service = services.find(
+          (s) => s._id.toString() === suggestion.id
+        );
+        return service
+          ? {
+              _id: service._id,
+              name: service.name,
+              price: service.price,
+              images: service.images,
+            }
+          : suggestion;
+      }
+    );
 
     res.status(200).json({
       message: "Configuration retrieved successfully",

@@ -195,10 +195,10 @@ const UserSvc = () => {
     // console.log("Selected User IDs:", selectedUserIds);
     // console.log("Selected Category IDs:", selectedServiceIds);
 
-    if (selectedUserIds.length === 0 || selectedServiceIds.length === 0) {
-      toast.info(`${t("select user-svc pls")}`);
-      return;
-    }
+    // if (selectedUserIds.length === 0 || selectedServiceIds.length === 0) {
+    //   toast.info(`${t("select user-svc pls")}`);
+    //   return;
+    // }
 
     try {
       const response = await apiConfigServiceToUser(
@@ -242,7 +242,7 @@ const UserSvc = () => {
   return (
     <Box className="w-full flex flex-col gap-4">
       <Grid2 container spacing={4}>
-        <Grid2 size={6}>
+        <Grid2 size={7}>
           <Typography variant="h6" gutterBottom>
             {t("select-accounts")}
           </Typography>
@@ -332,7 +332,7 @@ const UserSvc = () => {
                           handleOpen(user);
                         }}
                       >
-                        <VisibilityIcon fontSize="small" />
+                        <VisibilityIcon fontSize="inherit" />
                       </TableCell>
                     </TableRow>
                   );
@@ -351,7 +351,7 @@ const UserSvc = () => {
             labelRowsPerPage={t("rows-per-page")}
           />
         </Grid2>
-        <Grid2 size={6}>
+        <Grid2 size={5}>
           <Typography variant="h6" gutterBottom>
             {t("select-svc")}
           </Typography>
@@ -460,20 +460,13 @@ const UserSvc = () => {
       </Box>
 
       {/* Dialog */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth='sm'
-        fullWidth={true}
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         <DialogTitle id="responsive-dialog-title">
           <Stack>
             <Typography variant="h5" sx={{ mt: 2 }}>
               {selectedUser?.name}
             </Typography>
-            <Typography sx={{ mt: 2 }}>
-              ID: {selectedUser?._id}
-            </Typography>
+            <Typography sx={{ mt: 2 }}>ID: {selectedUser?._id}</Typography>
           </Stack>
         </DialogTitle>
         <DialogContent>
@@ -482,10 +475,11 @@ const UserSvc = () => {
               {t("exist-prod")}
             </Typography>
             <Stack spacing={2} className="mt-2">
-              {Array.isArray(serviceConfig) &&
-                serviceConfig.length > 0 ? (
+              {Array.isArray(serviceConfig) && serviceConfig.length > 0 ? (
                 serviceConfig.map((configSuggestion) => (
-                  <Item style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Item
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <span>ID: {configSuggestion._id}</span>
                     <span>{configSuggestion.name}</span>
                   </Item>
@@ -497,11 +491,7 @@ const UserSvc = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleClose}
-            variant="outlined"
-            color="warning"
-          >
+          <Button onClick={handleClose} variant="outlined" color="warning">
             {t("close")}
           </Button>
         </DialogActions>

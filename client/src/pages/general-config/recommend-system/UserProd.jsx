@@ -195,10 +195,10 @@ const UserProd = () => {
     // console.log("Selected User IDs:", selectedUserIds);
     // console.log("Selected Category IDs:", selectedProductIds);
 
-    if (selectedUserIds.length === 0 || selectedProductIds.length === 0) {
-      toast.info(`${t("select user-prod pls")}`);
-      return;
-    }
+    // if (selectedUserIds.length === 0 || selectedProductIds.length === 0) {
+    //   toast.info(`${t("select user-prod pls")}`);
+    //   return;
+    // }
 
     try {
       const response = await apiConfigProductToUser(
@@ -242,7 +242,7 @@ const UserProd = () => {
   return (
     <Box className="w-full flex flex-col gap-4">
       <Grid2 container spacing={4}>
-        <Grid2 size={6}>
+        <Grid2 size={7}>
           <Typography variant="h6" gutterBottom>
             {t("select-accounts")}
           </Typography>
@@ -332,7 +332,7 @@ const UserProd = () => {
                           handleOpen(user);
                         }}
                       >
-                        <VisibilityIcon fontSize="small" />
+                        <VisibilityIcon fontSize="inherit" />
                       </TableCell>
                     </TableRow>
                   );
@@ -351,7 +351,7 @@ const UserProd = () => {
             labelRowsPerPage={t("rows-per-page")}
           />
         </Grid2>
-        <Grid2 size={6}>
+        <Grid2 size={5}>
           <Typography variant="h6" gutterBottom>
             {t("select-prod")}
           </Typography>
@@ -458,20 +458,13 @@ const UserProd = () => {
       </Box>
 
       {/* Dialog */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth='sm'
-        fullWidth={true}
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         <DialogTitle id="responsive-dialog-title">
           <Stack>
             <Typography variant="h5" sx={{ mt: 2 }}>
               {selectedUser?.name}
             </Typography>
-            <Typography sx={{ mt: 2 }}>
-              ID: {selectedUser?._id}
-            </Typography>
+            <Typography sx={{ mt: 2 }}>ID: {selectedUser?._id}</Typography>
           </Stack>
         </DialogTitle>
         <DialogContent>
@@ -480,10 +473,11 @@ const UserProd = () => {
               {t("exist-prod")}
             </Typography>
             <Stack spacing={2} className="mt-2">
-              {Array.isArray(productConfig) &&
-                productConfig.length > 0 ? (
-                  productConfig.map((configSuggestion) => (
-                  <Item style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {Array.isArray(productConfig) && productConfig.length > 0 ? (
+                productConfig.map((configSuggestion) => (
+                  <Item
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <span>ID: {configSuggestion._id}</span>
                     <span>{configSuggestion.name}</span>
                   </Item>
@@ -495,11 +489,7 @@ const UserProd = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleClose}
-            variant="outlined"
-            color="warning"
-          >
+          <Button onClick={handleClose} variant="outlined" color="warning">
             {t("close")}
           </Button>
         </DialogActions>

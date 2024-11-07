@@ -261,7 +261,7 @@ const MiniGame = () => {
                           handleOpen(user);
                         }}
                       >
-                        <VisibilityIcon fontSize="small" />
+                        <VisibilityIcon fontSize="inherit" />
                       </TableCell> */}
                     </TableRow>
                   );

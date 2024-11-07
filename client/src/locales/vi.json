@@ -230,5 +230,7 @@
   "increase-play-config": "Cấu hình tăng lượt chơi",
   "use-for-earn": "Dùng để đổi thưởng",
   "use-for-rank": "Dùng để thăng hạng",
-  "last-played": "Lần chơi cuối"
+  "last-played": "Lần chơi cuối",
+  "permission-name": "Tên quyền",
+  "permission-value": "Giá trị"
 }
