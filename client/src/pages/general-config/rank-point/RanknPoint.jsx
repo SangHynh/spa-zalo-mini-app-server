@@ -47,6 +47,7 @@ const RanknPoint = () => {
 
       {selectedOption === "for-user" && <ForUser />}
       {selectedOption === "for-order" && <ForOrder />}
+      <div className="h-50"></div>
     </Box>
   );
 };
